@@ -7,7 +7,10 @@
     { "file": "7-Normal-approximation-and-continuity-of-binomial-distributions.html", "title": "7.이항분포의 정규근사와 연속성" },
     { "file": "from-binomial-to-normal.html", "title": "7.이항분포에서 정규분포로" },
     { "file": "Z-Score--Standardizing-the-position-of-data-above-a-normal-distribution.html", "title": "7.Z점수: 정규분포 위에서 데이터의 위치 표준화하기" },
-    { "file": "chi--square-and-Rayleigh-distributions-derived-from-normal-distributions.html", "title": "7.정규분포에서 파생되는 카이제곱 분포와 레일리 분포" }
+    { "file": "chi--square-and-Rayleigh-distributions-derived-from-normal-distributions.html", "title": "7.정규분포에서 파생되는 카이제곱 분포와 레일리 분포" },
+    { "file": "5.1.html", "title": "9.모집단과 표본분포" },
+    { "file": "kge.html", "title": "9.k개 표본세트, 세트당 n개 요소일 때 공식 유도" },
+    { "file": "bokwon.html", "title": "9.복원추출 비복원추출" },
   ],
   "cprog": [],
   "python": [],
