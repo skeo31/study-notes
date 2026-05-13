@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정규분포에서 파생되는 확률분포</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1117;
+  --ink2: #3a3d4a;
+  --ink3: #6b6f7e;
+  --paper: #fafaf8;
+  --surface: #ffffff;
+  --rule: #e4e4e0;
+  --accent-blue: #1a56db;
+  --accent-blue-light: #e8f0fe;
+  --accent-teal: #0d9488;
+  --accent-teal-light: #e0f7f5;
+  --accent-amber: #b45309;
+  --accent-amber-light: #fef3c7;
+  --accent-red: #be123c;
+  --accent-red-light: #fce7f3;
+  --chi-color: #1a56db;
+  --ray-color: #0d9488;
+  --formula-bg: #f1f5f9;
+  --formula-border: #cbd5e1;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'IBM Plex Sans KR', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+/* ── 헤더 ── */
+.page-header {
+  background: var(--ink);
+  color: white;
+  padding: 56px 40px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 10%;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(26,86,219,0.18);
+}
+.header-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+.header-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.header-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 16px;
+}
+.header-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  max-width: 560px;
+}
+.header-tags {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-top: 24px;
+}
+.tag {
+  font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+  padding: 4px 10px; border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── 본문 레이아웃 ── */
+.main { max-width: 900px; margin: 0 auto; padding: 48px 32px 80px; }
+
+/* ── 섹션 구분 ── */
+.section { margin-bottom: 64px; }
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.section-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--ink3);
+  letter-spacing: 0.1em;
+  min-width: 28px;
+}
+.section-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.35rem; font-weight: 700;
+  color: var(--ink);
+}
+.section-badge {
+  margin-left: auto;
+  font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+  padding: 3px 8px; border-radius: 4px;
+}
+.badge-chi { background: var(--accent-blue-light); color: var(--accent-blue); }
+.badge-ray { background: var(--accent-teal-light); color: var(--accent-teal); }
+
+/* ── 기본 텍스트 블록 ── */
+.prose { font-size: 15px; color: var(--ink2); line-height: 1.85; margin-bottom: 20px; }
+.prose strong { color: var(--ink); font-weight: 600; }
+em { color: var(--ink3); font-style: normal; font-size: 0.93em; }
+
+/* ── 수식 블록 ── */
+.formula-block {
+  background: var(--formula-bg);
+  border: 1px solid var(--formula-border);
+  border-left: 3px solid var(--accent-blue);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin: 20px 0;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.formula-block.teal { border-left-color: var(--accent-teal); }
+.formula-block.amber { border-left-color: var(--accent-amber); }
+.formula-label {
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 10px;
+  font-family: 'IBM Plex Sans KR', sans-serif;
+}
+.formula-main {
+  font-size: 1.05rem;
+  color: var(--ink);
+  line-height: 2.1;
+}
+.formula-main .sub { font-size: 0.72em; vertical-align: sub; }
+.formula-main .sup { font-size: 0.72em; vertical-align: super; }
+.formula-main .frac {
+  display: inline-flex; flex-direction: column;
+  align-items: center; vertical-align: middle;
+  margin: 0 4px; line-height: 1.3;
+}
+.formula-main .frac .num { border-bottom: 1px solid var(--ink); padding: 0 4px; font-size: 0.9em; }
+.formula-main .frac .den { padding: 0 4px; font-size: 0.9em; }
+.formula-note {
+  font-size: 12px; color: var(--ink3);
+  margin-top: 10px; font-family: 'IBM Plex Sans KR', sans-serif;
+  line-height: 1.6;
+}
+.formula-arrow {
+  text-align: center; color: var(--ink3);
+  font-size: 1.4rem; margin: 4px 0; line-height: 1;
+}
+
+/* ── 개념 카드 ── */
+.concept-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 22px 24px;
+  margin: 16px 0;
+}
+.concept-card-title {
+  font-size: 13px; font-weight: 600;
+  color: var(--ink3); letter-spacing: 0.05em;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+/* ── 콜아웃 (응용 예시) ── */
+.callout {
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 24px 0;
+  position: relative;
+}
+.callout.blue { background: var(--accent-blue-light); border-left: 3px solid var(--accent-blue); }
+.callout.teal { background: var(--accent-teal-light); border-left: 3px solid var(--accent-teal); }
+.callout.amber { background: var(--accent-amber-light); border-left: 3px solid var(--accent-amber); }
+.callout-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.callout-icon {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.callout.blue .callout-icon { background: var(--accent-blue); }
+.callout.teal .callout-icon { background: var(--accent-teal); }
+.callout.amber .callout-icon { background: var(--accent-amber); }
+.callout-title { font-weight: 600; font-size: 14px; color: var(--ink); }
+.callout-subtitle { font-size: 12px; color: var(--ink3); margin-top: 1px; }
+.callout-body { font-size: 14px; color: var(--ink2); line-height: 1.8; }
+.callout-body strong { color: var(--ink); }
+
+/* ── 그리드 카드 ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.mini-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.mini-card-label { font-size: 11px; color: var(--ink3); margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
+.mini-card-val { font-size: 1.3rem; font-weight: 600; color: var(--ink); font-family: 'IBM Plex Mono', monospace; }
+.mini-card-desc { font-size: 12px; color: var(--ink3); margin-top: 4px; }
+
+/* ── 관계 다이어그램 ── */
+.relation-diagram {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 32px 24px;
+  margin: 24px 0;
+}
+.rel-row {
+  display: flex; align-items: center;
+  justify-content: center; gap: 12px;
+  flex-wrap: wrap; margin: 8px 0;
+}
+.rel-box {
+  padding: 10px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  text-align: center; min-width: 140px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.rel-box.normal { background: #f1f5f9; color: var(--ink); border: 1px solid var(--rule); }
+.rel-box.chi { background: var(--accent-blue-light); color: var(--accent-blue); border: 1px solid #bfdbfe; }
+.rel-box.ray { background: var(--accent-teal-light); color: var(--accent-teal); border: 1px solid #99f6e4; }
+.rel-box.exp { background: var(--accent-amber-light); color: var(--accent-amber); border: 1px solid #fde68a; }
+.rel-op {
+  font-size: 11px; color: var(--ink3); text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  padding: 4px 8px; background: var(--paper);
+  border-radius: 4px; border: 1px solid var(--rule);
+}
+.rel-arrow { color: var(--ink3); font-size: 1.2rem; }
+
+/* ── 비교 테이블 ── */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 20px 0; }
+.compare-table th {
+  background: var(--ink); color: white;
+  padding: 10px 16px; text-align: left;
+  font-weight: 500; font-size: 12px;
+  letter-spacing: 0.05em;
+}
+.compare-table th:first-child { border-radius: 8px 0 0 0; }
+.compare-table th:last-child { border-radius: 0 8px 0 0; }
+.compare-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink2); vertical-align: top;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:nth-child(even) td { background: var(--paper); }
+.compare-table .row-label { font-weight: 600; color: var(--ink); font-size: 12px; }
+.col-chi { color: var(--accent-blue) !important; font-weight: 500 !important; }
+.col-ray { color: var(--accent-teal) !important; font-weight: 500 !important; }
+
+/* ── 핵심 정리 박스 ── */
+.summary {
+  background: var(--ink);
+  color: white;
+  border-radius: 12px;
+  padding: 32px 36px;
+  margin-top: 48px;
+}
+.summary-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.1rem; font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.summary-list { list-style: none; }
+.summary-list li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.7;
+  display: flex; gap: 12px;
+}
+.summary-list li::before {
+  content: '—';
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.summary-list li strong { color: white; }
+
+/* ── 구분선 텍스트 ── */
+.divider-text {
+  text-align: center; font-size: 12px;
+  color: var(--ink3); margin: 28px 0;
+  display: flex; align-items: center; gap: 14px;
+}
+.divider-text::before, .divider-text::after {
+  content: ''; flex: 1;
+  height: 1px; background: var(--rule);
+}
+
+/* ── 수식 내 특수 표기 ── */
+.math-chi { color: var(--accent-blue); font-weight: 600; }
+.math-ray { color: var(--accent-teal); font-weight: 600; }
+.math-norm { color: var(--ink); }
+.math-op { color: var(--ink3); }
+
+/* ── 인라인 강조 ── */
+code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88em;
+  background: var(--formula-bg);
+  padding: 1px 6px; border-radius: 4px;
+  color: var(--accent-blue);
+}
+
+/* ── 모바일 ── */
+@media (max-width: 640px) {
+  .page-header { padding: 36px 20px 32px; }
+  .main { padding: 32px 18px 60px; }
+  .rel-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ 헤더 ══════════ -->
+<div class="page-header">
+  <div class="header-inner">
+    <div class="header-label">확률 및 통계 — 강의자료 07</div>
+    <div class="header-title">정규분포에서 파생되는<br>카이제곱 분포와 레일리 분포</div>
+    <div class="header-sub">
+      정규분포를 기반으로 두 분포가 어떻게 유도되는지, 그리고 전자공학 현장에서 이 분포들이 어떻게 직접 사용되는지를 함께 살펴봅니다.
+    </div>
+    <div class="header-tags">
+      <span class="tag">Normal Distribution</span>
+      <span class="tag">Chi-square Distribution</span>
+      <span class="tag">Rayleigh Distribution</span>
+      <span class="tag">전자공학 응용</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══════════ 섹션 0: 출발점 ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <span class="section-title">출발점: 표준 정규분포 Z</span>
+  </div>
+
+  <p class="prose">
+    카이제곱 분포와 레일리 분포는 모두 <strong>표준 정규분포 Z ~ N(0, 1)</strong>에서 출발합니다.
+    이 두 분포는 새로운 개념이 아니라, 이미 알고 있는 정규분포에
+    <strong>제곱(²)</strong>과 <strong>제곱근(√)</strong> 이라는 연산을 적용한 결과입니다.
+  </p>
+
+  <div class="formula-block">
+    <div class="formula-label">표준 정규분포 PDF</div>
+    <div class="formula-main">
+      f(z) &nbsp;=&nbsp;
+      <span class="frac">
+        <span class="num">1</span>
+        <span class="den">√(2π)</span>
+      </span>
+      &nbsp; exp&thinsp;(−
+      <span class="frac">
+        <span class="num">z<span class="sup">2</span></span>
+        <span class="den">2</span>
+      </span>
+      ) &nbsp;,&nbsp;&nbsp; z ∈ (−∞, +∞)
+    </div>
+    <div class="formula-note">평균 = 0, 분산 = 1 / 좌우 대칭 / 대부분의 측정 오차, 잡음이 이 분포를 따름</div>
+  </div>
+
+  <div class="callout amber">
+    <div class="callout-header">
+      <div class="callout-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M13 16h-1v-4h-1m1-4h.01"/><circle cx="12" cy="12" r="10"/></svg>
+      </div>
+      <div>
+        <div class="callout-title">왜 정규분포가 출발점인가?</div>
+      </div>
+    </div>
+    <div class="callout-body">
+      전자 회로에서 발생하는 <strong>열잡음(Thermal Noise)</strong>과 측정 오차는 자연적으로 정규분포를 따릅니다.
+      이것은 실험적으로 확인된 사실입니다. 따라서 정규분포에서 파생되는 분포들은 곧바로
+      실제 전자 시스템의 분석 도구가 됩니다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 섹션 1: 카이제곱 분포 ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">카이제곱 분포 &nbsp; χ²(k)</span>
+    <span class="section-badge badge-chi">Chi-square</span>
+  </div>
+
+  <!-- 1-1 유도 -->
+  <p class="prose">
+    <strong>핵심 아이디어: 정규분포 변수들을 제곱하여 더한다.</strong><br>
+    서로 독립인 표준 정규분포 확률변수 k개를 각각 제곱한 뒤 합산하면,
+    그 합은 <strong>자유도(degree of freedom) k인 카이제곱 분포</strong>를 따릅니다.
+  </p>
+
+  <div class="formula-block">
+    <div class="formula-label">카이제곱 분포의 유도</div>
+    <div class="formula-main">
+      Z<span class="sub">1</span>, Z<span class="sub">2</span>, &hellip;, Z<span class="sub">k</span>
+      &nbsp;<span class="math-op">~</span>&nbsp;
+      <span class="math-norm">N(0,&thinsp;1)</span>&nbsp; <span style="color:var(--ink3);font-size:0.85em;">(독립)</span>
+    </div>
+    <div class="formula-arrow">↓ &nbsp; 각각 제곱한 뒤 합산</div>
+    <div class="formula-main">
+      <span class="math-chi">X = Z<span class="sub">1</span><span class="sup">2</span>
+        + Z<span class="sub">2</span><span class="sup">2</span>
+        + &hellip; + Z<span class="sub">k</span><span class="sup">2</span>
+        &nbsp;~&nbsp; χ<span class="sup">2</span>(k)</span>
+    </div>
+    <div class="formula-note">
+      k = 자유도 (더한 변수의 개수) &nbsp;|&nbsp; X ≥ 0 항상 &nbsp;|&nbsp; E[X] = k, Var[X] = 2k
+    </div>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula-label">카이제곱 분포 PDF</div>
+    <div class="formula-main">
+      f(x;&thinsp;k) &nbsp;=&nbsp;
+      <span class="frac">
+        <span class="num">x<span class="sup">(k/2)&minus;1</span> &thinsp; e<span class="sup">&minus;x/2</span></span>
+        <span class="den">2<span class="sup">k/2</span> &thinsp; Γ(k/2)</span>
+      </span>
+      &nbsp;,&nbsp;&nbsp; x &gt; 0
+    </div>
+    <div class="formula-note">Γ(·) = 감마 함수. k=1이면 양의 실수에서 단조 감소, k≥3이면 종 모양에 가까워짐</div>
+  </div>
+
+  <!-- 자유도 직관 -->
+  <div class="card-grid">
+    <div class="mini-card">
+      <div class="mini-card-label">k = 1</div>
+      <div class="mini-card-val">Z<span style="font-size:0.7em;vertical-align:super;">2</span></div>
+      <div class="mini-card-desc">정규변수 1개 제곱</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-card-label">k = 2</div>
+      <div class="mini-card-val">Z₁² + Z₂²</div>
+      <div class="mini-card-desc">= 지수분포 (특수 케이스)</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-card-label">k = n</div>
+      <div class="mini-card-val">Σ Zᵢ²</div>
+      <div class="mini-card-desc">k → ∞이면 정규분포에 수렴</div>
+    </div>
+  </div>
+
+  <div class="divider-text">전자공학 직접 응용 예</div>
+
+  <!-- ★ 응용 1: ADC 양자화 잡음 -->
+  <div class="callout blue">
+    <div class="callout-header">
+      <div class="callout-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div>
+        <div class="callout-title">응용 ① &nbsp; ADC 양자화 잡음 전력 분석</div>
+        <div class="callout-subtitle">Analog-to-Digital Converter — 디지털 시스템의 입력단</div>
+      </div>
+    </div>
+    <div class="callout-body">
+      ADC가 아날로그 신호를 디지털로 변환할 때 생기는 <strong>양자화 오차 e</strong>는
+      정규분포 e&thinsp;~&thinsp;N(0,&thinsp;σ²)로 모델링됩니다.<br><br>
+      n개의 독립 샘플에서 발생한 양자화 오차 전력의 합은:
+      <br><br>
+      <code style="background:rgba(255,255,255,0.5);color:var(--accent-blue);display:block;padding:10px 14px;border-radius:6px;font-size:13px;line-height:2;">
+        P<span style="font-size:0.75em;vertical-align:sub;">total</span> = e₁² + e₂² + ⋯ + eₙ²
+        &nbsp;=&nbsp; σ² · χ²(n)
+      </code>
+      <br>
+      이 <strong>잡음 전력이 정확히 카이제곱 분포를 따르기 때문에</strong>,
+      ADC 스펙에 명시된 SNR(신호 대 잡음비) 달성 여부를 통계적으로 검증할 수 있습니다.
+      즉, "이 ADC가 규격을 만족할 확률이 얼마인가?"에 직접 답합니다.
+    </div>
+  </div>
+
+  <!-- ★ 응용 2: 통신 수신기 에너지 검출 -->
+  <div class="callout blue">
+    <div class="callout-header">
+      <div class="callout-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M3 18s2-4 9-4 9 4 9 4"/><path d="M6 14s1.5-3 6-3 6 3 6 3"/><path d="M9 11s1-2 3-2 3 2 3 2"/><circle cx="12" cy="9" r="1" fill="white"/></svg>
+      </div>
+      <div>
+        <div class="callout-title">응용 ② &nbsp; 무선 수신기 에너지 검출(Energy Detection)</div>
+        <div class="callout-subtitle">스펙트럼 센싱 · 인지 무선(Cognitive Radio)</div>
+      </div>
+    </div>
+    <div class="callout-body">
+      "지금 이 주파수 대역에 신호가 있는가, 없는가?"를 판단하는 <strong>에너지 검출기</strong>는
+      수신 신호의 에너지를 다음과 같이 계산합니다:
+      <br><br>
+      <code style="background:rgba(255,255,255,0.5);color:var(--accent-blue);display:block;padding:10px 14px;border-radius:6px;font-size:13px;line-height:2;">
+        T = Σᵢ xᵢ²&nbsp; (xᵢ는 수신된 잡음 샘플)
+        <br>
+        신호 없을 때: T ~ σ² · χ²(2N)&nbsp; (N = 샘플 수)
+      </code>
+      <br>
+      "T가 임계값 λ를 넘으면 신호 있음"으로 판단합니다.
+      <strong>이 임계값 λ는 카이제곱 분포의 분위수(quantile)에서 직접 계산</strong>됩니다.
+      오탐지 확률(false alarm rate)을 0.01로 맞추려면
+      χ²(2N)의 상위 1% 지점이 λ가 됩니다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 섹션 2: 레일리 분포 ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">레일리 분포 &nbsp; Rayleigh(σ)</span>
+    <span class="section-badge badge-ray">Rayleigh</span>
+  </div>
+
+  <!-- 2-1 유도 -->
+  <p class="prose">
+    <strong>핵심 아이디어: 2개의 정규분포 성분으로 만든 2차원 벡터의 크기(amplitude).</strong><br>
+    서로 독립인 정규분포 확률변수 2개를 I축, Q축 성분으로 갖는 2D 벡터의
+    <strong>크기(= 원점으로부터의 거리)</strong>를 구하면 레일리 분포가 됩니다.
+  </p>
+
+  <div class="formula-block teal">
+    <div class="formula-label">레일리 분포의 유도</div>
+    <div class="formula-main">
+      X<span class="sub">I</span> ~ N(0,&thinsp;σ²), &nbsp;
+      X<span class="sub">Q</span> ~ N(0,&thinsp;σ²) &nbsp;
+      <span style="color:var(--ink3);font-size:0.85em;">(독립)</span>
+    </div>
+    <div class="formula-arrow">↓ &nbsp; 벡터 크기 (2D 거리)</div>
+    <div class="formula-main">
+      <span class="math-ray">
+        R &nbsp;=&nbsp; √(&thinsp;X<span class="sub">I</span><span class="sup">2</span>
+        + X<span class="sub">Q</span><span class="sup">2</span>&thinsp;)
+        &nbsp;~&nbsp; Rayleigh(σ)
+      </span>
+    </div>
+    <div class="formula-note">
+      R ≥ 0 항상 &nbsp;|&nbsp;
+      E[R] = σ√(π/2) ≈ 1.253σ &nbsp;|&nbsp;
+      최빈값(mode) = σ (가장 많이 나타나는 크기)
+    </div>
+  </div>
+
+  <div class="formula-block teal">
+    <div class="formula-label">레일리 분포 PDF</div>
+    <div class="formula-main">
+      f(r;&thinsp;σ) &nbsp;=&nbsp;
+      <span class="frac">
+        <span class="num">r</span>
+        <span class="den">σ<span class="sup">2</span></span>
+      </span>
+      &nbsp; exp&thinsp;(&minus;
+      <span class="frac">
+        <span class="num">r<span class="sup">2</span></span>
+        <span class="den">2σ<span class="sup">2</span></span>
+      </span>
+      ) &nbsp;,&nbsp;&nbsp; r &ge; 0
+    </div>
+    <div class="formula-note">r = 0에서 0으로 시작, r = σ에서 최대값, 이후 단조 감소</div>
+  </div>
+
+  <!-- IQ 좌표 직관 -->
+  <div class="concept-card">
+    <div class="concept-card-title">I-Q 좌표에서의 기하학적 해석</div>
+    <p style="font-size:14px;color:var(--ink2);line-height:1.8;">
+      무선통신에서 신호는 항상 <strong>I(동상) 성분</strong>과 <strong>Q(직교) 성분</strong>의 2D 복소 벡터로 표현됩니다.
+      채널을 통과하면서 추가되는 가우시안 잡음이 I, Q 각각에 독립적으로 더해지면,
+      수신 신호의 <strong>진폭(크기)은 정확히 레일리 분포</strong>를 따릅니다.
+      이것이 "레일리 페이딩(Rayleigh Fading)"의 수학적 정의입니다.
+    </p>
+    <div style="margin-top:16px; font-family:'IBM Plex Mono',monospace; font-size:13px; text-align:center; color:var(--ink3); line-height:2.2;">
+      복소 신호 &nbsp; s = X<span style="font-size:0.75em;vertical-align:sub;">I</span>
+      + j·X<span style="font-size:0.75em;vertical-align:sub;">Q</span><br>
+      신호 진폭 &nbsp; |s| = √(X<span style="font-size:0.75em;vertical-align:super;">2</span><span style="font-size:0.75em;vertical-align:sub;">I</span>
+      + X<span style="font-size:0.75em;vertical-align:super;">2</span><span style="font-size:0.75em;vertical-align:sub;">Q</span>)
+      <span style="color:var(--accent-teal); font-weight:600;"> ~ Rayleigh(σ)</span>
+    </div>
+  </div>
+
+  <div class="divider-text">전자공학 직접 응용 예</div>
+
+  <!-- ★ 응용 3: 레일리 페이딩 채널 -->
+  <div class="callout teal">
+    <div class="callout-header">
+      <div class="callout-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div>
+        <div class="callout-title">응용 ③ &nbsp; 레일리 페이딩 채널 모델</div>
+        <div class="callout-subtitle">4G LTE · 5G NR · Wi-Fi — 모바일 무선통신 핵심 모델</div>
+      </div>
+    </div>
+    <div class="callout-body">
+      스마트폰이 기지국과 통신할 때, 신호는 건물·지형에 반사되어 수십 개의 경로로 동시에 도달합니다.
+      이 다중경로(multipath) 신호들이 합쳐진 수신 신호의 <strong>진폭이 레일리 분포를 따릅니다.</strong>
+      <br><br>
+      <code style="background:rgba(255,255,255,0.5);color:var(--accent-teal);display:block;padding:10px 14px;border-radius:6px;font-size:13px;line-height:2;">
+        h = h<span style="font-size:0.75em;vertical-align:sub;">I</span>
+          + j·h<span style="font-size:0.75em;vertical-align:sub;">Q</span>&nbsp;
+          (채널 계수, hᵢ ~ N(0, σ²))
+        <br>
+        |h| ~ Rayleigh(σ)&nbsp; ← 수신 신호 진폭
+      </code>
+      <br>
+      통신 엔지니어는 이 분포를 이용해 <strong>"링크가 끊길 확률(outage probability)"</strong>을 계산하고
+      링크 마진을 설계합니다. 5G 기지국 배치 계획도 이 계산에 기반합니다.
+    </div>
+  </div>
+
+  <!-- ★ 응용 4: OFDM 부반송파 진폭 -->
+  <div class="callout teal">
+    <div class="callout-header">
+      <div class="callout-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <div>
+        <div class="callout-title">응용 ④ &nbsp; OFDM 수신기의 부반송파 이득 분포</div>
+        <div class="callout-subtitle">Wi-Fi · LTE · DVB-T — OFDM 기반 모든 디지털 통신 시스템</div>
+      </div>
+    </div>
+    <div class="callout-body">
+      OFDM(직교 주파수 분할 다중화) 방식에서 각 부반송파(subcarrier)는 독립적인
+      페이딩 채널을 겪습니다. 각 부반송파의 채널 이득 크기가 <strong>레일리 분포</strong>를 따르기 때문에,
+      수신기는 어느 부반송파가 강한지 약한지를 이 분포로 예측합니다.
+      <br><br>
+      <code style="background:rgba(255,255,255,0.5);color:var(--accent-teal);display:block;padding:10px 14px;border-radius:6px;font-size:13px;line-height:2;">
+        |H(f<span style="font-size:0.75em;vertical-align:sub;">k</span>)| ~ Rayleigh(σ)
+        &nbsp; (k번째 부반송파 채널 이득 크기)
+      </code>
+      <br>
+      이 분포를 알기 때문에 수신기는 채널 상태가 나쁜 부반송파를 피해
+      <strong>적응적 변조(adaptive modulation)</strong>를 수행할 수 있습니다.
+      지금 Wi-Fi가 자동으로 속도를 조절하는 것도 여기서 비롯됩니다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 섹션 3: 두 분포의 관계 ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">두 분포의 관계 — 제곱 하나의 차이</span>
+  </div>
+
+  <p class="prose">
+    카이제곱 분포와 레일리 분포는 별개의 분포처럼 보이지만,
+    <strong>R을 제곱하면 χ²(2) 분포</strong>로 이어집니다.
+    핵심은 <strong>전력(Power) = 진폭(Amplitude)²</strong> 라는 물리적 관계입니다.
+  </p>
+
+  <div class="formula-block">
+    <div class="formula-label">레일리 분포와 카이제곱 분포의 관계</div>
+    <div class="formula-main">
+      R &nbsp;~&nbsp; <span class="math-ray">Rayleigh(σ)</span>
+    </div>
+    <div class="formula-arrow">↓ &nbsp; 제곱 (전력으로 변환)</div>
+    <div class="formula-main">
+      R<span class="sup">2</span> &nbsp;=&nbsp;
+      X<span class="sub">I</span><span class="sup">2</span>
+      + X<span class="sub">Q</span><span class="sup">2</span>
+      &nbsp;~&nbsp;
+      <span class="math-chi">σ<span class="sup">2</span> &thinsp;·&thinsp; χ<span class="sup">2</span>(2)</span>
+      &nbsp;=&nbsp;
+      지수분포(Exponential)
+    </div>
+    <div class="formula-note">
+      자유도 2인 카이제곱 분포 = 지수분포 (k=2일 때 성립하는 특수한 관계)<br>
+      <strong>→ 수신 신호 전력은 지수분포를 따른다</strong> — 무선통신 BER 계산의 핵심 근거
+    </div>
+  </div>
+
+  <div class="relation-diagram">
+    <div class="rel-row">
+      <div class="rel-box normal">N(0, σ²) × 2개</div>
+    </div>
+    <div class="rel-row">
+      <div class="rel-op">√(x² + y²) →</div>
+      <div class="rel-box ray">Rayleigh(σ)<br><span style="font-size:11px;">수신 신호 진폭</span></div>
+      <div class="rel-op">제곱 →</div>
+      <div class="rel-box chi">σ² · χ²(2)<br><span style="font-size:11px;">수신 신호 전력</span></div>
+      <div class="rel-op">= &nbsp;</div>
+      <div class="rel-box exp">σ²·Exp(½)<br><span style="font-size:11px;">= σ²·χ²(2) &nbsp;(k=2 특수케이스)</span></div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--ink3);margin-top:16px;font-family:'IBM Plex Mono',monospace;">
+      진폭(Rayleigh) ←→ 전력(σ²·Exp(½) = σ²·χ²(2)) : 제곱과 제곱근으로 연결
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <div class="callout-header">
+      <div class="callout-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div class="callout-title">왜 이 관계가 중요한가 — 무선통신 BER 계산</div>
+      </div>
+    </div>
+    <div class="callout-body">
+      무선통신에서 <strong>비트 오류율(BER, Bit Error Rate)</strong>을 계산하려면 수신 SNR의 분포를 알아야 합니다.
+      <br>
+      수신 SNR = (신호 전력) / (잡음 전력) = R² / σ²<span style="font-size:0.85em;color:var(--ink3);"> n</span>
+      <br><br>
+      R² ~ χ²(2) · σ² 이므로 <strong>SNR이 지수분포를 따름</strong>을 알 수 있고,
+      이로부터 레일리 페이딩 채널의 평균 BER을 닫힌 형태의 수식으로 구할 수 있습니다.
+      4G/5G 표준의 링크 버짓(link budget) 계산이 이 공식에서 출발합니다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 섹션 4: 종합 비교 ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">종합 비교</span>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width:22%;">항목</th>
+        <th style="width:39%;" class="col-chi">카이제곱 분포 χ²(k)</th>
+        <th style="width:39%;" class="col-ray">레일리 분포 Rayleigh(σ)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="row-label">만드는 방법</td>
+        <td>정규변수 k개를 <strong>제곱하여 합산</strong></td>
+        <td>정규변수 2개로 만든 <strong>2D 벡터의 크기</strong></td>
+      </tr>
+      <tr>
+        <td class="row-label">파라미터</td>
+        <td>자유도 k (양의 정수)</td>
+        <td>스케일 σ (σ &gt; 0)</td>
+      </tr>
+      <tr>
+        <td class="row-label">평균</td>
+        <td>k</td>
+        <td>σ√(π/2) ≈ 1.253σ</td>
+      </tr>
+      <tr>
+        <td class="row-label">물리적 의미</td>
+        <td><strong>전력 (Power)</strong><br><span style="font-size:12px;color:var(--ink3);">신호 에너지의 합</span></td>
+        <td><strong>진폭 (Amplitude)</strong><br><span style="font-size:12px;color:var(--ink3);">복소 신호의 크기</span></td>
+      </tr>
+      <tr>
+        <td class="row-label">전자공학<br>직접 응용</td>
+        <td class="col-chi">
+          · ADC 양자화 잡음 전력<br>
+          · 에너지 검출기 임계값 설계<br>
+          · 잡음 전력 분산 검정
+        </td>
+        <td class="col-ray">
+          · 레일리 페이딩 채널 진폭<br>
+          · OFDM 부반송파 이득 크기<br>
+          · 수신 신호 포락선(envelope)
+        </td>
+      </tr>
+      <tr>
+        <td class="row-label">두 분포의 관계</td>
+        <td colspan="2" style="text-align:center;">
+          <span class="math-ray">R ~ Rayleigh(σ)</span>
+          &nbsp;⟺&nbsp;
+          <span class="math-chi">R² ~ σ² · χ²(2)</span>
+          <br>
+          <span style="font-size:12px;color:var(--ink3);">진폭을 제곱하면 전력 → 카이제곱으로 연결</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════ 핵심 정리 ══════════ -->
+<div class="summary">
+  <div class="summary-title">핵심 정리</div>
+  <ul class="summary-list">
+    <li>
+      <strong>정규분포</strong>는 출발점. 전자회로의 열잡음과 측정 오차가 정규분포를 따른다.
+    </li>
+    <li>
+      <strong>카이제곱 분포 χ²(k)</strong> = 정규변수 k개를 제곱하여 더한 것.
+      물리적으로는 <em>전력(Power)</em>에 해당한다.
+      ADC 잡음 전력, 에너지 검출기에서 직접 사용된다.
+    </li>
+    <li>
+      <strong>레일리 분포 Rayleigh(σ)</strong> = 독립 정규변수 2개(I, Q)로 만든 2D 벡터의 크기.
+      물리적으로는 <em>신호 진폭(Amplitude)</em>에 해당한다.
+      레일리 페이딩 채널, OFDM 시스템에서 직접 사용된다.
+    </li>
+    <li>
+      <strong>두 분포의 연결 고리</strong>: 레일리 진폭을 제곱하면 χ²(2) = 지수분포.
+      이것이 무선통신 BER 계산과 링크 마진 설계의 수학적 기반이다.
+    </li>
+    <li>
+      <strong>자유도 k</strong>는 더한 독립 정규성분의 수 = 안테나 수 · 경로 수 · 샘플 수 등으로 직관적으로 해석된다.
+    </li>
+  </ul>
+</div>
+
+</div><!-- /main -->
+</body>
+</html>
