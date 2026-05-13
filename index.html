@@ -42,10 +42,7 @@
     font-family: 'JetBrains Mono', monospace;
   }
   .subject h2 { font-size: 1.3rem; font-weight: 700; }
-  .subject-count {
-    color: var(--text2); font-size: 0.85rem; margin-left: auto;
-    font-family: 'JetBrains Mono', monospace;
-  }
+  .subject-count { color: var(--text2); font-size: 0.85rem; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
   .files { display: grid; gap: 10px; }
   .file {
     background: var(--card); border: 1px solid var(--border);
@@ -53,18 +50,13 @@
     text-decoration: none; display: flex; align-items: center;
     gap: 14px; transition: all 0.15s ease;
   }
-  .file:hover, .file:active {
-    border-color: var(--accent); transform: translateY(-1px); background: var(--bg2);
-  }
+  .file:hover, .file:active { border-color: var(--accent); transform: translateY(-1px); background: var(--bg2); }
   .file-title { flex: 1; font-weight: 500; font-size: 1rem; }
   .file-name { font-size: 0.78rem; color: var(--text2); margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
   .file-arrow { color: var(--text2); font-size: 1.2rem; }
   .empty { color: var(--text2); font-style: italic; padding: 12px 20px; font-size: 0.9rem; }
   .loading { text-align: center; color: var(--text2); padding: 40px; }
-  footer {
-    text-align: center; margin-top: 60px; padding-top: 30px;
-    border-top: 1px solid var(--border); color: var(--text2); font-size: 0.85rem;
-  }
+  footer { text-align: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border); color: var(--text2); font-size: 0.85rem; }
   @media (max-width: 600px) {
     body { padding: 24px 16px 60px; }
     h1 { font-size: 1.8rem; }
@@ -78,63 +70,37 @@
     <h1>📚 Study Notes</h1>
     <p class="subtitle">학습 자료 모음</p>
   </header>
-  <div id="content">
-    <div class="loading">불러오는 중...</div>
-  </div>
-  <footer>파일 추가하면 자동으로 여기에 나타나요</footer>
+  <div id="content"><div class="loading">불러오는 중...</div></div>
+  <footer>파일 추가하면 manifest.json에 등록하세요</footer>
 </div>
 
 <script>
-  const hostname = window.location.hostname;
-  const pathParts = window.location.pathname.split('/').filter(Boolean);
-  const GITHUB_USER = hostname.split('.')[0];
-  const GITHUB_REPO = pathParts[0] || '';
-
   const SUBJECTS = [
-    { folder: "stats",  name: "확률과 통계",             color: "#58a6ff", label: "ST" },
-    { folder: "cprog",  name: "C 프로그래밍",             color: "#f78166", label: "C"  },
-    { folder: "python", name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
-    { folder: "ethics", name: "AI 윤리",                  color: "#d2a8ff", label: "AI" },
+    { key: "stats",  name: "확률과 통계",             color: "#58a6ff", label: "ST" },
+    { key: "cprog",  name: "C 프로그래밍",             color: "#f78166", label: "C"  },
+    { key: "python", name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
+    { key: "ethics", name: "AI 윤리",                  color: "#d2a8ff", label: "AI" },
   ];
 
-  async function fetchFolder(folder) {
-    const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${folder}`;
-    try {
-      const res = await fetch(url);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data
-        .filter(item => item.type === "file" && item.name.endsWith(".html"))
-        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-    } catch { return []; }
-  }
-
-  async function fetchTitle(folder, filename) {
-    const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${folder}/${filename}`;
-    try {
-      const res = await fetch(url);
-      const text = await res.text();
-      const match = text.match(/<title[^>]*>([^<]+)<\/title>/i);
-      return match ? match[1].trim() : null;
-    } catch { return null; }
-  }
-
   function fallbackName(filename) {
-    return filename.replace(/\.html$/, "").replace(/[-_]/g, " ");
+    return filename.replace(/\.html$/, "").replace(/[-_]+/g, " ");
   }
 
   async function render() {
     const container = document.getElementById("content");
+    let manifest;
+    try {
+      const res = await fetch('./manifest.json');
+      manifest = await res.json();
+    } catch {
+      container.innerHTML = `<div class="empty">manifest.json을 불러오지 못했습니다.</div>`;
+      return;
+    }
+
     container.innerHTML = "";
 
     for (const subject of SUBJECTS) {
-      const files = await fetchFolder(subject.folder);
-
-      // 제목 병렬로 한 번에 fetch
-      const titles = await Promise.all(
-        files.map(f => fetchTitle(subject.folder, f.name))
-      );
-
+      const files = manifest[subject.key] || [];
       const section = document.createElement("div");
       section.className = "subject";
       section.innerHTML = `
@@ -145,20 +111,18 @@
         </div>
         <div class="files"></div>
       `;
-
       const filesDiv = section.querySelector(".files");
       if (files.length === 0) {
         filesDiv.innerHTML = `<div class="empty">아직 파일이 없습니다</div>`;
       } else {
-        files.forEach((file, i) => {
-          const displayTitle = titles[i] || fallbackName(file.name);
+        files.forEach(({ file, title }) => {
           const a = document.createElement("a");
           a.className = "file";
-          a.href = `${subject.folder}/${file.name}`;
+          a.href = `${subject.key}/${file}`;
           a.innerHTML = `
             <div style="flex:1">
-              <div class="file-title">${displayTitle}</div>
-              <div class="file-name">${file.name}</div>
+              <div class="file-title">${title || fallbackName(file)}</div>
+              <div class="file-name">${file}</div>
             </div>
             <span class="file-arrow">→</span>
           `;
