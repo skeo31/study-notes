@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>변동계수(CV) 예제</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --deep: #111d35;
+    --card: #16253e;
+    --border: #1e3356;
+    --accent: #3d8ef8;
+    --accent2: #56cfb2;
+    --accent3: #f7c948;
+    --accent4: #e05c7e;
+    --text: #e8edf5;
+    --text2: #a0b0cc;
+    --text3: #6a80a0;
+    --formula-bg: #0d1f38;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 20px;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0a1628 0%, #0e2040 50%, #0a1a36 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 32px 56px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 4px 32px rgba(61,142,248,0.15);
+  }
+  .header-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: #fff;
+  }
+
+  .main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 48px;
+  }
+
+  /* Section header */
+  .section-num { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 14px; }
+  .section-desc { font-size: 19px; color: var(--text2); max-width: 700px; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 28px; }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+  }
+  .card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title::before {
+    content: '';
+    width: 4px; height: 22px;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  /* Formula box */
+  .formula-box {
+    background: var(--formula-bg);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 26px 30px;
+    margin: 18px 0;
+    text-align: center;
+    font-size: 24px;
+    overflow-x: auto;
+  }
+  .formula-box.accent2 { border-color: var(--accent2); }
+  .formula-box.accent3 { border-color: var(--accent3); }
+  .formula-box.accent4 { border-color: var(--accent4); }
+
+  /* Def box */
+  .def-box {
+    border-left: 4px solid var(--accent2);
+    background: rgba(86,207,178,0.06);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 26px;
+    margin: 18px 0;
+    font-size: 19px;
+  }
+  .def-box.warn { border-left-color: var(--accent3); background: rgba(247,201,72,0.06); }
+  .def-box.info { border-left-color: var(--accent); background: rgba(61,142,248,0.06); }
+  .def-box.danger { border-left-color: var(--accent4); background: rgba(224,92,126,0.06); }
+
+  /* Highlight */
+  .hl  { color: var(--accent);  font-weight: 700; }
+  .hl2 { color: var(--accent2); font-weight: 700; }
+  .hl3 { color: var(--accent3); font-weight: 700; }
+  .hl4 { color: var(--accent4); font-weight: 700; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; margin: 18px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 18px; }
+  th {
+    background: rgba(61,142,248,0.18);
+    color: var(--accent);
+    padding: 14px 18px;
+    text-align: center;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    font-size: 18px;
+  }
+  td {
+    padding: 12px 18px;
+    text-align: center;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 18px;
+  }
+  td:first-child { font-weight: 600; color: var(--text); }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* Example */
+  .example {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 28px 0;
+  }
+  .example-header {
+    background: rgba(61,142,248,0.12);
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .example-body { padding: 24px 28px; }
+  .example-q { font-size: 19px; color: var(--text2); margin-bottom: 18px; line-height: 1.9; }
+
+  .example-a-btn {
+    background: rgba(61,142,248,0.1);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 17px;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: all 0.2s;
+  }
+  .example-a-btn:hover { background: var(--accent); color: #fff; }
+  .example-answer { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .example-answer.show { display: block; }
+  .example-answer p { font-size: 19px; color: var(--text2); line-height: 2.0; }
+
+  /* Conclusion highlight row */
+  .result-row {
+    display: flex;
+    gap: 16px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .result-card {
+    flex: 1;
+    min-width: 180px;
+    background: var(--formula-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .result-card:hover { border-color: var(--accent); }
+  .result-card .label { font-size: 15px; color: var(--text3); margin-bottom: 6px; font-weight: 500; }
+  .result-card .value { font-size: 26px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .result-card .sub { font-size: 14px; color: var(--text3); margin-top: 4px; }
+
+  .winner-badge {
+    display: inline-block;
+    background: rgba(86,207,178,0.18);
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 3px 14px;
+    margin-top: 8px;
+  }
+
+  /* Bar chart visual */
+  .bar-wrap {
+    display: flex;
+    gap: 28px;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 24px 0 8px;
+    height: 160px;
+  }
+  .bar-group { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+  .bar-label { font-size: 15px; color: var(--text3); margin-bottom: 4px; }
+  .bar {
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #fff;
+    transition: opacity 0.2s;
+    cursor: default;
+    min-height: 20px;
+  }
+  .bar:hover { opacity: 0.85; }
+  .bar-name { font-size: 16px; color: var(--text2); font-weight: 600; margin-top: 6px; }
+
+  /* Step list */
+  .step-list { counter-reset: step; }
+  .step-item {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 18px;
+    align-items: flex-start;
+  }
+  .step-num {
+    min-width: 34px; height: 34px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { font-size: 19px; color: var(--text2); padding-top: 4px; line-height: 1.9; }
+  .step-body strong { color: var(--text); }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  mjx-container { font-size: 1.15em !important; }
+
+  /* Scenario tabs */
+  .scenario-tabs { display: flex; gap: 0; margin-bottom: 0; border-radius: 10px 10px 0 0; overflow: hidden; }
+  .tab-btn {
+    flex: 1;
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    color: var(--text3);
+    padding: 14px;
+    font-size: 17px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tab-btn:first-child { border-radius: 10px 0 0 0; }
+  .tab-btn:last-child { border-radius: 0 10px 0 0; }
+  .tab-btn.active { background: var(--card); color: var(--accent); border-top-color: var(--accent); }
+  .tab-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.04); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .tab-content-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0 0 14px 14px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+
+  /* Insight box */
+  .insight {
+    background: linear-gradient(135deg, rgba(61,142,248,0.08), rgba(86,207,178,0.08));
+    border: 1px solid rgba(86,207,178,0.3);
+    border-radius: 10px;
+    padding: 22px 28px;
+    margin-top: 20px;
+    font-size: 19px;
+    color: var(--text2);
+    line-height: 1.9;
+  }
+  .insight strong { color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">SECTION 1.5</div>
+  <div class="header-title">변동계수 (Coefficient of Variation)</div>
+</div>
+
+<div class="main">
+
+  <div class="section-num">CONCEPT</div>
+  <div class="section-title">변동계수란?</div>
+  <div class="section-desc">
+    단위가 다르거나 평균의 크기가 크게 다른 두 집단의 산포를 비교할 때,<br>
+    표준편차만으로는 판단할 수 없습니다. 이때 <strong style="color:var(--accent)">변동계수(CV)</strong>를 사용합니다.
+  </div>
+
+  <!-- 정의 공식 카드 -->
+  <div class="card">
+    <div class="card-title">정의와 공식</div>
+    <div class="def-box">
+      <strong>변동계수(CV, Coefficient of Variation)</strong>란 표준편차를 산술평균으로 나눈 값으로,
+      <strong>상대적 산포</strong>의 크기를 나타냅니다.
+    </div>
+    <div class="formula-box">
+      \[ CV = \frac{S}{\bar{x}} \times 100 \,(\%) \]
+    </div>
+    <div class="formula-box accent2" style="font-size:19px; text-align:left; padding: 20px 28px;">
+      <span class="hl2">✔ 언제 쓰나?</span><br>
+      <span style="color:var(--text2);">
+        ① 단위가 서로 다른 두 집단의 산포 비교 &nbsp;(예: 키 vs 몸무게)<br>
+        ② 평균의 크기가 크게 다른 집단의 산포 비교 &nbsp;(예: 주가 수준이 다른 두 종목)<br>
+        ③ CV가 클수록 상대적으로 더 <strong style="color:var(--accent3)">불안정(변동이 큼)</strong>
+      </span>
+    </div>
+  </div>
+
+  <!-- ===== 예제 탭 ===== -->
+  <div class="card-title" style="margin-bottom:12px; font-size:22px;">
+    <span style="width:4px;height:22px;background:var(--accent);border-radius:2px;display:inline-block;"></span>
+    예제 모음
+  </div>
+
+  <div class="scenario-tabs">
+    <button class="tab-btn active" onclick="switchTab(0)">예제 ① 키 vs 몸무게</button>
+    <button class="tab-btn" onclick="switchTab(1)">예제 ② 두 주식 비교</button>
+    <button class="tab-btn" onclick="switchTab(2)">예제 ③ 국가별 소득</button>
+  </div>
+  <div class="tab-content-wrap">
+
+    <!-- 탭 0: 키 vs 몸무게 -->
+    <div class="tab-panel active" id="tab0">
+      <div class="example">
+        <div class="example-header">예제 ① | 단위가 다른 두 변수의 산포 비교</div>
+        <div class="example-body">
+          <div class="example-q">
+            고등학생 30명의 키와 몸무게를 측정하였다.<br>
+            <strong style="color:var(--text);">키:</strong> \(\bar{x}_1 = 170\,\text{cm},\; S_1 = 8\,\text{cm}\)<br>
+            <strong style="color:var(--text);">몸무게:</strong> \(\bar{x}_2 = 65\,\text{kg},\; S_2 = 7\,\text{kg}\)<br><br>
+            키와 몸무게 중 어느 쪽이 상대적으로 더 산포가 큰가?
+          </div>
+          <button class="example-a-btn" onclick="toggleAnswer(this)">풀이 보기 ▾</button>
+          <div class="example-answer">
+            <p>
+              <span class="hl">표준편차만 비교</span>하면 키(8 cm) &gt; 몸무게(7 kg)처럼 보이지만,<br>
+              <strong style="color:var(--accent3);">단위가 달라 직접 비교는 불가</strong>합니다.
+            </p>
+            <div class="formula-box accent2" style="text-align:left; font-size:20px; margin-top:14px;">
+              \[
+                CV_{\text{키}} = \frac{8}{170} \times 100 \approx 4.71\,\%
+              \]
+              \[
+                CV_{\text{몸무게}} = \frac{7}{65} \times 100 \approx 10.77\,\%
+              \]
+            </div>
+            <div class="result-row" style="margin-top:20px;">
+              <div class="result-card">
+                <div class="label">키 (cm)</div>
+                <div class="value hl">4.71%</div>
+                <div class="sub">CV</div>
+              </div>
+              <div class="result-card">
+                <div class="label">몸무게 (kg)</div>
+                <div class="value hl4">10.77%</div>
+                <div class="sub">CV</div>
+                <div class="winner-badge">산포 더 큼 ▲</div>
+              </div>
+            </div>
+            <!-- 시각적 막대 -->
+            <div style="margin:20px 0 8px; font-size:16px; color:var(--text3);">CV 크기 비교 (막대)</div>
+            <div style="display:flex; gap:16px; align-items:flex-end; height:120px; padding-bottom:4px;">
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;">
+                <div style="font-size:16px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace;">4.71%</div>
+                <div style="width:100%;height:44px;background:var(--accent);border-radius:6px 6px 0 0;opacity:0.85;"></div>
+                <div style="font-size:16px;color:var(--text2);">키</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;">
+                <div style="font-size:16px;font-weight:700;color:var(--accent4);font-family:'JetBrains Mono',monospace;">10.77%</div>
+                <div style="width:100%;height:100px;background:var(--accent4);border-radius:6px 6px 0 0;opacity:0.85;"></div>
+                <div style="font-size:16px;color:var(--text2);">몸무게</div>
+              </div>
+            </div>
+            <div class="insight" style="margin-top:20px;">
+              <strong>결론:</strong> 표준편차는 키(8)가 몸무게(7)보다 크지만,<br>
+              변동계수는 <strong>몸무게(10.77%)</strong>가 키(4.71%)보다 훨씬 크므로,<br>
+              <strong>몸무게의 상대적 산포가 더 크다</strong>고 판단합니다.<br>
+              <span style="font-size:16px;color:var(--text3);">→ 단위가 다를 때는 반드시 CV로 비교해야 합니다.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab0 -->
+
+    <!-- 탭 1: 주식 비교 -->
+    <div class="tab-panel" id="tab1">
+      <div class="example">
+        <div class="example-header">예제 ② | 평균 수준이 다른 두 주식의 안정성 비교</div>
+        <div class="example-body">
+          <div class="example-q">
+            최근 20거래일간 두 주식의 종가(단위: 원)를 관찰하였다.<br><br>
+            <strong style="color:var(--text);">A주식 (대형주):</strong> \(\bar{x}_A = 85{,}000,\; S_A = 4{,}200\)<br>
+            <strong style="color:var(--text);">B주식 (소형주):</strong> \(\bar{x}_B = 3{,}500,\; S_B = 310\)<br><br>
+            어느 주식이 상대적으로 더 가격 변동이 불안정한가?
+          </div>
+          <button class="example-a-btn" onclick="toggleAnswer(this)">풀이 보기 ▾</button>
+          <div class="example-answer">
+            <p>
+              표준편차만 보면 A주식(4,200원) &gt; B주식(310원)이므로<br>
+              A주식이 더 불안정해 보이지만,<br>
+              <strong style="color:var(--accent3);">두 주식의 주가 수준(평균)이 크게 다르므로</strong> CV로 비교해야 합니다.
+            </p>
+            <div class="formula-box accent3" style="text-align:left; font-size:20px; margin-top:14px;">
+              \[
+                CV_A = \frac{4{,}200}{85{,}000} \times 100 \approx 4.94\,\%
+              \]
+              \[
+                CV_B = \frac{310}{3{,}500} \times 100 \approx 8.86\,\%
+              \]
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>평균 (원)</th><th>표준편차 (원)</th><th>CV (%)</th><th>판단</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>A주식 (대형주)</td>
+                    <td>85,000</td>
+                    <td>4,200</td>
+                    <td><span class="hl2">4.94%</span></td>
+                    <td style="color:var(--accent2);">상대적으로 안정</td>
+                  </tr>
+                  <tr>
+                    <td>B주식 (소형주)</td>
+                    <td>3,500</td>
+                    <td>310</td>
+                    <td><span class="hl4">8.86%</span></td>
+                    <td style="color:var(--accent4);">상대적으로 불안정 ▲</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="insight">
+              <strong>결론:</strong> 절대적 가격 변동폭(표준편차)은 A주식이 훨씬 크지만,<br>
+              변동계수 기준으로는 <strong>B주식(8.86%)</strong>이 A주식(4.94%)보다 더 불안정합니다.<br>
+              <span style="font-size:16px;color:var(--text3);">→ 주가 수준이 다른 종목을 비교할 때는 CV를 사용해야 합니다.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab1 -->
+
+    <!-- 탭 2: 국가별 소득 -->
+    <div class="tab-panel" id="tab2">
+      <div class="example">
+        <div class="example-header">예제 ③ | 국가별 가구 소득 분포의 상대적 불평등 비교</div>
+        <div class="example-body">
+          <div class="example-q">
+            세 나라의 가구 연간 소득(단위: 만 원) 표본 자료에서 다음을 얻었다.<br><br>
+            <strong style="color:var(--text);">A국:</strong> \(\bar{x} = 3{,}000,\; S = 900\)<br>
+            <strong style="color:var(--text);">B국:</strong> \(\bar{x} = 5{,}500,\; S = 1{,}200\)<br>
+            <strong style="color:var(--text);">C국:</strong> \(\bar{x} = 8{,}000,\; S = 1{,}000\)<br><br>
+            세 나라 중 소득 분포의 상대적 불균등이 가장 큰 나라는?
+          </div>
+          <button class="example-a-btn" onclick="toggleAnswer(this)">풀이 보기 ▾</button>
+          <div class="example-answer">
+            <div class="formula-box" style="text-align:left; font-size:20px;">
+              \[
+                CV_A = \frac{900}{3{,}000} \times 100 = 30.0\,\%
+              \]
+              \[
+                CV_B = \frac{1{,}200}{5{,}500} \times 100 \approx 21.8\,\%
+              \]
+              \[
+                CV_C = \frac{1{,}000}{8{,}000} \times 100 = 12.5\,\%
+              \]
+            </div>
+            <div class="result-row">
+              <div class="result-card">
+                <div class="label">A국</div>
+                <div class="value hl4">30.0%</div>
+                <div class="sub">CV</div>
+                <div class="winner-badge" style="background:rgba(224,92,126,0.18);color:var(--accent4);border-color:var(--accent4);">불균등 가장 큼 ▲</div>
+              </div>
+              <div class="result-card">
+                <div class="label">B국</div>
+                <div class="value hl3">21.8%</div>
+                <div class="sub">CV</div>
+              </div>
+              <div class="result-card">
+                <div class="label">C국</div>
+                <div class="value hl2">12.5%</div>
+                <div class="sub">CV</div>
+                <div class="winner-badge">가장 균등 ▼</div>
+              </div>
+            </div>
+            <!-- 시각 막대 -->
+            <div style="margin:20px 0 8px; font-size:16px; color:var(--text3);">CV 크기 비교 (막대)</div>
+            <div style="display:flex; gap:16px; align-items:flex-end; height:140px; padding-bottom:4px;">
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;">
+                <div style="font-size:16px;font-weight:700;color:var(--accent4);font-family:'JetBrains Mono',monospace;">30.0%</div>
+                <div style="width:100%;height:120px;background:var(--accent4);border-radius:6px 6px 0 0;opacity:0.85;"></div>
+                <div style="font-size:16px;color:var(--text2);">A국</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;">
+                <div style="font-size:16px;font-weight:700;color:var(--accent3);font-family:'JetBrains Mono',monospace;">21.8%</div>
+                <div style="width:100%;height:87px;background:var(--accent3);border-radius:6px 6px 0 0;opacity:0.85;"></div>
+                <div style="font-size:16px;color:var(--text2);">B국</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;">
+                <div style="font-size:16px;font-weight:700;color:var(--accent2);font-family:'JetBrains Mono',monospace;">12.5%</div>
+                <div style="width:100%;height:50px;background:var(--accent2);border-radius:6px 6px 0 0;opacity:0.85;"></div>
+                <div style="font-size:16px;color:var(--text2);">C국</div>
+              </div>
+            </div>
+            <div class="insight">
+              <strong>결론:</strong> 표준편차는 B국(1,200)이 가장 크지만,<br>
+              변동계수 기준으로는 <strong>A국(30.0%)</strong>의 소득 분포가 가장 불균등합니다.<br>
+              소득 수준(평균)이 낮은 나라일수록 같은 표준편차도 더 큰 상대적 불평등을 의미합니다.<br>
+              <span style="font-size:16px;color:var(--text3);">→ 평균의 크기가 다른 집단을 비교할 때는 CV가 필수입니다.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab2 -->
+
+  </div><!-- /tab-content-wrap -->
+
+  <!-- 핵심 정리 -->
+  <div class="card">
+    <div class="card-title">핵심 정리</div>
+    <div class="def-box warn">
+      ⚠️ <strong>표준편차의 한계:</strong> 단위가 다르거나 평균의 크기가 크게 다른 두 집단을 표준편차만으로 비교하면 잘못된 결론을 내릴 수 있습니다.
+    </div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body"><strong>단위가 동일하고 평균이 비슷</strong>한 경우 → 표준편차(S)로 비교 가능</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body"><strong>단위가 다르거나 평균의 크기 차이가 클</strong> 경우 → <span class="hl">CV</span>로 비교해야 함</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body">CV는 <strong>단위가 없는 무차원(dimensionless) 척도</strong>이므로 어떤 집단이든 비교 가능</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-body"><strong>CV 값이 클수록</strong> 상대적으로 산포가 크고 <span class="hl4">불안정</span>한 집단</div>
+      </div>
+    </div>
+    <div class="formula-box accent3" style="font-size:20px;">
+      \[
+        \text{CV가 클수록} \;\Rightarrow\; \text{평균 대비 변동이 크다} \;\Rightarrow\; \text{상대적으로 불안정}
+      \]
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+function toggleAnswer(btn) {
+  const ans = btn.nextElementSibling;
+  const isOpen = ans.classList.contains('show');
+  ans.classList.toggle('show');
+  btn.textContent = isOpen ? '풀이 보기 ▾' : '풀이 닫기 ▴';
+}
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+</script>
+</body>
+</html>
