@@ -7,111 +7,63 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d1117;
-    --bg2: #161b22;
-    --card: #1e2535;
-    --border: #30404d;
-    --accent: #58a6ff;
-    --accent4: #d2a8ff;
-    --text: #e6edf3;
-    --text2: #8b949e;
+    --bg: #0d1117; --bg2: #161b22; --card: #1e2535;
+    --border: #30404d; --accent: #58a6ff; --accent4: #d2a8ff;
+    --text: #e6edf3; --text2: #8b949e;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 40px 24px 80px;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 40px 24px 80px;
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 880px; margin: 0 auto; }
   header {
-    text-align: center;
-    padding: 40px 0 50px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
+    text-align: center; padding: 40px 0 50px;
+    border-bottom: 1px solid var(--border); margin-bottom: 40px;
   }
   h1 {
-    font-size: 2.4rem;
-    font-weight: 900;
+    font-size: 2.4rem; font-weight: 900;
     background: linear-gradient(135deg, var(--accent), var(--accent4));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; letter-spacing: -0.02em;
   }
   .subtitle { color: var(--text2); margin-top: 12px; font-size: 1rem; }
-  .debug {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 24px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--text2);
-  }
   .subject { margin-bottom: 36px; }
   .subject-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    padding: 0 4px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px; padding: 0 4px;
   }
   .subject-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 0.95rem;
-    color: #0d1117;
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 0.95rem; color: #0d1117;
     font-family: 'JetBrains Mono', monospace;
   }
   .subject h2 { font-size: 1.3rem; font-weight: 700; }
   .subject-count {
-    color: var(--text2);
-    font-size: 0.85rem;
-    margin-left: auto;
+    color: var(--text2); font-size: 0.85rem; margin-left: auto;
     font-family: 'JetBrains Mono', monospace;
   }
   .files { display: grid; gap: 10px; }
   .file {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    color: var(--text);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    transition: all 0.15s ease;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; color: var(--text);
+    text-decoration: none; display: flex; align-items: center;
+    gap: 14px; transition: all 0.15s ease;
   }
   .file:hover, .file:active {
-    border-color: var(--accent);
-    transform: translateY(-1px);
-    background: var(--bg2);
+    border-color: var(--accent); transform: translateY(-1px); background: var(--bg2);
   }
-  .file-name { flex: 1; font-weight: 500; font-size: 1rem; word-break: break-word; }
+  .file-title { flex: 1; font-weight: 500; font-size: 1rem; }
+  .file-name { font-size: 0.78rem; color: var(--text2); margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
   .file-arrow { color: var(--text2); font-size: 1.2rem; }
-  .empty {
-    color: var(--text2);
-    font-style: italic;
-    padding: 12px 20px;
-    font-size: 0.9rem;
-  }
+  .empty { color: var(--text2); font-style: italic; padding: 12px 20px; font-size: 0.9rem; }
   .loading { text-align: center; color: var(--text2); padding: 40px; }
   footer {
-    text-align: center;
-    margin-top: 60px;
-    padding-top: 30px;
-    border-top: 1px solid var(--border);
-    color: var(--text2);
-    font-size: 0.85rem;
+    text-align: center; margin-top: 60px; padding-top: 30px;
+    border-top: 1px solid var(--border); color: var(--text2); font-size: 0.85rem;
   }
   @media (max-width: 600px) {
     body { padding: 24px 16px 60px; }
@@ -133,18 +85,16 @@
 </div>
 
 <script>
-  // URL에서 자동 감지: skeo31.github.io/study-notes/ → user=skeo31, repo=study-notes
   const hostname = window.location.hostname;
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   const GITHUB_USER = hostname.split('.')[0];
   const GITHUB_REPO = pathParts[0] || '';
 
   const SUBJECTS = [
-    { folder: "stats",    name: "확률과 통계",   color: "#58a6ff", label: "ST" },
-    { folder: "calculus", name: "미적분",        color: "#ffa657", label: "CA" },
-    { folder: "cprog",    name: "C 프로그래밍",  color: "#f78166", label: "C"  },
-    { folder: "python",   name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
-    { folder: "ethics",   name: "AI 윤리",       color: "#d2a8ff", label: "AI" },
+    { folder: "stats",  name: "확률과 통계",             color: "#58a6ff", label: "ST" },
+    { folder: "cprog",  name: "C 프로그래밍",             color: "#f78166", label: "C"  },
+    { folder: "python", name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
+    { folder: "ethics", name: "AI 윤리",                  color: "#d2a8ff", label: "AI" },
   ];
 
   async function fetchFolder(folder) {
@@ -156,12 +106,20 @@
       return data
         .filter(item => item.type === "file" && item.name.endsWith(".html"))
         .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-    } catch (e) {
-      return [];
-    }
+    } catch { return []; }
   }
 
-  function prettifyName(filename) {
+  async function fetchTitle(folder, filename) {
+    const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${folder}/${filename}`;
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+      const match = text.match(/<title[^>]*>([^<]+)<\/title>/i);
+      return match ? match[1].trim() : null;
+    } catch { return null; }
+  }
+
+  function fallbackName(filename) {
     return filename.replace(/\.html$/, "").replace(/[-_]/g, " ");
   }
 
@@ -169,13 +127,14 @@
     const container = document.getElementById("content");
     container.innerHTML = "";
 
-    const debug = document.createElement("div");
-    debug.className = "debug";
-    debug.textContent = `repo: ${GITHUB_USER}/${GITHUB_REPO}`;
-    container.appendChild(debug);
-
     for (const subject of SUBJECTS) {
       const files = await fetchFolder(subject.folder);
+
+      // 제목 병렬로 한 번에 fetch
+      const titles = await Promise.all(
+        files.map(f => fetchTitle(subject.folder, f.name))
+      );
+
       const section = document.createElement("div");
       section.className = "subject";
       section.innerHTML = `
@@ -186,16 +145,21 @@
         </div>
         <div class="files"></div>
       `;
+
       const filesDiv = section.querySelector(".files");
       if (files.length === 0) {
         filesDiv.innerHTML = `<div class="empty">아직 파일이 없습니다</div>`;
       } else {
-        files.forEach(file => {
+        files.forEach((file, i) => {
+          const displayTitle = titles[i] || fallbackName(file.name);
           const a = document.createElement("a");
           a.className = "file";
           a.href = `${subject.folder}/${file.name}`;
           a.innerHTML = `
-            <span class="file-name">${prettifyName(file.name)}</span>
+            <div style="flex:1">
+              <div class="file-title">${displayTitle}</div>
+              <div class="file-name">${file.name}</div>
+            </div>
             <span class="file-arrow">→</span>
           `;
           filesDiv.appendChild(a);
