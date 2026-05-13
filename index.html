@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -45,82 +44,54 @@
     { key: "ethics", name: "AI 윤리",                  color: "#d2a8ff", label: "AI" }
   ];
 
-function makeFileCard(href, title) {
-var a = document.createElement(“a”);
-a.href = href;
-// 인라인 스타일로 강제 적용
-a.style.cssText = [
-“display:flex”,
-“align-items:center”,
-“gap:14px”,
-“padding:16px 20px”,
-“background:#1e2535”,
-“border:1px solid #30404d”,
-“border-radius:12px”,
-“text-decoration:none”,
-“color:#e6edf3”,
-“-webkit-text-fill-color:#e6edf3”
-].join(”;”);
-
-```
-var titleSpan = document.createElement("span");
-titleSpan.textContent = title;
-titleSpan.style.cssText = "flex:1;font-weight:500;font-size:1rem;color:#e6edf3;-webkit-text-fill-color:#e6edf3;";
-
-var arrow = document.createElement("span");
-arrow.textContent = "→";
-arrow.style.cssText = "color:#8b949e;font-size:1rem;";
-
-a.appendChild(titleSpan);
-a.appendChild(arrow);
-return a;
-```
-
-}
-
-function fallback(f) { return f.replace(/.html$/, “”).replace(/[-_]+/g, “ “); }
-
-fetch(”./manifest.json”).then(function(r){ return r.json(); }).then(function(manifest){
-var container = document.getElementById(“content”);
-container.innerHTML = “”;
-
-```
-SUBJECTS.forEach(function(subject) {
-  var files = manifest[subject.key] || [];
-
-  var section = document.createElement("div");
-  section.className = "subject";
-
-  var header = document.createElement("div");
-  header.className = "subject-header";
-  header.innerHTML =
-    '<div class="subject-icon" style="background:' + subject.color + '">' + subject.label + '</div>' +
-    '<span class="subject-name">' + subject.name + '</span>' +
-    '<span class="subject-count">' + files.length + ' files</span>' +
-    '<span class="subject-arrow">▶</span>';
-  header.onclick = function() { section.classList.toggle("open"); };
-
-  var filesDiv = document.createElement("div");
-  filesDiv.className = "files";
-
-  if (files.length === 0) {
-    filesDiv.innerHTML = '<div class="empty">아직 파일이 없습니다</div>';
-  } else {
-    files.forEach(function(item) {
-      filesDiv.appendChild(makeFileCard(subject.key + "/" + item.file, item.title || fallback(item.file)));
-    });
+  function makeFileCard(href, title) {
+    var a = document.createElement("a");
+    a.href = href;
+    a.style.cssText = "display:flex;align-items:center;gap:14px;padding:16px 20px;background:#1e2535;border:1px solid #30404d;border-radius:12px;text-decoration:none;color:#e6edf3;-webkit-text-fill-color:#e6edf3;";
+    var titleSpan = document.createElement("span");
+    titleSpan.textContent = title;
+    titleSpan.style.cssText = "flex:1;font-weight:500;font-size:1rem;color:#e6edf3;-webkit-text-fill-color:#e6edf3;";
+    var arrow = document.createElement("span");
+    arrow.textContent = "→";
+    arrow.style.cssText = "color:#8b949e;font-size:1rem;";
+    a.appendChild(titleSpan);
+    a.appendChild(arrow);
+    return a;
   }
 
-  section.appendChild(header);
-  section.appendChild(filesDiv);
-  container.appendChild(section);
-});
-```
+  function fallback(f) { return f.replace(/\.html$/, "").replace(/[-_]+/g, " "); }
 
-}).catch(function(){
-document.getElementById(“content”).innerHTML = ‘<div class="empty">manifest.json을 불러오지 못했습니다.</div>’;
-});
+  fetch("./manifest.json").then(function(r){ return r.json(); }).then(function(manifest){
+    var container = document.getElementById("content");
+    container.innerHTML = "";
+    SUBJECTS.forEach(function(subject) {
+      var files = manifest[subject.key] || [];
+      var section = document.createElement("div");
+      section.className = "subject";
+      var header = document.createElement("div");
+      header.className = "subject-header";
+      header.innerHTML =
+        '<div class="subject-icon" style="background:' + subject.color + '">' + subject.label + '</div>' +
+        '<span class="subject-name">' + subject.name + '</span>' +
+        '<span class="subject-count">' + files.length + ' files</span>' +
+        '<span class="subject-arrow">▶</span>';
+      header.onclick = function() { section.classList.toggle("open"); };
+      var filesDiv = document.createElement("div");
+      filesDiv.className = "files";
+      if (files.length === 0) {
+        filesDiv.innerHTML = '<div class="empty">아직 파일이 없습니다</div>';
+      } else {
+        files.forEach(function(item) {
+          filesDiv.appendChild(makeFileCard(subject.key + "/" + item.file, item.title || fallback(item.file)));
+        });
+      }
+      section.appendChild(header);
+      section.appendChild(filesDiv);
+      container.appendChild(section);
+    });
+  }).catch(function(){
+    document.getElementById("content").innerHTML = '<div class="empty">manifest.json을 불러오지 못했습니다.</div>';
+  });
 </script>
-
 </body>
 </html>
