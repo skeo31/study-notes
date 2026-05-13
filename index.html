@@ -7,128 +7,25 @@
 <title>Study Notes</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0d1117;
-    --bg2: #161b22;
-    --card: #1e2535;
-    --border: #30404d;
-    --accent: #58a6ff;
-    --accent4: #d2a8ff;
-    --text: #e6edf3;
-    --text2: #8b949e;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 40px 24px 80px;
-    -webkit-font-smoothing: antialiased;
-  }
+  body { font-family: 'Noto Sans KR', sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; padding: 40px 24px 80px; }
   .wrap { max-width: 880px; margin: 0 auto; }
-  header {
-    text-align: center;
-    padding: 40px 0 50px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
-  }
-  h1 {
-    font-size: 2.4rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--accent), var(--accent4));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
-  }
-  .subtitle { color: var(--text2); margin-top: 12px; font-size: 1rem; }
-
-.subject {
-margin-bottom: 16px;
-border-radius: 16px;
-overflow: hidden;
-border: 1px solid var(–border);
-}
-.subject-header {
-display: flex;
-align-items: center;
-gap: 14px;
-padding: 20px 24px;
-cursor: pointer;
-background: var(–card);
-user-select: none;
-transition: background 0.15s;
-}
-.subject-header:hover { background: var(–bg2); }
-.subject-icon {
-width: 40px;
-height: 40px;
-border-radius: 12px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-weight: 900;
-font-size: 0.95rem;
-color: #0d1117;
-font-family: ‘JetBrains Mono’, monospace;
-flex-shrink: 0;
-}
-.subject-name { font-size: 1.2rem; font-weight: 700; flex: 1; }
-.subject-meta { display: flex; align-items: center; gap: 12px; }
-.subject-count { color: var(–text2); font-size: 0.85rem; font-family: ‘JetBrains Mono’, monospace; }
-.subject-arrow { color: var(–text2); font-size: 1rem; transition: transform 0.25s ease; }
-.subject.open .subject-arrow { transform: rotate(90deg); }
-
-.files {
-display: none;
-flex-direction: column;
-gap: 10px;
-background: var(–bg);
-padding: 16px;
-border-top: 1px solid var(–border);
-}
-.subject.open .files { display: flex; }
-
-a.file {
-display: flex;
-align-items: center;
-gap: 14px;
-padding: 16px 20px;
-background: var(–card);
-border: 1px solid var(–border);
-border-radius: 12px;
-text-decoration: none;
-color: var(–text) !important;
--webkit-text-fill-color: var(–text) !important;
-transition: all 0.12s;
-}
-a.file:hover, a.file:active {
-border-color: var(–accent);
-background: var(–bg2);
-transform: translateY(-1px);
-}
-.file-title { flex: 1; font-weight: 500; font-size: 1rem; }
-.file-arrow { color: var(–text2); font-size: 1rem; }
-
-.empty { color: var(–text2); font-style: italic; padding: 12px 4px; font-size: 0.9rem; }
-.loading { text-align: center; color: var(–text2); padding: 40px; }
-footer {
-text-align: center;
-margin-top: 48px;
-padding-top: 28px;
-border-top: 1px solid var(–border);
-color: var(–text2);
-font-size: 0.85rem;
-}
-@media (max-width: 600px) {
-body { padding: 24px 16px 60px; }
-h1 { font-size: 1.8rem; }
-.subject-header { padding: 16px 18px; }
-a.file { padding: 14px 16px; }
-}
+  header { text-align: center; padding: 40px 0 50px; border-bottom: 1px solid #30404d; margin-bottom: 40px; }
+  h1 { font-size: 2.4rem; font-weight: 900; background: linear-gradient(135deg, #58a6ff, #d2a8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .subtitle { color: #8b949e; margin-top: 12px; font-size: 1rem; }
+  .subject { margin-bottom: 16px; border-radius: 16px; overflow: hidden; border: 1px solid #30404d; }
+  .subject-header { display: flex; align-items: center; gap: 14px; padding: 20px 24px; cursor: pointer; background: #1e2535; user-select: none; }
+  .subject-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.95rem; color: #0d1117; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .subject-name { font-size: 1.2rem; font-weight: 700; flex: 1; color: #e6edf3; }
+  .subject-count { color: #8b949e; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; margin-right: 8px; }
+  .subject-arrow { color: #8b949e; font-size: 1rem; transition: transform 0.25s; display: inline-block; }
+  .subject.open .subject-arrow { transform: rotate(90deg); }
+  .files { display: none; flex-direction: column; gap: 10px; background: #0d1117; padding: 16px; border-top: 1px solid #30404d; }
+  .subject.open .files { display: flex; }
+  .empty { color: #8b949e; font-style: italic; padding: 8px 4px; }
+  .loading { text-align: center; color: #8b949e; padding: 40px; }
+  footer { text-align: center; margin-top: 48px; padding-top: 28px; border-top: 1px solid #30404d; color: #8b949e; font-size: 0.85rem; }
 </style>
-
 </head>
 <body>
 <div class="wrap">
@@ -139,74 +36,90 @@ a.file { padding: 14px 16px; }
   <div id="content"><div class="loading">불러오는 중...</div></div>
   <footer>과목을 눌러 파일 목록을 확인하세요</footer>
 </div>
-
 <script>
-  const SUBJECTS = [
+  var SUBJECTS = [
     { key: "stats",  name: "확률과 통계",             color: "#58a6ff", label: "ST" },
     { key: "calc",   name: "미적분",                   color: "#ffa657", label: "CA" },
     { key: "cprog",  name: "C 프로그래밍",             color: "#f78166", label: "C"  },
     { key: "python", name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
-    { key: "ethics", name: "AI 윤리",                  color: "#d2a8ff", label: "AI" },
+    { key: "ethics", name: "AI 윤리",                  color: "#d2a8ff", label: "AI" }
   ];
 
-  function fallbackName(filename) {
-    return filename.replace(/\.html$/, "").replace(/[-_]+/g, " ");
+function makeFileCard(href, title) {
+var a = document.createElement(“a”);
+a.href = href;
+// 인라인 스타일로 강제 적용
+a.style.cssText = [
+“display:flex”,
+“align-items:center”,
+“gap:14px”,
+“padding:16px 20px”,
+“background:#1e2535”,
+“border:1px solid #30404d”,
+“border-radius:12px”,
+“text-decoration:none”,
+“color:#e6edf3”,
+“-webkit-text-fill-color:#e6edf3”
+].join(”;”);
+
+```
+var titleSpan = document.createElement("span");
+titleSpan.textContent = title;
+titleSpan.style.cssText = "flex:1;font-weight:500;font-size:1rem;color:#e6edf3;-webkit-text-fill-color:#e6edf3;";
+
+var arrow = document.createElement("span");
+arrow.textContent = "→";
+arrow.style.cssText = "color:#8b949e;font-size:1rem;";
+
+a.appendChild(titleSpan);
+a.appendChild(arrow);
+return a;
+```
+
+}
+
+function fallback(f) { return f.replace(/.html$/, “”).replace(/[-_]+/g, “ “); }
+
+fetch(”./manifest.json”).then(function(r){ return r.json(); }).then(function(manifest){
+var container = document.getElementById(“content”);
+container.innerHTML = “”;
+
+```
+SUBJECTS.forEach(function(subject) {
+  var files = manifest[subject.key] || [];
+
+  var section = document.createElement("div");
+  section.className = "subject";
+
+  var header = document.createElement("div");
+  header.className = "subject-header";
+  header.innerHTML =
+    '<div class="subject-icon" style="background:' + subject.color + '">' + subject.label + '</div>' +
+    '<span class="subject-name">' + subject.name + '</span>' +
+    '<span class="subject-count">' + files.length + ' files</span>' +
+    '<span class="subject-arrow">▶</span>';
+  header.onclick = function() { section.classList.toggle("open"); };
+
+  var filesDiv = document.createElement("div");
+  filesDiv.className = "files";
+
+  if (files.length === 0) {
+    filesDiv.innerHTML = '<div class="empty">아직 파일이 없습니다</div>';
+  } else {
+    files.forEach(function(item) {
+      filesDiv.appendChild(makeFileCard(subject.key + "/" + item.file, item.title || fallback(item.file)));
+    });
   }
 
-  async function render() {
-    const container = document.getElementById("content");
-    let manifest;
-    try {
-      const res = await fetch('./manifest.json');
-      manifest = await res.json();
-    } catch {
-      container.innerHTML = '<div class="empty">manifest.json을 불러오지 못했습니다.</div>';
-      return;
-    }
+  section.appendChild(header);
+  section.appendChild(filesDiv);
+  container.appendChild(section);
+});
+```
 
-    container.innerHTML = "";
-
-    for (const subject of SUBJECTS) {
-      const files = manifest[subject.key] || [];
-
-      const section = document.createElement("div");
-      section.className = "subject";
-
-      const header = document.createElement("div");
-      header.className = "subject-header";
-      header.innerHTML =
-        '<div class="subject-icon" style="background:' + subject.color + '">' + subject.label + '</div>' +
-        '<span class="subject-name">' + subject.name + '</span>' +
-        '<div class="subject-meta">' +
-          '<span class="subject-count">' + files.length + ' files</span>' +
-          '<span class="subject-arrow">▶</span>' +
-        '</div>';
-      header.addEventListener("click", function() { section.classList.toggle("open"); });
-
-      const filesDiv = document.createElement("div");
-      filesDiv.className = "files";
-
-      if (files.length === 0) {
-        filesDiv.innerHTML = '<div class="empty">아직 파일이 없습니다</div>';
-      } else {
-        files.forEach(function(item) {
-          const a = document.createElement("a");
-          a.className = "file";
-          a.href = subject.key + "/" + item.file;
-          a.innerHTML =
-            '<span class="file-title">' + (item.title || fallbackName(item.file)) + '</span>' +
-            '<span class="file-arrow">→</span>';
-          filesDiv.appendChild(a);
-        });
-      }
-
-      section.appendChild(header);
-      section.appendChild(filesDiv);
-      container.appendChild(section);
-    }
-  }
-
-  render();
+}).catch(function(){
+document.getElementById(“content”).innerHTML = ‘<div class="empty">manifest.json을 불러오지 못했습니다.</div>’;
+});
 </script>
 
 </body>
