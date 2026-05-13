@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>χ²-분포 재생성 성질</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+  :root {
+    --bg:         #0e1520;
+    --surface:    #19243a;
+    --formula-bg: #111c2e;
+    --accent:     #4da6ff;
+    --accent2:    #f5a623;
+    --accent3:    #5ce6a0;
+    --accentR:    #e06c75;
+    --text:       #e8edf5;
+    --text-muted: #7a8faf;
+    --border:     #2a3d5e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 23px;
+    line-height: 1.85;
+    padding: 0 0 80px;
+  }
+
+  .slide {
+    max-width: 1100px;
+    margin: 52px auto;
+    background: var(--surface);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.55);
+  }
+  .slide-header {
+    background: linear-gradient(135deg,#152040,#0b1730);
+    padding: 22px 44px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid var(--accent);
+  }
+  .slide-header .chap { font-size:17px; font-weight:700; color:var(--accent); letter-spacing:.06em; text-transform:uppercase; }
+  .slide-header h2    { font-size:28px; font-weight:900; color:var(--text); }
+  .slide-body  { padding: 40px 52px 46px; }
+  .slide-footer{
+    background:#0d1422; padding:11px 52px;
+    display:flex; justify-content:flex-end;
+    font-size:15px; color:var(--text-muted);
+    font-family:'JetBrains Mono',monospace;
+    border-top:1px solid var(--border);
+  }
+
+  .sec {
+    display:flex; align-items:center; gap:12px;
+    font-size:26px; font-weight:800; color:var(--accent);
+    margin-bottom:26px;
+  }
+  .sec::before {
+    content:''; display:inline-block;
+    width:7px; height:28px; border-radius:4px; background:var(--accent);
+  }
+
+  p.bt { font-size:23px; line-height:1.85; margin-bottom:18px; }
+
+  .fb {
+    background: var(--formula-bg);
+    border:1px solid var(--border);
+    border-left:4px solid var(--accent);
+    border-radius:12px;
+    padding:26px 36px;
+    margin:18px 0;
+    font-size:23px;
+    overflow-x: auto;
+  }
+  .fb.orange { border-left-color: var(--accent2); }
+  .fb.green  { border-left-color: var(--accent3); }
+  .fb.big    { font-size:25px; padding:32px 40px; }
+
+  .hl  { color:var(--accent2); font-weight:700; }
+  .hlb { color:var(--accent);  font-weight:700; }
+  .hlg { color:var(--accent3); font-weight:700; }
+  .hlr { color:var(--accentR); font-weight:700; }
+
+  .insight {
+    background:#1a2a18; border:1px solid #3a5a2a;
+    border-left:5px solid var(--accent3); border-radius:10px;
+    padding:20px 28px; margin:18px 0; font-size:22px; line-height:1.8;
+  }
+  .insight-title { font-size:21px; font-weight:800; color:var(--accent3); margin-bottom:8px; }
+
+  .warn {
+    background:#2a1a08; border:1px solid #6a4010;
+    border-left:5px solid var(--accent2); border-radius:10px;
+    padding:18px 26px; margin:18px 0; font-size:22px; line-height:1.8;
+  }
+  .warn-title { font-weight:800; color:var(--accent2); margin-bottom:6px; font-size:21px; }
+
+  .app-box {
+    background: linear-gradient(135deg,#0b2418,#091e12);
+    border:1px solid #2a5a3a; border-left:5px solid var(--accent3);
+    border-radius:12px; padding:26px 34px; margin-top:26px;
+  }
+  .app-title {
+    display:flex; align-items:center; gap:10px;
+    font-size:21px; font-weight:800; color:var(--accent3); margin-bottom:16px;
+  }
+  .app-item { display:flex; gap:14px; align-items:flex-start; margin-bottom:13px; font-size:21px; line-height:1.75; }
+  .app-item:last-child { margin-bottom:0; }
+  .app-dot { width:8px; height:8px; border-radius:50%; background:var(--accent3); flex-shrink:0; margin-top:10px; }
+
+  hr.div { border:none; border-top:1px solid var(--border); margin:30px 0; }
+
+  /* ── 직관 그림 박스들 ── */
+  .visual-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin: 22px 0;
+    flex-wrap: wrap;
+  }
+  .chi-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .chi-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .chi-seg {
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    min-width: 120px;
+    padding: 0 14px;
+  }
+  .seg-blue   { background: #1a3a6a; border: 2px solid var(--accent);  color: var(--accent); }
+  .seg-orange { background: #3a2010; border: 2px solid var(--accent2); color: var(--accent2); }
+  .seg-green  { background: #0a2a18; border: 2px solid var(--accent3); color: var(--accent3); }
+  .seg-sum    { background: #2a1a40; border: 2px solid #a070ff;        color: #a070ff; }
+  .plus-sign  { font-size:30px; font-weight:900; color:var(--text-muted); padding: 0 4px; }
+  .eq-sign    { font-size:30px; font-weight:900; color:var(--accent2);   padding: 0 4px; }
+  .arrow-down { font-size:22px; color:var(--text-muted); }
+  .df-label   { font-size:18px; color:var(--text-muted); font-weight:700; }
+  .df-val     { font-size:20px; font-weight:800; }
+  .df-val.blue   { color: var(--accent); }
+  .df-val.orange { color: var(--accent2); }
+  .df-val.green  { color: var(--accent3); }
+  .df-val.purple { color: #a070ff; }
+
+  /* 조건 배지 */
+  .cond-badge {
+    display: inline-block;
+    background: #2a1808; border: 1px solid var(--accent2);
+    border-radius: 6px; padding: 4px 14px;
+    font-size: 18px; font-weight:700; color:var(--accent2);
+    margin-bottom: 10px;
+  }
+
+  mjx-container { font-size:1.1em !important; }
+</style>
+</head>
+<body>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 1 : 재생성 성질이란?
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="chap">Chapter 05 · 표본분포</span>
+    <h2>χ²-분포의 재생성(Reproductive) 성질</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec">재생성 성질이란?</div>
+
+    <p class="bt">
+      χ²-분포를 따르는 <span class="hl">독립인</span> 확률변수들을 더하면,
+      그 합도 여전히 <span class="hlb">χ²-분포</span>를 따른다.
+      단, <span class="hl">자유도는 각각의 자유도를 모두 더한 값</span>이 된다.
+    </p>
+
+    <div class="fb big">
+      \[
+        X_i \sim \chi^2(n_i), \quad X_1,X_2,\ldots,X_k \text{ 서로 독립}
+      \]
+      \[
+        \Downarrow
+      \]
+      \[
+        Y = \sum_{i=1}^{k} X_i \;\sim\; \chi^2\!\!\left(\sum_{i=1}^{k} n_i\right)
+      \]
+    </div>
+
+    <div class="insight">
+      <div class="insight-title">💡 한 줄 직관</div>
+      χ²-분포끼리 더하면 "분포의 종류는 유지"되고, "자유도만 합산"된다.
+      마치 <span class="hl">같은 언어를 쓰는 사람끼리는 대화가 통하듯이</span>,
+      χ² 변수끼리는 더해도 χ²로 남는다.
+    </div>
+
+  </div>
+  <div class="slide-footer">1 / 4</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 2 : 직관적 그림 — 자유도 블록
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="chap">Chapter 05 · 표본분포</span>
+    <h2>재생성 성질 — 직관: 자유도는 "쌓인다"</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec">자유도를 블록처럼 생각하자</div>
+
+    <p class="bt">
+      자유도를 <span class="hl">"독립적으로 움직일 수 있는 칸의 수"</span>라고 생각하면,
+      독립인 χ² 변수를 합치는 것은 <span class="hlb">블록을 쌓는 것</span>과 같다.
+    </p>
+
+    <!-- 그림: 블록 쌓기 -->
+    <div class="visual-row" style="justify-content:center; align-items:flex-end; gap:24px; padding:16px 0;">
+
+      <!-- X1 블록 -->
+      <div class="chi-block">
+        <div class="chi-bar-wrap">
+          <div class="chi-seg seg-blue" style="width:130px;">\(X_1\)</div>
+          <div class="chi-seg seg-blue" style="width:130px; opacity:0.7;"></div>
+          <div class="chi-seg seg-blue" style="width:130px; opacity:0.4;"></div>
+        </div>
+        <div class="df-label">자유도</div>
+        <div class="df-val blue">\(n_1 = 3\)</div>
+      </div>
+
+      <div class="plus-sign">+</div>
+
+      <!-- X2 블록 -->
+      <div class="chi-block">
+        <div class="chi-bar-wrap">
+          <div class="chi-seg seg-orange" style="width:130px;">\(X_2\)</div>
+          <div class="chi-seg seg-orange" style="width:130px; opacity:0.7;"></div>
+        </div>
+        <div class="df-label">자유도</div>
+        <div class="df-val orange">\(n_2 = 2\)</div>
+      </div>
+
+      <div class="plus-sign">+</div>
+
+      <!-- X3 블록 -->
+      <div class="chi-block">
+        <div class="chi-bar-wrap">
+          <div class="chi-seg seg-green" style="width:130px;">\(X_3\)</div>
+          <div class="chi-seg seg-green" style="width:130px; opacity:0.7;"></div>
+          <div class="chi-seg seg-green" style="width:130px; opacity:0.5;"></div>
+          <div class="chi-seg seg-green" style="width:130px; opacity:0.3;"></div>
+        </div>
+        <div class="df-label">자유도</div>
+        <div class="df-val green">\(n_3 = 4\)</div>
+      </div>
+
+      <div class="eq-sign">=</div>
+
+      <!-- Y = 합산 블록 -->
+      <div class="chi-block">
+        <div class="chi-bar-wrap">
+          <div class="chi-seg seg-sum" style="width:130px;">\(Y = X_1\!+\!X_2\!+\!X_3\)</div>
+          <div class="chi-seg seg-blue"   style="width:130px; font-size:16px; justify-content:flex-start; padding-left:14px;">← \(n_1=3\)</div>
+          <div class="chi-seg seg-blue"   style="width:130px; opacity:0.6;"></div>
+          <div class="chi-seg seg-orange" style="width:130px; font-size:16px; justify-content:flex-start; padding-left:14px;">← \(n_2=2\)</div>
+          <div class="chi-seg seg-green"  style="width:130px; font-size:16px; justify-content:flex-start; padding-left:14px;">← \(n_3=4\)</div>
+          <div class="chi-seg seg-green"  style="width:130px; opacity:0.7;"></div>
+          <div class="chi-seg seg-green"  style="width:130px; opacity:0.4;"></div>
+          <div class="chi-seg seg-green"  style="width:130px; opacity:0.2;"></div>
+        </div>
+        <div class="df-label">자유도</div>
+        <div class="df-val purple">\(n_1+n_2+n_3 = 9\)</div>
+      </div>
+
+    </div>
+
+    <div class="fb green" style="text-align:center; font-size:24px;">
+      \(Y \sim \chi^2(3+2+4) = \chi^2(9)\)
+    </div>
+
+    <div class="warn">
+      <div class="warn-title">⚠ 반드시 독립이어야 한다</div>
+      블록을 "그냥 쌓는" 것이 가능하려면 각 변수가 <span class="hl">서로 독립</span>이어야 한다.
+      독립이 아니라면 합의 분포는 χ²-분포가 아닐 수 있다.
+    </div>
+
+  </div>
+  <div class="slide-footer">2 / 4</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 3 : 왜 성립하는가? (증명 아이디어)
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="chap">Chapter 05 · 표본분포</span>
+    <h2>왜 성립하는가? — 증명 아이디어</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec">χ²-분포의 출발점을 기억하자</div>
+
+    <p class="bt">
+      χ²-분포의 핵심 성질 (1)을 먼저 떠올린다:
+    </p>
+
+    <div class="fb">
+      \[Z \sim \mathrm{N}(0,1) \;\Longrightarrow\; Z^2 \sim \chi^2(1)\]
+      <div style="margin-top:10px; font-size:20px; color:var(--text-muted);">
+        표준정규변수 하나를 제곱하면 → 자유도 <span class="hlb">1</span>인 χ²
+      </div>
+    </div>
+
+    <hr class="div">
+    <div class="sec" style="margin-top:0;">자유도 n인 χ² = 표준정규변수 n개의 제곱합</div>
+
+    <p class="bt">
+      서로 독립인 \(Z_1, Z_2, \ldots, Z_n \sim \mathrm{N}(0,1)\)이면:
+    </p>
+
+    <div class="fb orange">
+      \[
+        X = Z_1^2 + Z_2^2 + \cdots + Z_n^2 = \sum_{i=1}^n Z_i^2 \;\sim\; \chi^2(n)
+      \]
+    </div>
+
+    <div class="insight">
+      <div class="insight-title">💡 재생성 성질의 직관적 증명</div>
+      <p class="bt" style="margin-bottom:12px;">
+        이제 \(X_1 \sim \chi^2(n_1)\), \(X_2 \sim \chi^2(n_2)\)이고 서로 독립이라 하자.
+      </p>
+      <p class="bt" style="margin-bottom:12px;">
+        <span class="hlb">\(X_1\)</span>은 독립인 표준정규변수 <span class="hl">\(n_1\)개</span>의 제곱합,
+        <span class="hlb">\(X_2\)</span>는 독립인 표준정규변수 <span class="hl">\(n_2\)개</span>의 제곱합이다.
+      </p>
+      <p class="bt" style="margin-bottom:0;">
+        \(X_1\)과 \(X_2\)가 서로 독립이므로, 이 두 그룹의 표준정규변수들은 모두 서로 독립이다.
+        따라서 합 \(Y = X_1 + X_2\)는 독립인 표준정규변수 <span class="hl">\((n_1+n_2)\)개</span>의 제곱합
+        → <span class="hlb">\(\chi^2(n_1+n_2)\)</span>
+      </p>
+    </div>
+
+    <div class="fb green" style="font-size:22px;">
+      <div style="margin-bottom:12px; color:var(--text-muted);">적률생성함수(MGF)로도 확인 가능:</div>
+      \(M_{X_i}(t) = (1-2t)^{-n_i/2}\) 이고, 독립이면 MGF를 곱하므로:
+      \[
+        M_Y(t) = M_{X_1}(t)\cdot M_{X_2}(t) = (1-2t)^{-n_1/2}\cdot(1-2t)^{-n_2/2}
+               = (1-2t)^{-(n_1+n_2)/2}
+      \]
+      → 자유도 \((n_1+n_2)\)인 χ²-분포의 MGF와 일치!
+    </div>
+
+  </div>
+  <div class="slide-footer">3 / 4</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 4 : 전자공학 응용 & 요약
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="chap">Chapter 05 · 표본분포</span>
+    <h2>재생성 성질 — 활용 & 요약</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec">이 성질이 어디에 쓰이는가?</div>
+
+    <!-- 활용 1: χ² 성질 (3)과의 연결 -->
+    <div style="background:#101e38;border:1px solid #2a4a7a;border-left:5px solid var(--accent);border-radius:12px;padding:26px 34px;margin-bottom:22px;">
+      <div style="font-size:22px;font-weight:800;color:var(--accent);margin-bottom:14px;">
+        📐 활용 1 — χ²-분포 성질 (3)(ii) 도출에 직접 사용
+      </div>
+      <p class="bt" style="margin-bottom:12px;">
+        표본분산의 분포를 유도할 때:
+      </p>
+      <div class="fb" style="margin:0 0 12px;">
+        \[
+          \underbrace{\sum_{i=1}^n \frac{(X_i-\mu)^2}{\sigma^2}}_{\chi^2(n)}
+          = \underbrace{\frac{(n-1)S^2}{\sigma^2}}_{\text{?}}
+          + \underbrace{\left(\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\right)^2}_{\chi^2(1)}
+        \]
+      </div>
+      <p class="bt" style="margin-bottom:0;">
+        좌변 \(\chi^2(n)\)이 두 <span class="hl">독립인</span> χ² 변수의 합이므로,
+        재생성 성질을 거꾸로 적용하면:
+        \(\dfrac{(n-1)S^2}{\sigma^2} \sim \chi^2(n-1)\)이 된다.
+      </p>
+    </div>
+
+    <!-- 활용 2: 전자공학 -->
+    <div class="app-box">
+      <div class="app-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5ce6a0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        전자공학 응용 — 여러 센서 노이즈의 합산 분석
+      </div>
+      <div class="app-item">
+        <div class="app-dot"></div>
+        <div>
+          <strong>상황:</strong>
+          IoT 시스템에서 센서 A, B, C 세 채널의 노이즈 에너지를 각각
+          \(\chi^2(n_1)\), \(\chi^2(n_2)\), \(\chi^2(n_3)\)으로 모델링한다.
+          각 채널이 <span class="hlb">서로 독립</span>이면, <strong>총 노이즈 에너지</strong>의 분포는:
+        </div>
+      </div>
+      <div class="fb green" style="margin:10px 0;">
+        \[
+          Y_\text{total} = Y_A + Y_B + Y_C \;\sim\; \chi^2(n_1+n_2+n_3)
+        \]
+      </div>
+      <div class="app-item">
+        <div class="app-dot"></div>
+        <div>
+          <strong>실용적 의미:</strong>
+          각 채널을 따로 분석하지 않고,
+          합산된 χ²-분포 하나로 전체 시스템의 노이즈 허용 임계값을
+          <span class="hlg">한 번에 계산</span>할 수 있다.
+        </div>
+      </div>
+    </div>
+
+    <hr class="div">
+
+    <!-- 최종 요약 -->
+    <div class="sec" style="margin-bottom:20px;">핵심 정리</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+      <div style="background:#101e38;border:1px solid #2a4a7a;border-radius:10px;padding:20px 22px;font-size:21px;line-height:1.75;">
+        <div style="font-size:19px;font-weight:800;color:var(--accent);margin-bottom:10px;">조건</div>
+        \(X_i \sim \chi^2(n_i)\)<br>
+        <span class="hl">서로 독립</span>
+      </div>
+      <div style="background:#101e38;border:1px solid #2a4a7a;border-radius:10px;padding:20px 22px;font-size:21px;line-height:1.75;">
+        <div style="font-size:19px;font-weight:800;color:var(--accent2);margin-bottom:10px;">결론</div>
+        \(Y = \sum X_i\)<br>
+        <span class="hl">\(\sim \chi^2\!\left(\sum n_i\right)\)</span>
+      </div>
+      <div style="background:#101e38;border:1px solid #2a4a7a;border-radius:10px;padding:20px 22px;font-size:21px;line-height:1.75;">
+        <div style="font-size:19px;font-weight:800;color:var(--accent3);margin-bottom:10px;">핵심</div>
+        분포 종류 유지<br>
+        <span class="hlg">자유도만 합산</span>
+      </div>
+    </div>
+
+  </div>
+  <div class="slide-footer">4 / 4</div>
+</div>
+
+<div style="height:60px;"></div>
+</body>
+</html>
