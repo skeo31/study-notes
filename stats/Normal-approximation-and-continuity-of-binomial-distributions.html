@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이항분포의 정규근사와 연속성 수정</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #1f2937;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text);
+            line-height: 1.8;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 50px 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideDown 0.8s ease-out 0.2s both;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            color: #64748b;
+            font-weight: 400;
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.8s ease-out both;
+        }
+        
+        .content-card:nth-child(1) { animation-delay: 0.3s; }
+        .content-card:nth-child(2) { animation-delay: 0.4s; }
+        .content-card:nth-child(3) { animation-delay: 0.5s; }
+        .content-card:nth-child(4) { animation-delay: 0.6s; }
+        .content-card:nth-child(5) { animation-delay: 0.7s; }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h2 {
+            color: var(--primary);
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        h3 {
+            color: var(--secondary);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #fef3c7 0%, #fef3c7 100%);
+            background-size: 100% 50%;
+            background-position: 0 85%;
+            background-repeat: no-repeat;
+            padding: 2px 6px;
+            font-weight: 600;
+            border-radius: 3px;
+        }
+        
+        .formula-box {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 25px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3em;
+            text-align: center;
+            border: 3px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .formula-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .comparison-item {
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .comparison-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .discrete {
+            background: linear-gradient(135deg, #fef3c7, #fff);
+            border-color: var(--accent);
+        }
+        
+        .continuous {
+            background: linear-gradient(135deg, #dbeafe, #fff);
+            border-color: var(--primary);
+        }
+        
+        .comparison-title {
+            font-weight: 700;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-box {
+            background: linear-gradient(135deg, #f3e8ff, #fff);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid var(--secondary);
+            box-shadow: 0 3px 10px rgba(124, 58, 237, 0.1);
+        }
+        
+        .step-title {
+            font-weight: 700;
+            color: var(--secondary);
+            font-size: 1.15em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #ecfccb, #fff);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border: 2px dashed var(--success);
+        }
+        
+        .example-title {
+            font-weight: 700;
+            color: var(--success);
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .note-box {
+            background: linear-gradient(135deg, #fee2e2, #fff);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .note-title {
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .rule-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .rule-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .rule-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .rule-formula {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05em;
+            color: var(--text);
+        }
+        
+        .calculation-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .calc-step {
+            margin: 12px 0;
+            padding-left: 20px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .visual-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 25px 0;
+            text-align: center;
+            border: 2px solid var(--border);
+        }
+        
+        .bar-visual {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 150px;
+            margin: 20px 0;
+        }
+        
+        .bar {
+            width: 30px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+            transform: translateY(-5px);
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .highlight-bar {
+            background: linear-gradient(to top, var(--accent), #fbbf24) !important;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 15px;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+        
+        code {
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--secondary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeIn 0.8s ease-out 0.8s both;
+        }
+        
+        footer p {
+            color: #64748b;
+            font-size: 0.95em;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 이항분포의 정규근사와 연속성 수정</h1>
+            <p class="subtitle">Binomial to Normal Approximation & Continuity Correction</p>
+        </header>
+
+        <div class="content-card">
+            <h2><span class="emoji">🎯</span>핵심 질문</h2>
+            <div class="formula-box" style="font-size: 1.1em; text-align: left; padding: 25px;">
+                <p style="margin-bottom: 15px;">
+                    이항분포 <strong>B(n, p)</strong>를 정규분포로 근사화했다면,
+                </p>
+                <p style="font-size: 1.3em; color: var(--primary); font-weight: 700; text-align: center; margin: 20px 0;">
+                    P(X = k)를 P(k - 0.5 ≤ X ≤ k + 0.5)로 계산할 수 있는가?
+                </p>
+                </p>
+            </div>
+            <p style="font-size: 1.1em; margin-top: 20px;">
+                이것이 바로 <span class="highlight">연속성 수정(Continuity Correction)</span>입니다.
+            </p>
+        </div>
+
+        <div class="content-card">
+            <h2><span class="emoji">🤔</span>왜 연속성 수정이 필요한가?</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item discrete">
+                    <div class="comparison-title" style="color: var(--accent);">
+                        <span class="emoji">🎲</span>이항분포 B(n,p)
+                    </div>
+                    <p><strong>타입:</strong> 이산 확률분포</p>
+                    <p style="margin-top: 10px;"><strong>특징:</strong></p>
+                    <ul style="font-size: 0.95em;">
+                        <li>정수값만 가능 (0, 1, 2, 3, ...)</li>
+                        <li>P(X = k)가 의미 있음</li>
+                        <li>한 점에서 확률 > 0</li>
+                    </ul>
+                    <div class="formula-box" style="font-size: 0.9em; margin-top: 15px;">
+                        P(X = 5) = 실제 값
+                    </div>
+                </div>
+                
+                <div class="comparison-item continuous">
+                    <div class="comparison-title" style="color: var(--primary);">
+                        <span class="emoji">📈</span>정규분포 N(μ, σ²)
+                    </div>
+                    <p><strong>타입:</strong> 연속 확률분포</p>
+                    <p style="margin-top: 10px;"><strong>특징:</strong></p>
+                    <ul style="font-size: 0.95em;">
+                        <li>모든 실수값 가능</li>
+                        <li>P(X = k) = 0 (한 점의 확률)</li>
+                        <li>구간 확률만 의미 있음</li>
+                    </ul>
+                    <div class="formula-box" style="font-size: 0.9em; margin-top: 15px; background: linear-gradient(135deg, #fee2e2, #fff); border-color: var(--danger);">
+                        P(X = 5) = 0
+                    </div>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <div class="note-title">
+                    <span class="emoji">⚠️</span>핵심 문제
+                </div>
+                <p>
+                    이산분포에서는 <strong>P(X = k)</strong>가 의미 있지만, 
+                    연속분포에서는 <strong>한 점에서의 확률이 0</strong>입니다!
+                </p>
+                <p style="margin-top: 10px;">
+                    따라서 이산값 k를 연속분포에서 표현하려면 <span class="highlight">구간으로 변환</span>해야 합니다.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2><span class="emoji">🔧</span>연속성 수정 방법</h2>
+            
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                이산값 <code>k</code>를 연속분포에서 표현할 때, k는 실제로 
+                <span class="highlight">[k - 0.5, k + 0.5]</span> 구간을 대표한다고 봅니다.
+            </p>
+
+            <div class="visual-diagram">
+                <h3 style="color: var(--text); margin-bottom: 20px;">시각적 이해</h3>
+                <div style="background: linear-gradient(135deg, #f8fafc, #fff); padding: 30px; border-radius: 10px; margin: 20px 0;">
+                    <div style="display: flex; justify-content: center; align-items: flex-end; gap: 5px; margin-bottom: 30px;">
+                        <div style="text-align: center;">
+                            <div style="width: 50px; height: 60px; background: linear-gradient(to top, #cbd5e1, #94a3b8); border-radius: 4px 4px 0 0;"></div>
+                            <div style="margin-top: 10px; font-weight: 600;">k-2</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 50px; height: 90px; background: linear-gradient(to top, #cbd5e1, #94a3b8); border-radius: 4px 4px 0 0;"></div>
+                            <div style="margin-top: 10px; font-weight: 600;">k-1</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 50px; height: 120px; background: linear-gradient(to top, var(--accent), #fbbf24); border-radius: 4px 4px 0 0; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);"></div>
+                            <div style="margin-top: 10px; font-weight: 700; color: var(--accent); font-size: 1.1em;">k</div>
+                            <div style="margin-top: 5px; font-size: 0.85em; color: var(--secondary);">[k-0.5, k+0.5]</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 50px; height: 90px; background: linear-gradient(to top, #cbd5e1, #94a3b8); border-radius: 4px 4px 0 0;"></div>
+                            <div style="margin-top: 10px; font-weight: 600;">k+1</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 50px; height: 60px; background: linear-gradient(to top, #cbd5e1, #94a3b8); border-radius: 4px 4px 0 0;"></div>
+                            <div style="margin-top: 10px; font-weight: 600;">k+2</div>
+                        </div>
+                    </div>
+                    <p style="color: #475569; font-size: 0.95em; line-height: 1.6;">
+                        이산값 k는 연속분포에서 k-0.5부터 k+0.5까지의 구간으로 대응됩니다.<br>
+                        이렇게 하면 이산분포와 연속분포 사이의 간격을 메울 수 있습니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="formula-box" style="background: linear-gradient(135deg, #dcfce7, #fff); border-color: var(--success);">
+                P(X = k) ≈ P(k - 0.5 ≤ X ≤ k + 0.5)
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2><span class="emoji">📐</span>다양한 경우의 연속성 수정</h2>
+            
+            <p style="margin-bottom: 20px;">
+                이항분포를 정규분포로 근사할 때, 다양한 확률 계산에 연속성 수정을 적용하는 방법:
+            </p>
+
+            <div class="rules-grid">
+                <div class="rule-item">
+                    <div class="rule-label">P(X = k)</div>
+                    <div class="rule-formula">P(k-0.5 ≤ X ≤ k+0.5)</div>
+                </div>
+                
+                <div class="rule-item">
+                    <div class="rule-label">P(X ≤ k)</div>
+                    <div class="rule-formula">P(X ≤ k+0.5)</div>
+                </div>
+                
+                <div class="rule-item">
+                    <div class="rule-label">P(X < k)</div>
+                    <div class="rule-formula">P(X ≤ k-0.5)</div>
+                </div>
+                
+                <div class="rule-item">
+                    <div class="rule-label">P(X ≥ k)</div>
+                    <div class="rule-formula">P(X ≥ k-0.5)</div>
+                </div>
+                
+                <div class="rule-item">
+                    <div class="rule-label">P(X > k)</div>
+                    <div class="rule-formula">P(X ≥ k+0.5)</div>
+                </div>
+                
+                <div class="rule-item">
+                    <div class="rule-label">P(a ≤ X ≤ b)</div>
+                    <div class="rule-formula">P(a-0.5 ≤ X ≤ b+0.5)</div>
+                </div>
+            </div>
+
+            <div class="note-box" style="background: linear-gradient(135deg, #dbeafe, #fff); border-color: var(--primary);">
+                <div class="note-title" style="color: var(--primary);">
+                    <span class="emoji">💡</span>기억 팁
+                </div>
+                <ul style="margin-top: 10px;">
+                    <li><strong>"이상(≥)" 또는 "초과(>)"</strong>: 아래쪽 경계에서 0.5를 뺍니다</li>
+                    <li><strong>"이하(≤)" 또는 "미만(<)"</strong>: 위쪽 경계에서 0.5를 더합니다</li>
+                    <li><strong>"정확히 같음(=)"</strong>: 양쪽 모두 적용 (±0.5)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2><span class="emoji">🧮</span>구체적인 예제</h2>
+            
+            <div class="example-box">
+                <div class="example-title">
+                    <span class="emoji">📝</span>예제: 동전 던지기
+                </div>
+                
+                <p style="font-size: 1.05em; margin-bottom: 15px;">
+                    공정한 동전을 <strong>100번</strong> 던질 때, 앞면이 정확히 <strong>52번</strong> 나올 확률을 정규근사로 구하세요.
+                </p>
+
+                <div class="step-box">
+                    <div class="step-title">
+                        <span class="emoji">1️⃣</span>Step 1: 이항분포 설정
+                    </div>
+                    <p>X ~ B(n=100, p=0.5)</p>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">
+                        <span class="emoji">2️⃣</span>Step 2: 정규분포 파라미터 계산
+                    </div>
+                    <div class="calculation-box">
+                        <div class="calc-step">μ = np = 100 × 0.5 = 50</div>
+                        <div class="calc-step">σ² = np(1-p) = 100 × 0.5 × 0.5 = 25</div>
+                        <div class="calc-step">σ = √25 = 5</div>
+                    </div>
+                    <p>따라서 X ~ N(μ=50, σ²=25) 또는 N(50, 5²)</p>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">
+                        <span class="emoji">3️⃣</span>Step 3: 연속성 수정 적용
+                    </div>
+                    <p style="margin-bottom: 10px;">P(X = 52)를 구하려면:</p>
+                    <div class="formula-box" style="background: linear-gradient(135deg, #fef3c7, #fff); border-color: var(--accent);">
+                        P(X = 52) ≈ P(51.5 ≤ X ≤ 52.5)
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">
+                        <span class="emoji">4️⃣</span>Step 4: 표준화 (Z-score 계산)
+                    </div>
+                    <div class="calculation-box">
+                        <div class="calc-step">Z₁ = (51.5 - 50) / 5 = 1.5 / 5 = 0.3</div>
+                        <div class="calc-step">Z₂ = (52.5 - 50) / 5 = 2.5 / 5 = 0.5</div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">
+                        <span class="emoji">5️⃣</span>Step 5: 표준정규분포표 이용
+                    </div>
+                    <div class="calculation-box">
+                        <div class="calc-step">P(0.3 ≤ Z ≤ 0.5) = Φ(0.5) - Φ(0.3)</div>
+                        <div class="calc-step">= 0.6915 - 0.6179</div>
+                        <div class="calc-step" style="border-left-color: var(--success); font-weight: 700;">= 0.0736</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #dcfce7, #fff); padding: 20px; border-radius: 10px; margin-top: 20px; border: 2px solid var(--success);">
+                    <p style="font-weight: 700; color: var(--success); font-size: 1.2em;">
+                        답: 약 7.36%
+                    </p>
+                    <p style="margin-top: 10px; color: #166534;">
+                        100번의 동전 던지기에서 정확히 52번 앞면이 나올 확률은 약 7.36%입니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="note-box" style="background: linear-gradient(135deg, #fef3c7, #fff); border-color: var(--accent);">
+                <div class="note-title" style="color: var(--accent);">
+                    <span class="emoji">⚡</span>연속성 수정의 중요성
+                </div>
+                <p>
+                    만약 연속성 수정 없이 P(X = 52)를 그냥 P(X = 52)로 계산하면 확률이 0이 되어버립니다!<br>
+                    연속성 수정을 사용하면 근사의 <strong>정확도가 크게 향상</strong>됩니다.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2><span class="emoji">✅</span>정규근사 사용 조건</h2>
+            
+            <p style="margin-bottom: 20px;">
+                이항분포를 정규분포로 근사할 때는 다음 조건을 만족해야 합니다:
+            </p>
+
+            <div class="step-box" style="background: linear-gradient(135deg, #dcfce7, #fff); border-color: var(--success);">
+                <div class="step-title" style="color: var(--success);">
+                    <span class="emoji">📊</span>일반적인 경험 규칙
+                </div>
+                <div class="formula-box" style="text-align: left; font-size: 1.1em;">
+                    <div style="margin: 10px 0;">✓ np ≥ 5</div>
+                    <div style="margin: 10px 0;">✓ n(1-p) ≥ 5</div>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.95em; color: #166534;">
+                    두 조건을 모두 만족하면 정규근사가 비교적 정확합니다.
+                </p>
+            </div>
+
+            <div class="example-box" style="background: linear-gradient(135deg, #e0f2fe, #fff); border-color: var(--primary);">
+                <div class="example-title" style="color: var(--primary);">
+                    <span class="emoji">🔍</span>조건 확인 예시
+                </div>
+                <p><strong>상황 1:</strong> n=100, p=0.5</p>
+                <div class="calculation-box" style="background: #f8fafc;">
+                    <div class="calc-step">np = 100 × 0.5 = 50 ≥ 5 ✅</div>
+                    <div class="calc-step">n(1-p) = 100 × 0.5 = 50 ≥ 5 ✅</div>
+                </div>
+                <p style="color: var(--success); font-weight: 600; margin-top: 10px;">→ 정규근사 사용 가능!</p>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+                
+                <p><strong>상황 2:</strong> n=20, p=0.1</p>
+                <div class="calculation-box" style="background: #f8fafc;">
+                    <div class="calc-step">np = 20 × 0.1 = 2 < 5 ❌</div>
+                    <div class="calc-step">n(1-p) = 20 × 0.9 = 18 ≥ 5 ✅</div>
+                </div>
+                <p style="color: var(--danger); font-weight: 600; margin-top: 10px;">→ 정규근사 부적합! 이항분포 직접 사용</p>
+            </div>
+        </div>
+
+        <footer>
+            <p style="font-size: 1.1em; font-weight: 600; margin-bottom: 10px;">📊 확률 및 통계 - 이항분포의 정규근사</p>
+            <p>연속성 수정(Continuity Correction)은 이산분포와 연속분포 사이의 다리입니다.</p>
+        </footer>
+    </div>
+</body>
+</html>
