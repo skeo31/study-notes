@@ -63,19 +63,21 @@ transition: transform 0.25s ease;
 .files {
 display: none;
 flex-direction: column;
+gap: 10px;
 border-top: 1px solid var(–border);
 background: var(–bg);
+padding: 16px;
 }
 .subject.open .files { display: flex; }
 
 .file {
-padding: 16px 24px; color: var(–text);
+padding: 16px 20px; color: var(–text);
 text-decoration: none; display: flex; align-items: center;
-gap: 14px; border-bottom: 1px solid var(–border);
-transition: background 0.12s;
+gap: 14px; border-radius: 12px;
+background: var(–card); border: 1px solid var(–border);
+transition: all 0.12s;
 }
-.file:last-child { border-bottom: none; }
-.file:hover, .file:active { background: var(–card); }
+.file:hover, .file:active { border-color: var(–accent); background: var(–bg2); transform: translateY(-1px); }
 .file-title { flex: 1; font-weight: 500; font-size: 1rem; }
 .file-arrow { color: var(–text2); font-size: 1rem; }
 
