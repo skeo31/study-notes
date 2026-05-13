@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>복원추출 vs 비복원추출</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+      startup: { ready() { MathJax.startup.defaultReady(); } }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+  <style>
+    :root {
+      --ink:      #1a1410;
+      --paper:    #f5f0e8;
+      --cream:    #ede7d6;
+      --rust:     #c0392b;
+      --gold:     #b8860b;
+      --teal:     #1a6b6b;
+      --muted:    #6b5f4f;
+      --rule:     #c8bfad;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif KR', serif;
+      font-size: 20px;
+      line-height: 1.85;
+      padding: 0 0 6rem;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 18px,
+        rgba(255,255,255,0.03) 18px,
+        rgba(255,255,255,0.03) 36px
+      );
+    }
+    header .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      position: relative;
+    }
+    header h1 em { color: var(--gold); font-style: normal; }
+    header .subtitle {
+      margin-top: 1rem;
+      font-size: 1.05rem;
+      color: rgba(245,240,232,0.65);
+      position: relative;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin: 4rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px solid var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-title .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 0.15em 0.5em;
+      border-radius: 3px;
+    }
+
+    /* ── CONCEPT CARDS ── */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    @media (max-width: 640px) { .concept-grid { grid-template-columns: 1fr; } }
+
+    .concept-card {
+      border: 2px solid var(--ink);
+      border-radius: 2px;
+      padding: 1.8rem 1.6rem;
+      position: relative;
+    }
+    .concept-card .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .concept-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .concept-card p { font-size: 1rem; color: var(--muted); line-height: 1.75; }
+    .concept-card.with { border-color: var(--teal); }
+    .concept-card.with h3 { color: var(--teal); }
+    .concept-card.without { border-color: var(--rust); }
+    .concept-card.without h3 { color: var(--rust); }
+
+    /* ── FORMULA BOX ── */
+    .formula-section {
+      background: var(--cream);
+      border: 2px solid var(--ink);
+      border-radius: 2px;
+      padding: 2.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .formula-section h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1.5px solid var(--rule);
+    }
+
+    .formula-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 640px) { .formula-row { grid-template-columns: 1fr; } }
+
+    .formula-item { }
+    .formula-item .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .formula-item .math-box {
+      background: white;
+      border: 1.5px solid var(--rule);
+      border-radius: 2px;
+      padding: 1.1rem 1.3rem;
+      font-size: 1.2rem;
+      text-align: center;
+      min-height: 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .formula-item.highlight .math-box {
+      border-color: var(--teal);
+      background: rgba(26,107,107,0.05);
+    }
+
+    .fpc-box {
+      margin-top: 0.5rem;
+      background: rgba(184,134,11,0.08);
+      border-left: 4px solid var(--gold);
+      padding: 1rem 1.2rem;
+      font-size: 1rem;
+      color: var(--ink);
+      line-height: 1.8;
+    }
+    .fpc-box strong { color: var(--gold); }
+
+    /* ── COMPARISON TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 2rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+    thead tr {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    thead th {
+      padding: 1rem 1.2rem;
+      text-align: left;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    thead th:first-child { width: 28%; }
+    tbody tr { border-bottom: 1.5px solid var(--rule); }
+    tbody tr:nth-child(even) { background: var(--cream); }
+    tbody td {
+      padding: 1rem 1.2rem;
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    tbody td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .val-with  { color: var(--teal); font-weight: 700; }
+    .val-wo    { color: var(--rust); font-weight: 700; }
+
+    /* ── PROS/CONS GRID ── */
+    .pros-cons-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    @media (max-width: 640px) { .pros-cons-grid { grid-template-columns: 1fr; } }
+
+    .method-block { }
+    .method-block .method-header {
+      padding: 1rem 1.4rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      border: 2px solid;
+      border-bottom: none;
+      border-radius: 2px 2px 0 0;
+    }
+    .method-block.with .method-header  { background: var(--teal); color: white; border-color: var(--teal); }
+    .method-block.without .method-header { background: var(--rust); color: white; border-color: var(--rust); }
+
+    .pros-cons-body {
+      border: 2px solid;
+      border-top: none;
+      border-radius: 0 0 2px 2px;
+      padding: 1.4rem;
+    }
+    .method-block.with  .pros-cons-body { border-color: var(--teal); }
+    .method-block.without .pros-cons-body { border-color: var(--rust); }
+
+    .pc-group { margin-bottom: 1.4rem; }
+    .pc-group:last-child { margin-bottom: 0; }
+    .pc-group .pc-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .pc-group.pros .pc-title { color: var(--teal); }
+    .pc-group.cons .pc-title { color: var(--rust); }
+    .pc-list { list-style: none; }
+    .pc-list li {
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 0.5rem;
+      padding-left: 1.4rem;
+      position: relative;
+    }
+    .pc-list li::before {
+      position: absolute; left: 0;
+      font-weight: 900;
+    }
+    .pros .pc-list li::before { content: '+'; color: var(--teal); }
+    .cons .pc-list li::before { content: '−'; color: var(--rust); }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border: 2px solid var(--gold);
+      background: rgba(184,134,11,0.06);
+      border-radius: 2px;
+      padding: 1.6rem 1.8rem;
+      margin: 2.5rem 0;
+      font-size: 1.05rem;
+      line-height: 1.85;
+    }
+    .callout .callout-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+    }
+
+    /* ── SUMMARY BOX ── */
+    .summary {
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 2px;
+      padding: 2.5rem 2rem;
+      margin: 3rem 0 0;
+    }
+    .summary h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      margin-bottom: 1.5rem;
+      color: var(--gold);
+    }
+    .summary-points { list-style: none; }
+    .summary-points li {
+      font-size: 1.05rem;
+      padding: 0.6rem 0;
+      padding-left: 1.8rem;
+      position: relative;
+      border-bottom: 1px solid rgba(200,191,173,0.2);
+      line-height: 1.75;
+    }
+    .summary-points li:last-child { border-bottom: none; }
+    .summary-points li::before {
+      content: '▸';
+      position: absolute; left: 0;
+      color: var(--gold);
+    }
+
+    /* ── MISC ── */
+    p { margin-bottom: 1rem; }
+    .lead {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin: 1.5rem 0 2rem;
+      line-height: 1.9;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">통계학 · 표본 추출 이론</div>
+  <h1>복원추출 <em>vs</em> 비복원추출</h1>
+  <p class="subtitle">유한 모집단에서 표본 평균을 추정할 때의 비교 분석</p>
+</header>
+
+<div class="container">
+
+  <!-- 1. 개념 정리 -->
+  <h2 class="section-title"><span class="num">01</span> 핵심 개념 정리</h2>
+  <div class="concept-grid">
+    <div class="concept-card with">
+      <div class="tag">Sampling with replacement</div>
+      <h3>복원추출</h3>
+      <p>한 개체를 뽑은 뒤 <strong>다시 모집단에 돌려놓고</strong> 다음 개체를 추출합니다. 매 추출이 서로 독립적으로 이루어집니다.</p>
+    </div>
+    <div class="concept-card without">
+      <div class="tag">Sampling without replacement</div>
+      <h3>비복원추출</h3>
+      <p>한 번 뽑은 개체는 <strong>다시 모집단에 포함시키지 않고</strong> 추출합니다. 각 추출은 이전 결과에 의존합니다.</p>
+    </div>
+  </div>
+
+  <!-- 2. 분산 공식 -->
+  <h2 class="section-title"><span class="num">02</span> 표본 평균의 분산 비교</h2>
+  <p class="lead">두 방법 모두 표본 평균의 기댓값은 동일하게 모평균 $\mu$에 수렴합니다 (불편추정량). 그러나 <strong>분산</strong>이 다릅니다.</p>
+
+  <div class="formula-section">
+    <h3>분산 공식</h3>
+    <div class="formula-row">
+      <div class="formula-item">
+        <div class="label">복원추출</div>
+        <div class="math-box">
+          $$\operatorname{Var}(\bar{X}) = \frac{\sigma^2}{n}$$
+        </div>
+      </div>
+      <div class="formula-item highlight">
+        <div class="label">비복원추출</div>
+        <div class="math-box">
+          $$\operatorname{Var}(\bar{X}) = \frac{\sigma^2}{n} \cdot \frac{N-n}{N-1}$$
+        </div>
+      </div>
+    </div>
+
+    <div class="fpc-box">
+      <strong>유한 모집단 수정 계수 (FPC, Finite Population Correction)</strong><br>
+      비복원추출에만 적용되는 인수: $\displaystyle\frac{N-n}{N-1}$<br>
+      $N$=모집단 크기, $n$=표본 크기, $\sigma^2$=모분산<br><br>
+      $n \ge 1$일 때 항상 $\dfrac{N-n}{N-1} \le 1$ 이므로, 비복원추출의 분산이 <strong>항상 더 작거나 같습니다.</strong>
+    </div>
+  </div>
+
+  <!-- 3. 비교표 -->
+  <h2 class="section-title"><span class="num">03</span> 주요 특성 비교</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>특성</th>
+          <th>복원추출</th>
+          <th>비복원추출</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>표본평균의 분산</td>
+          <td>$\dfrac{\sigma^2}{n}$</td>
+          <td>$\dfrac{\sigma^2}{n} \cdot \dfrac{N-n}{N-1}$</td>
+        </tr>
+        <tr>
+          <td>FPC 적용</td>
+          <td>없음</td>
+          <td class="val-wo">있음</td>
+        </tr>
+        <tr>
+          <td>추출 간 독립성</td>
+          <td class="val-with">독립</td>
+          <td>종속 (비독립)</td>
+        </tr>
+        <tr>
+          <td>중복 선택 가능성</td>
+          <td>있음</td>
+          <td class="val-wo">없음</td>
+        </tr>
+        <tr>
+          <td>추정 정밀도</td>
+          <td>상대적으로 낮음</td>
+          <td class="val-with">상대적으로 높음</td>
+        </tr>
+        <tr>
+          <td>이론 전개 복잡도</td>
+          <td class="val-with">단순</td>
+          <td>다소 복잡</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. 장단점 -->
+  <h2 class="section-title"><span class="num">04</span> 장단점 상세 분석</h2>
+  <div class="pros-cons-grid">
+    <div class="method-block with">
+      <div class="method-header">복원추출</div>
+      <div class="pros-cons-body">
+        <div class="pc-group pros">
+          <div class="pc-title">장점</div>
+          <ul class="pc-list">
+            <li>매 추출이 독립이므로 수학적 처리가 단순</li>
+            <li>무한 모집단 가정과 동일하게 표준 공식 적용 가능</li>
+            <li>부트스트랩(bootstrap) 등 시뮬레이션에 적합</li>
+          </ul>
+        </div>
+        <div class="pc-group cons">
+          <div class="pc-title">단점</div>
+          <ul class="pc-list">
+            <li>동일 개체 중복 선택으로 <strong>정보 효율 낮음</strong></li>
+            <li>같은 $n$이라면 비복원추출보다 <strong>분산 큼</strong></li>
+            <li>실제 조사에서 중복 조사는 비용 낭비</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="method-block without">
+      <div class="method-header">비복원추출</div>
+      <div class="pros-cons-body">
+        <div class="pc-group pros">
+          <div class="pc-title">장점</div>
+          <ul class="pc-list">
+            <li>중복 없이 모집단 전체를 고르게 커버</li>
+            <li><strong>분산이 더 작아</strong> 추정 정밀도가 높음</li>
+            <li>여론조사·품질검사 등 현실 조사에 자연스럽고 효율적</li>
+          </ul>
+        </div>
+        <div class="pc-group cons">
+          <div class="pc-title">단점</div>
+          <ul class="pc-list">
+            <li>추출 간 비독립으로 이론 처리 복잡</li>
+            <li>FPC를 별도로 고려해야 함</li>
+            <li>모집단 목록(sampling frame) 전체가 필요</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 실용적 판단 기준 -->
+  <h2 class="section-title"><span class="num">05</span> 언제 차이가 무시 가능한가?</h2>
+  <div class="callout">
+    <div class="callout-title">5% 규칙 (Rule of Thumb)</div>
+    표본 비율 $\dfrac{n}{N}$이 <strong>5% 미만</strong>으로 작을 때, FPC는 1에 가까워집니다:
+    $$\frac{N-n}{N-1} \approx 1 \quad \text{when} \quad \frac{n}{N} < 0.05$$
+    따라서 두 방법의 분산 차이가 거의 없어지며, 이때 복원추출의 단순한 공식을 그대로 사용해도 무방합니다. 대규모 모집단 조사에서 복원추출 공식이 통용되는 이유가 바로 이것입니다.
+  </div>
+
+  <!-- 요약 -->
+  <div class="summary">
+    <h2>요약</h2>
+    <ul class="summary-points">
+      <li>두 방법 모두 <strong>불편추정량</strong>: 기댓값 $E(\bar{X}) = \mu$로 동일</li>
+      <li><strong>정밀도 측면</strong>에서는 비복원추출이 우수 (분산 더 작음)</li>
+      <li><strong>수학적 단순성·독립성</strong> 측면에서는 복원추출이 편리</li>
+      <li>실제 표본조사에서는 특별한 이유가 없으면 <strong>비복원추출이 표준</strong></li>
+      <li>$n/N < 0.05$이면 두 방법의 차이는 무시 가능</li>
+    </ul>
+  </div>
+
+</div><!-- /container -->
+</body>
+</html>
