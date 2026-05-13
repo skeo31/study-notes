@@ -10,7 +10,21 @@
     { "file": "chi--square-and-Rayleigh-distributions-derived-from-normal-distributions.html", "title": "7.정규분포에서 파생되는 카이제곱 분포와 레일리 분포" },
     { "file": "5.1.html", "title": "9.모집단과 표본분포" },
     { "file": "kge.html", "title": "9.k개 표본세트, 세트당 n개 요소일 때 공식 유도" },
-    { "file": "bokwon.html", "title": "9.복원추출 비복원추출" }
+    { "file": "bokwon.html", "title": "9.복원추출 비복원추출" },
+    { "file": "5-3-1.html", "title": "10.여러가지 표본분포" },
+    { "file": "5-3-2.html", "title": "10.카이제곱분포 성질 2번(재생성)" },
+    { "file": "5-3-3.html", "title": "10.카이제곱분포 성질 3번 (i)과 (ii)설명" },
+    { "file": "5-4-1.html", "title": "10.표본평균의 차의 분포" },
+    { "file": "5-4-2.html", "title": "10.naive bayes classification 이산확률 복습" },
+    { "file": "5-4-3.html", "title": "10.naive bayes classification 연속확률 복습" },
+    { "file": "11-1.html", "title": "11.자료의 정리와 요약" },
+    { "file": "11-2.html", "title": "11.변동 계수 예제" },
+    { "file": "12-1.html", "title": "12.통계적 추정" },
+    { "file": "12-2.html", "title": "12.모평균의 추정(5.2, 5.3과 연결)" },
+
+
+
+    
   ],
   "cprog": [],
   "python": [],
