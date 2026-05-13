@@ -8,91 +8,124 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d1117; --bg2: #161b22; --card: #1e2535;
-    --border: #30404d; --accent: #58a6ff; --accent4: #d2a8ff;
-    --text: #e6edf3; --text2: #8b949e;
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --card: #1e2535;
+    --border: #30404d;
+    --accent: #58a6ff;
+    --accent4: #d2a8ff;
+    --text: #e6edf3;
+    --text2: #8b949e;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Noto Sans KR', sans-serif;
-    background: var(--bg); color: var(--text);
-    min-height: 100vh; padding: 40px 24px 80px;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 24px 80px;
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 880px; margin: 0 auto; }
   header {
-    text-align: center; padding: 40px 0 50px;
-    border-bottom: 1px solid var(--border); margin-bottom: 40px;
+    text-align: center;
+    padding: 40px 0 50px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
   }
   h1 {
-    font-size: 2.4rem; font-weight: 900;
+    font-size: 2.4rem;
+    font-weight: 900;
     background: linear-gradient(135deg, var(--accent), var(--accent4));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; letter-spacing: -0.02em;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
   }
   .subtitle { color: var(--text2); margin-top: 12px; font-size: 1rem; }
 
-/* 과목 블럭 */
-.subject { margin-bottom: 16px; border-radius: 16px; overflow: hidden; border: 1px solid var(–border); }
-
+.subject {
+margin-bottom: 16px;
+border-radius: 16px;
+overflow: hidden;
+border: 1px solid var(–border);
+}
 .subject-header {
-display: flex; align-items: center; gap: 14px;
-padding: 20px 24px; cursor: pointer;
+display: flex;
+align-items: center;
+gap: 14px;
+padding: 20px 24px;
+cursor: pointer;
 background: var(–card);
 user-select: none;
 transition: background 0.15s;
 }
 .subject-header:hover { background: var(–bg2); }
-
 .subject-icon {
-width: 40px; height: 40px; border-radius: 12px;
-display: flex; align-items: center; justify-content: center;
-font-weight: 900; font-size: 0.95rem; color: #0d1117;
-font-family: ‘JetBrains Mono’, monospace; flex-shrink: 0;
+width: 40px;
+height: 40px;
+border-radius: 12px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: 900;
+font-size: 0.95rem;
+color: #0d1117;
+font-family: ‘JetBrains Mono’, monospace;
+flex-shrink: 0;
 }
 .subject-name { font-size: 1.2rem; font-weight: 700; flex: 1; }
 .subject-meta { display: flex; align-items: center; gap: 12px; }
 .subject-count { color: var(–text2); font-size: 0.85rem; font-family: ‘JetBrains Mono’, monospace; }
-.subject-arrow {
-color: var(–text2); font-size: 1rem;
-transition: transform 0.25s ease;
-}
+.subject-arrow { color: var(–text2); font-size: 1rem; transition: transform 0.25s ease; }
 .subject.open .subject-arrow { transform: rotate(90deg); }
 
-/* 파일 목록 */
 .files {
 display: none;
 flex-direction: column;
 gap: 10px;
-border-top: 1px solid var(–border);
 background: var(–bg);
 padding: 16px;
+border-top: 1px solid var(–border);
 }
 .subject.open .files { display: flex; }
 
-.file {
-padding: 16px 20px; color: var(–text);
-text-decoration: none; display: flex; align-items: center;
-gap: 14px; border-radius: 12px;
-background: var(–card); border: 1px solid var(–border);
+a.file {
+display: flex;
+align-items: center;
+gap: 14px;
+padding: 16px 20px;
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 12px;
+text-decoration: none;
+color: var(–text) !important;
+-webkit-text-fill-color: var(–text) !important;
 transition: all 0.12s;
 }
-.file:hover, .file:active { border-color: var(–accent); background: var(–bg2); transform: translateY(-1px); }
+a.file:hover, a.file:active {
+border-color: var(–accent);
+background: var(–bg2);
+transform: translateY(-1px);
+}
 .file-title { flex: 1; font-weight: 500; font-size: 1rem; }
 .file-arrow { color: var(–text2); font-size: 1rem; }
 
-.empty { color: var(–text2); font-style: italic; padding: 16px 24px; font-size: 0.9rem; }
+.empty { color: var(–text2); font-style: italic; padding: 12px 4px; font-size: 0.9rem; }
 .loading { text-align: center; color: var(–text2); padding: 40px; }
-
 footer {
-text-align: center; margin-top: 48px; padding-top: 28px;
-border-top: 1px solid var(–border); color: var(–text2); font-size: 0.85rem;
+text-align: center;
+margin-top: 48px;
+padding-top: 28px;
+border-top: 1px solid var(–border);
+color: var(–text2);
+font-size: 0.85rem;
 }
 @media (max-width: 600px) {
 body { padding: 24px 16px 60px; }
 h1 { font-size: 1.8rem; }
 .subject-header { padding: 16px 18px; }
-.file { padding: 14px 18px; }
+a.file { padding: 14px 16px; }
 }
 </style>
 
@@ -127,7 +160,7 @@ h1 { font-size: 1.8rem; }
       const res = await fetch('./manifest.json');
       manifest = await res.json();
     } catch {
-      container.innerHTML = `<div class="empty">manifest.json을 불러오지 못했습니다.</div>`;
+      container.innerHTML = '<div class="empty">manifest.json을 불러오지 못했습니다.</div>';
       return;
     }
 
@@ -141,30 +174,28 @@ h1 { font-size: 1.8rem; }
 
       const header = document.createElement("div");
       header.className = "subject-header";
-      header.innerHTML = `
-        <div class="subject-icon" style="background:${subject.color}">${subject.label}</div>
-        <span class="subject-name">${subject.name}</span>
-        <div class="subject-meta">
-          <span class="subject-count">${files.length} files</span>
-          <span class="subject-arrow">▶</span>
-        </div>
-      `;
-      header.addEventListener("click", () => section.classList.toggle("open"));
+      header.innerHTML =
+        '<div class="subject-icon" style="background:' + subject.color + '">' + subject.label + '</div>' +
+        '<span class="subject-name">' + subject.name + '</span>' +
+        '<div class="subject-meta">' +
+          '<span class="subject-count">' + files.length + ' files</span>' +
+          '<span class="subject-arrow">▶</span>' +
+        '</div>';
+      header.addEventListener("click", function() { section.classList.toggle("open"); });
 
       const filesDiv = document.createElement("div");
       filesDiv.className = "files";
 
       if (files.length === 0) {
-        filesDiv.innerHTML = `<div class="empty">아직 파일이 없습니다</div>`;
+        filesDiv.innerHTML = '<div class="empty">아직 파일이 없습니다</div>';
       } else {
-        files.forEach(({ file, title }) => {
+        files.forEach(function(item) {
           const a = document.createElement("a");
           a.className = "file";
-          a.href = `${subject.key}/${file}`;
-          a.innerHTML = `
-            <span class="file-title">${title || fallbackName(file)}</span>
-            <span class="file-arrow">→</span>
-          `;
+          a.href = subject.key + "/" + item.file;
+          a.innerHTML =
+            '<span class="file-title">' + (item.title || fallbackName(item.file)) + '</span>' +
+            '<span class="file-arrow">→</span>';
           filesDiv.appendChild(a);
         });
       }
