@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --card: #1e2535;
+    --border: #30404d;
+    --accent: #58a6ff;
+    --accent2: #f78166;
+    --accent3: #3fb950;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --text: #e6edf3;
+    --text2: #8b949e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    padding: 40px 0 50px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent4));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: var(--text2);
+    margin-top: 12px;
+    font-size: 1rem;
+  }
+
+  .subject {
+    margin-bottom: 36px;
+  }
+  .subject-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+  .subject-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.95rem;
+    color: #0d1117;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .subject h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  .subject-count {
+    color: var(--text2);
+    font-size: 0.85rem;
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .files {
+    display: grid;
+    gap: 10px;
+  }
+  .file {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.15s ease;
+  }
+  .file:hover, .file:active {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    background: var(--bg2);
+  }
+  .file-name {
+    flex: 1;
+    font-weight: 500;
+    font-size: 1rem;
+    word-break: break-word;
+  }
+  .file-arrow {
+    color: var(--text2);
+    font-size: 1.2rem;
+  }
+
+  .empty {
+    color: var(--text2);
+    font-style: italic;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+  .loading {
+    text-align: center;
+    color: var(--text2);
+    padding: 40px;
+  }
+  .error {
+    background: rgba(248, 81, 73, 0.1);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    color: #ff7b72;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 24px 16px 60px; }
+    h1 { font-size: 1.8rem; }
+    .file { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📚 Study Notes</h1>
+    <p class="subtitle">학습 자료 모음</p>
+  </header>
+
+  <div id="content">
+    <div class="loading">불러오는 중...</div>
+  </div>
+
+  <footer>
+    파일 추가하면 자동으로 여기에 나타나요
+  </footer>
+</div>
+
+<script>
+  // ===== 설정 =====
+  // 깃허브 사용자명과 레포명 (레포 만들 때 이름이 다르면 여기를 바꾸세요)
+  const GITHUB_USER = "minseok7807-cloud";
+  const GITHUB_REPO = "study-notes";
+
+  // 과목 폴더 설정 (폴더명, 표시이름, 아이콘색)
+  const SUBJECTS = [
+    { folder: "stats",  name: "확률과 통계",   color: "#58a6ff", label: "ST" },
+    { folder: "cprog",  name: "C 프로그래밍",  color: "#f78166", label: "C"  },
+    { folder: "python", name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
+    { folder: "ethics", name: "AI 윤리",       color: "#d2a8ff", label: "AI" },
+  ];
+
+  // ===== 렌더링 =====
+  async function fetchFolder(folder) {
+    const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${folder}`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data
+        .filter(item => item.type === "file" && item.name.endsWith(".html"))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function prettifyName(filename) {
+    // 6-1-estimation.html → 6-1 estimation
+    return filename
+      .replace(/\.html$/, "")
+      .replace(/-/g, " ")
+      .replace(/_/g, " ");
+  }
+
+  async function render() {
+    const container = document.getElementById("content");
+    container.innerHTML = "";
+
+    for (const subject of SUBJECTS) {
+      const files = await fetchFolder(subject.folder);
+
+      const section = document.createElement("div");
+      section.className = "subject";
+
+      section.innerHTML = `
+        <div class="subject-header">
+          <div class="subject-icon" style="background:${subject.color}">${subject.label}</div>
+          <h2>${subject.name}</h2>
+          <span class="subject-count">${files.length} files</span>
+        </div>
+        <div class="files"></div>
+      `;
+
+      const filesDiv = section.querySelector(".files");
+
+      if (files.length === 0) {
+        filesDiv.innerHTML = `<div class="empty">아직 파일이 없습니다</div>`;
+      } else {
+        files.forEach(file => {
+          const a = document.createElement("a");
+          a.className = "file";
+          a.href = `${subject.folder}/${file.name}`;
+          a.innerHTML = `
+            <span class="file-name">${prettifyName(file.name)}</span>
+            <span class="file-arrow">→</span>
+          `;
+          filesDiv.appendChild(a);
+        });
+      }
+
+      container.appendChild(section);
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
