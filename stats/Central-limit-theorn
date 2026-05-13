@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중심극한정리 (Central Limit Theorem)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: #f0eff5;
+    color: #1a1a1a;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  .page {
+    background: #ffffff;
+    max-width: 980px;
+    margin: 0 auto 60px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 52px;
+    background: #1e1b4b;
+    color: #fff;
+  }
+
+  .page-number {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7c7ab8;
+  }
+
+  .page-title-header {
+    font-size: 15px;
+    font-weight: 400;
+    color: #a8a6d8;
+  }
+
+  .page-body {
+    padding: 52px 52px 60px;
+  }
+
+  .slide-title {
+    font-size: 38px;
+    font-weight: 700;
+    color: #1e1b4b;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .slide-subtitle {
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+
+  .divider {
+    height: 1px;
+    background: #ebe9f4;
+    margin-bottom: 36px;
+  }
+
+  /* ── 카드 ── */
+  .card-row {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .cols2 { grid-template-columns: 1fr 1fr; }
+  .cols3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: #f7f6fb;
+    border: 1px solid #e0ddf0;
+    border-radius: 12px;
+    padding: 24px 26px;
+  }
+
+  .card-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9b97c8;
+    margin-bottom: 10px;
+  }
+
+  .card-body {
+    font-size: 18px;
+    color: #444;
+    line-height: 1.65;
+  }
+
+  .formula-box {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+    text-align: center;
+    font-size: 20px;
+    overflow-x: auto;
+  }
+
+  /* ── 하이라이트 ── */
+  .hl-purple {
+    background: #eeecff;
+    border: 1px solid #b8b4f0;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #3730a3;
+    font-size: 19px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .hl-blue {
+    background: #eaf2ff;
+    border: 1px solid #b0cfff;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #1a4fa0;
+    font-size: 19px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .hl-green {
+    background: #eafaf0;
+    border: 1px solid #8fd4a8;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #1a6b3a;
+    font-size: 19px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .hl-amber {
+    background: #fff8e6;
+    border: 1px solid #f0cc6e;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #7a5200;
+    font-size: 19px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .hl-red {
+    background: #fff0f0;
+    border: 1px solid #f0aaaa;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #8b1a1a;
+    font-size: 19px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  /* ── 흐름 노드 ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 16px;
+    flex-wrap: nowrap;
+  }
+
+  .flow-node {
+    flex: 1;
+    text-align: center;
+    background: #f0eefb;
+    border: 1.5px solid #c4bfec;
+    border-radius: 12px;
+    padding: 16px 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d2880;
+    line-height: 1.35;
+  }
+
+  .flow-node span {
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+    color: #7c78c0;
+    margin-top: 4px;
+  }
+
+  .flow-node.gray {
+    background: #f4f3f0;
+    border-color: #ccc;
+    color: #333;
+  }
+  .flow-node.gray span { color: #999; }
+
+  .flow-node.green {
+    background: #d6f5e3;
+    border-color: #6dc994;
+    color: #0d5c2e;
+  }
+  .flow-node.green span { color: #3a9960; }
+
+  .flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+    flex-shrink: 0;
+    gap: 2px;
+  }
+
+  .flow-arrow-label {
+    font-size: 12px;
+    color: #aaa;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  .flow-arrow-sym {
+    font-size: 26px;
+    color: #bbb;
+    line-height: 1;
+  }
+
+  /* ── TOC 바 ── */
+  .toc-bar {
+    max-width: 980px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #d8d5ef;
+    background: #fff;
+  }
+
+  .toc-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 6px;
+    font-size: 13px;
+    color: #8884c0;
+    font-weight: 500;
+    border-right: 1px solid #eee;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+    line-height: 1.3;
+  }
+
+  .toc-item:last-child { border-right: none; }
+  .toc-item:hover { background: #f0eefb; color: #3730a3; }
+
+  .page-rule {
+    max-width: 980px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #9b97c8;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  .page-rule::before, .page-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #d8d5ef;
+  }
+
+  .col-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9b97c8;
+    margin-bottom: 10px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  /* ── 조건 박스 ── */
+  .condition-box {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .condition-item {
+    flex: 1;
+    background: #f0eefb;
+    border: 1px solid #c4bfec;
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+
+  .condition-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: #4338ca;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .condition-desc {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  /* ── 큰 수식 강조 ── */
+  .big-formula {
+    background: #1e1b4b;
+    border-radius: 14px;
+    padding: 28px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    color: #ffffff;
+  }
+
+  .big-formula .katex,
+  .big-formula .katex * {
+    color: #ffffff !important;
+  }
+
+  /* ── 예시 테이블 ── */
+  .ex-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 17px;
+    margin-bottom: 20px;
+  }
+
+  .ex-table th {
+    background: #1e1b4b;
+    color: #d4d2f5;
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .ex-table th:first-child { border-radius: 8px 0 0 0; }
+  .ex-table th:last-child { border-radius: 0 8px 0 0; }
+
+  .ex-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #ebe9f4;
+    color: #333;
+    vertical-align: top;
+  }
+
+  .ex-table tr:last-child td { border-bottom: none; }
+  .ex-table tr:nth-child(even) td { background: #f7f6fb; }
+
+  /* ── 비교 박스 ── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .compare-card {
+    border-radius: 12px;
+    padding: 22px 24px;
+    border: 1.5px solid;
+  }
+
+  .compare-card.before {
+    background: #fff8e6;
+    border-color: #f0cc6e;
+  }
+
+  .compare-card.after {
+    background: #eafaf0;
+    border-color: #6dc994;
+  }
+
+  .compare-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .before .compare-card-title { color: #7a5200; }
+  .after .compare-card-title { color: #1a6b3a; }
+
+  .compare-card-body {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  .before .compare-card-body { color: #5a3c00; }
+  .after .compare-card-body { color: #0d4d28; }
+
+  /* ── 시각화 canvas ── */
+  canvas {
+    display: block;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #e0ddf0;
+    background: #fff;
+  }
+
+  .sim-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .sim-label {
+    font-size: 16px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sim-val {
+    font-weight: 700;
+    color: #3730a3;
+    min-width: 32px;
+    display: inline-block;
+  }
+
+  input[type=range] {
+    accent-color: #4338ca;
+    width: 140px;
+  }
+
+  .btn-run {
+    background: #4338ca;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-run:hover { background: #3730a3; }
+
+  strong { font-weight: 700; }
+
+  @media (max-width: 680px) {
+    .cols2, .cols3, .two-col, .compare-grid { grid-template-columns: 1fr; }
+    .condition-box { flex-direction: column; }
+    .page-body { padding: 32px 24px 40px; }
+    .page-header { padding: 14px 24px; }
+    .slide-title { font-size: 28px; }
+    .toc-item { font-size: 11px; padding: 10px 3px; }
+  }
+</style>
+</head>
+<body>
+
+<div style="height:48px;"></div>
+
+<!-- TOC 가로 페이지 바 -->
+<div class="toc-bar">
+  <a class="toc-item" href="#p0">개요</a>
+  <a class="toc-item" href="#p1">직관과 조건</a>
+  <a class="toc-item" href="#p2">공식 정리</a>
+  <a class="toc-item" href="#p3">수렴 과정</a>
+  <a class="toc-item" href="#p4">시뮬레이션</a>
+  <a class="toc-item" href="#p5">표본평균 활용</a>
+  <a class="toc-item" href="#p6">실전 응용</a>
+  <a class="toc-item" href="#p7">정리</a>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 0: 개요 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p0">개요</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Overview</span>
+    <span class="page-title-header">중심극한정리 (Central Limit Theorem)</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">중심극한정리란?</div>
+    <div class="slide-subtitle">통계학에서 가장 강력하고 중요한 정리</div>
+    <div class="divider"></div>
+
+    <div class="big-formula">
+      <div id="f-clt-main" style="font-size:24px;"></div>
+      <div style="margin-top:14px;font-size:16px;color:#9b97c8;">어떤 분포에서 추출하든, 표본 크기 n이 충분히 크면 표본평균은 정규분포를 따른다</div>
+    </div>
+
+    <div class="card-row cols3">
+      <div class="card" style="border-top:3px solid #4338ca;">
+        <div class="card-label">핵심 아이디어</div>
+        <div class="card-body">원래 분포의 모양에 관계없이 표본평균은 정규분포에 수렴한다</div>
+      </div>
+      <div class="card" style="border-top:3px solid #0891b2;">
+        <div class="card-label">왜 중요한가?</div>
+        <div class="card-body">모집단 분포를 몰라도 통계적 추론(신뢰구간, 가설검정)이 가능해진다</div>
+      </div>
+      <div class="card" style="border-top:3px solid #059669;">
+        <div class="card-label">적용 범위</div>
+        <div class="card-body">이항, 포아송, 균등, 지수 등 <strong>거의 모든 분포</strong>에 적용 가능</div>
+      </div>
+    </div>
+
+    <div class="hl-purple">
+      <strong>"어떤 모양의 항아리에 담긴 구슬도, 충분히 많이 꺼내서 평균을 내면 결국 정규분포를 따른다."</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 1: 직관과 조건 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p1">1 / 7</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 1</span>
+    <span class="page-title-header">직관과 적용 조건</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">직관과 적용 조건</div>
+    <div class="slide-subtitle">CLT가 성립하려면 세 가지 조건이 필요하다</div>
+    <div class="divider"></div>
+
+    <div class="condition-box">
+      <div class="condition-item">
+        <div class="condition-num">①</div>
+        <div class="card-label" style="margin:6px 0 4px;">독립성</div>
+        <div class="condition-desc">각 관측값 X₁, X₂, …, Xₙ은 서로 독립이어야 한다</div>
+      </div>
+      <div class="condition-item">
+        <div class="condition-num">②</div>
+        <div class="card-label" style="margin:6px 0 4px;">동일 분포 (i.i.d.)</div>
+        <div class="condition-desc">모두 같은 분포에서 추출 (동일한 μ, σ²)</div>
+      </div>
+      <div class="condition-item">
+        <div class="condition-num">③</div>
+        <div class="card-label" style="margin:6px 0 4px;">유한 분산</div>
+        <div class="condition-desc">모집단의 분산 σ²가 유한해야 한다 (σ² &lt; ∞)</div>
+      </div>
+    </div>
+
+    <div class="hl-amber">
+      <strong>n은 얼마나 커야 하나?</strong><br>
+      일반적으로 <strong>n ≥ 30</strong>이면 충분하다고 알려져 있습니다.
+      단, 모집단이 심하게 비대칭(skewed)이면 더 큰 n이 필요합니다.
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="col-label" style="margin-bottom:10px;">직관적 이해</div>
+        <div class="card">
+          <div class="card-body">
+            동전 던지기(이산), 키 측정(연속), 대기 시간(지수) 등<br>
+            어떤 분포든 <strong>많이 더하면</strong> 가운데로 모이는 경향이 있다.<br><br>
+            극단값들은 서로 상쇄되고,<br>
+            평균 근처에 확률이 집중된다.
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="col-label" style="margin-bottom:10px;">수렴 속도</div>
+        <div class="card">
+          <div class="card-body">
+            <strong>대칭 분포:</strong> n = 5~10으로도 충분<br>
+            <strong>균등 분포:</strong> n ≈ 12~15<br>
+            <strong>지수 분포:</strong> n ≈ 30~50<br>
+            <strong>매우 치우친 분포:</strong> n ≥ 100 권장
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 2: 공식 정리 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p2">2 / 7</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 2</span>
+    <span class="page-title-header">CLT 공식 정리</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">CLT 공식 정리</div>
+    <div class="slide-subtitle">표본합의 분포와 표준화</div>
+    <div class="divider"></div>
+
+    <div class="col-label" style="margin-bottom:12px;">설정 (Setup)</div>
+    <div class="hl-purple" style="margin-bottom:28px;">
+      X₁, X₂, …, Xₙ : i.i.d. (독립 동일 분포)<br>
+      모집단 평균 <strong>μ</strong>, 모집단 분산 <strong>σ²</strong> (유한)
+    </div>
+
+    <div class="col-label" style="margin-bottom:12px;">표본합의 분포</div>
+    <div class="card-row cols2" style="margin-bottom:28px;">
+      <div class="card">
+        <div class="card-label">표본합 정의</div>
+        <div class="formula-box" id="f-xbar"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">표본합의 기댓값과 분산</div>
+        <div class="formula-box" id="f-xbar-ev"></div>
+        <div class="formula-box" id="f-xbar-var"></div>
+      </div>
+    </div>
+
+    <div class="col-label" style="margin-bottom:12px;">CLT 본 정리</div>
+    <div class="big-formula">
+      <div id="f-clt-formal" style="font-size:22px;"></div>
+      <div style="margin-top:12px;font-size:15px;color:#9b97c8;">n → ∞ 일 때, 분포 수렴(convergence in distribution)</div>
+    </div>
+
+    <div class="card-row cols2">
+      <div class="card">
+        <div class="card-label">표준화 (Standardization)</div>
+        <div class="card-body">표본합을 표준정규분포로 변환</div>
+        <div class="formula-box" id="f-z-xbar"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">CLT 수렴 형태</div>
+        <div class="card-body">표본합 S<sub>n</sub>의 분포 수렴</div>
+        <div class="formula-box" id="f-clt-sum"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 3: 수렴 과정 시각화 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p3">3 / 7</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 3</span>
+    <span class="page-title-header">n에 따른 수렴 과정</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">n에 따른 수렴 과정</div>
+    <div class="slide-subtitle">균등분포 U(0, 1)에서 표본평균을 반복 추출하면?</div>
+    <div class="divider"></div>
+
+    <canvas id="conv-canvas" height="260"></canvas>
+
+    <div style="height:18px;"></div>
+
+    <div class="card-row cols3">
+      <div class="card" style="text-align:center;">
+        <div class="card-label">n = 1</div>
+        <div class="card-body">원래 분포 그대로<br>(균등분포)</div>
+        <div style="margin-top:10px;height:6px;background:linear-gradient(to right,#c4bfec,#4338ca);border-radius:3px;"></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="card-label">n = 5 ~ 10</div>
+        <div class="card-body">삼각형 → 종 모양<br>으로 변해가는 중</div>
+        <div style="margin-top:10px;height:6px;background:linear-gradient(to right,#4338ca,#0891b2);border-radius:3px;"></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="card-label">n ≥ 30</div>
+        <div class="card-body">정규분포에<br>매우 가까워짐</div>
+        <div style="margin-top:10px;height:6px;background:linear-gradient(to right,#0891b2,#059669);border-radius:3px;"></div>
+      </div>
+    </div>
+
+    <div class="hl-blue" style="margin-top:8px;">
+      <strong>핵심 관찰:</strong> n이 커질수록 분포의 모양은 종 모양(정규분포)에 가까워지고,
+      분포의 너비는 <strong>1/√n</strong> 비율로 좁아진다 (표준편차 = σ/√n).
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 4: 시뮬레이션 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p4">4 / 7</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 4</span>
+    <span class="page-title-header">CLT 시뮬레이션</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">CLT 시뮬레이션</div>
+    <div class="slide-subtitle">표본 크기 n을 바꾸면서 표본평균 분포 변화를 직접 확인</div>
+    <div class="divider"></div>
+
+    <div class="sim-controls">
+      <div class="sim-label">
+        표본 크기 n:
+        <input type="range" id="n-slider" min="1" max="100" value="5" oninput="updateSim()">
+        <span class="sim-val" id="n-val">5</span>
+      </div>
+      <div class="sim-label">
+        분포:
+        <select id="dist-select" onchange="updateSim()" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:16px;color:#333;">
+          <option value="uniform">균등분포 U(0,1)</option>
+          <option value="exp">지수분포 Exp(1)</option>
+          <option value="binom">이항분포 B(10,0.3)</option>
+          <option value="bimodal">이봉분포</option>
+        </select>
+      </div>
+      <button class="btn-run" onclick="runSim()">시뮬레이션 실행 ▶</button>
+    </div>
+
+    <canvas id="sim-canvas" height="280"></canvas>
+
+    <div style="height:14px;"></div>
+    <div id="sim-stats" class="hl-green" style="font-size:17px;"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 5: 표본평균 활용 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p5">5 / 7</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 5</span>
+    <span class="page-title-header">표본평균의 활용</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">표본평균의 활용</div>
+    <div class="slide-subtitle">CLT를 이용한 확률 계산과 신뢰구간</div>
+    <div class="divider"></div>
+
+    <div class="col-label" style="margin-bottom:12px;">예제 — 확률 계산</div>
+    <div class="hl-amber" style="margin-bottom:20px;">
+      어떤 공장에서 생산하는 부품의 무게: 평균 μ = 50g, 표준편차 σ = 8g<br>
+      n = 64개를 랜덤 추출할 때, 표본평균이 51g을 초과할 확률은?
+    </div>
+
+    <div class="card-row cols2">
+      <div class="card">
+        <div class="card-label">풀이 과정</div>
+        <div class="card-body">CLT에 의해</div>
+        <div class="formula-box" id="f-ex-dist"></div>
+        <div class="formula-box" id="f-ex-z"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">표준화 및 확률</div>
+        <div class="formula-box" id="f-ex-calc"></div>
+        <div class="card-body" style="margin-top:14px;font-size:17px;color:#1a6b3a;font-weight:700;">
+          → P(Z > 1) ≈ 0.1587 (약 15.87%)
+        </div>
+      </div>
+    </div>
+
+    <div style="height:8px;"></div>
+    <div class="col-label" style="margin-bottom:12px;">신뢰구간 (Confidence Interval)</div>
+    <div class="card-row cols2">
+      <div class="card">
+        <div class="card-label">95% 신뢰구간 공식</div>
+        <div class="card-body">CLT가 기반이 된다</div>
+        <div class="formula-box" id="f-ci"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">해석</div>
+        <div class="card-body">
+          같은 방법으로 100번 표본을 뽑으면,<br>
+          <strong>약 95번</strong>은 이 구간이 모평균 μ를 포함한다.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 6: 실전 응용 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p6">6 / 7</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 6</span>
+    <span class="page-title-header">실전 응용</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">CLT의 실전 응용</div>
+    <div class="slide-subtitle">통계학 전반에 걸친 CLT의 역할</div>
+    <div class="divider"></div>
+
+    <table class="ex-table">
+      <thead>
+        <tr>
+          <th style="width:22%;">분야</th>
+          <th style="width:32%;">상황</th>
+          <th>CLT의 역할</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>품질관리</strong></td>
+          <td>생산 공정에서 n개씩 표본 추출</td>
+          <td>표본평균이 정규분포 → 관리도(Control Chart) 설계 가능</td>
+        </tr>
+        <tr>
+          <td><strong>여론조사</strong></td>
+          <td>n명을 무작위 선택해 지지율 조사</td>
+          <td>표본비율이 정규분포 → 오차범위(margin of error) 계산</td>
+        </tr>
+        <tr>
+          <td><strong>금융</strong></td>
+          <td>일별 수익률의 포트폴리오 합산</td>
+          <td>수익률 합이 정규분포에 근사 → VaR (위험가치) 계산</td>
+        </tr>
+        <tr>
+          <td><strong>의학 임상</strong></td>
+          <td>치료군 vs 대조군 비교</td>
+          <td>표본평균 차이의 분포 → t-검정, z-검정 근거</td>
+        </tr>
+        <tr>
+          <td><strong>머신러닝</strong></td>
+          <td>손실 함수의 미니배치 기댓값</td>
+          <td>배치 기울기 추정치가 정규분포 → SGD 수렴 분석</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="compare-grid">
+      <div class="compare-card before">
+        <div class="compare-card-title">CLT 없이는</div>
+        <div class="compare-card-body">
+          모집단이 정규분포일 때만<br>
+          정확한 통계적 추론 가능.<br>
+          대부분의 현실 데이터에서는<br>
+          방법론 적용 불가.
+        </div>
+      </div>
+      <div class="compare-card after">
+        <div class="compare-card-title">CLT 덕분에</div>
+        <div class="compare-card-body">
+          모집단 분포와 무관하게<br>
+          n이 충분히 크면 정규분포 가정.<br>
+          현실 거의 모든 상황에서<br>
+          통계적 추론이 가능.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 7: 정리 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p7">정리</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Summary</span>
+    <span class="page-title-header">핵심 요약</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">핵심 요약</div>
+    <div class="divider"></div>
+
+    <div class="big-formula">
+      <div id="f-clt-summary" style="font-size:22px;"></div>
+      <div style="margin-top:12px;font-size:16px;color:#9b97c8;">n이 충분히 크면 (일반적으로 n ≥ 30)</div>
+    </div>
+
+    <div class="card-row cols3">
+      <div class="card" style="border-left:4px solid #4338ca;">
+        <div class="card-label">조건</div>
+        <div class="card-body">① 독립<br>② 동일 분포 (i.i.d.)<br>③ 유한 분산 (σ² &lt; ∞)</div>
+      </div>
+      <div class="card" style="border-left:4px solid #0891b2;">
+        <div class="card-label">결론</div>
+        <div class="card-body">표본합 S<sub>n</sub> 의 분포는<br>정규분포에 수렴한다.<br>분산은 nσ² 으로 증가한다.</div>
+      </div>
+      <div class="card" style="border-left:4px solid #059669;">
+        <div class="card-label">의의</div>
+        <div class="card-body">모집단 분포에 무관하게<br>정규분포 기반 추론 가능.<br>통계학 전반의 기초.</div>
+      </div>
+    </div>
+
+    <div class="col-label" style="margin:8px 0 12px;">확률분포 계보에서의 위치</div>
+    <div class="flow-row">
+      <div class="flow-node gray">이항분포<span>B(n, p)</span></div>
+      <div class="flow-arrow">
+        <div class="flow-arrow-label">n→∞<br>CLT</div>
+        <div class="flow-arrow-sym">→</div>
+      </div>
+      <div class="flow-node" style="background:#eeecff;border-color:#b8b4f0;color:#3730a3;">정규분포<span>N(μ, σ²)</span></div>
+      <div class="flow-arrow">
+        <div class="flow-arrow-label">일반화</div>
+        <div class="flow-arrow-sym">→</div>
+      </div>
+      <div class="flow-node green">어떤 분포든<span>i.i.d., n→∞</span></div>
+    </div>
+
+    <div class="hl-purple" style="margin-top:8px;">
+      <strong>CLT는 단순한 정리가 아닙니다.</strong><br>
+      현실 세계의 복잡한 데이터에서 질서를 발견하게 해주는, 통계학의 가장 강력한 도구입니다.
+    </div>
+  </div>
+</div>
+
+<div style="height:60px;"></div>
+
+<script>
+/* ── KaTeX 수식 렌더링 ── */
+const formulas = {
+  'f-clt-main':    'S_n = X_1 + X_2 + \\cdots + X_n \\;\\xrightarrow{\\;d\\;}\\; N\\!\\left(n\\mu,\\;n\\sigma^2\\right)',
+  'f-xbar':        'S_n = X_1 + X_2 + \\cdots + X_n',
+  'f-xbar-ev':     'E[S_n] = n\\mu',
+  'f-xbar-var':    '\\text{Var}(S_n) = n\\sigma^2',
+  'f-clt-formal':  '\\dfrac{S_n - n\\mu}{\\sqrt{n}\\,\\sigma} \\xrightarrow{\\;d\\;} N(0,\\,1) \\quad (n \\to \\infty)',
+  'f-z-xbar':      'Z = \\dfrac{S_n - n\\mu}{\\sqrt{n}\\,\\sigma} \\sim N(0,1)',
+  'f-clt-sum':     'S_n \\;\\xrightarrow{\\;d\\;}\\; N\\!\\left(n\\mu,\\; n\\sigma^2\\right)',
+  'f-ex-dist':     '\\bar{X} \\sim N\\!\\left(50,\\; \\frac{8^2}{64}\\right) = N(50,\\;1)',
+  'f-ex-z':        'Z = \\dfrac{\\bar{X} - 50}{1}',
+  'f-ex-calc':     'P(\\bar{X} > 51) = P\\!\\left(Z > \\frac{51-50}{1}\\right) = P(Z > 1)',
+  'f-ci':          '\\bar{X} \\pm 1.96 \\cdot \\dfrac{\\sigma}{\\sqrt{n}}',
+  'f-clt-summary': 'S_n \\;\\xrightarrow{\\;d\\;}\\; N\\!\\left(n\\mu,\\;n\\sigma^2\\right)',
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  Object.entries(formulas).forEach(([id, tex]) => {
+    const el = document.getElementById(id);
+    if (el) katex.render(tex, el, { throwOnError: false, displayMode: false });
+  });
+  drawConvCanvas();
+  runSim();
+});
+
+/* ── 수렴 시각화 (페이지 3) ── */
+function drawConvCanvas() {
+  const canvas = document.getElementById('conv-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+  canvas.height = 260 * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  const W = canvas.offsetWidth, H = 260;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const configs = [
+    { n: 1,  color: '#7c78c0', label: 'n = 1' },
+    { n: 5,  color: '#0891b2', label: 'n = 5' },
+    { n: 30, color: '#059669', label: 'n = 30' },
+  ];
+
+  const PAD = 40, plotW = W - PAD * 2, plotH = H - 60;
+  const bins = 60;
+  const TRIALS = 8000;
+
+  configs.forEach(({ n, color, label }, ci) => {
+    // 균등분포 U(0,1)에서 표본평균 시뮬레이션
+    const means = [];
+    for (let t = 0; t < TRIALS; t++) {
+      let s = 0;
+      for (let i = 0; i < n; i++) s += Math.random();
+      means.push(s / n);
+    }
+    const hist = new Array(bins).fill(0);
+    means.forEach(v => {
+      const b = Math.min(bins - 1, Math.floor(v * bins));
+      hist[b]++;
+    });
+    const maxH = Math.max(...hist);
+
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.85;
+    for (let b = 0; b < bins; b++) {
+      const x = PAD + (b / bins) * plotW;
+      const y = H - 30 - (hist[b] / maxH) * plotH * 0.88;
+      if (b === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // 범례
+    ctx.fillStyle = color;
+    ctx.fillRect(PAD + ci * 120, 10, 18, 4);
+    ctx.fillStyle = '#444';
+    ctx.font = '13px Segoe UI, sans-serif';
+    ctx.fillText(label, PAD + ci * 120 + 24, 18);
+  });
+
+  // 축
+  ctx.strokeStyle = '#ddd';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD, H - 30);
+  ctx.lineTo(W - PAD, H - 30);
+  ctx.stroke();
+
+  ctx.fillStyle = '#aaa';
+  ctx.font = '12px Segoe UI, sans-serif';
+  ctx.fillText('0', PAD - 4, H - 14);
+  ctx.fillText('0.5', W / 2 - 8, H - 14);
+  ctx.fillText('1', W - PAD - 4, H - 14);
+  ctx.fillText('표본평균 x̄', W / 2 - 30, H - 2);
+}
+
+/* ── 시뮬레이션 (페이지 4) ── */
+function sample(dist) {
+  switch (dist) {
+    case 'uniform': return Math.random();
+    case 'exp': return -Math.log(1 - Math.random());
+    case 'binom': {
+      let s = 0;
+      for (let i = 0; i < 10; i++) if (Math.random() < 0.3) s++;
+      return s;
+    }
+    case 'bimodal':
+      return Math.random() < 0.5
+        ? 0.2 + Math.random() * 0.2
+        : 0.6 + Math.random() * 0.2;
+    default: return Math.random();
+  }
+}
+
+function updateSim() {
+  document.getElementById('n-val').textContent = document.getElementById('n-slider').value;
+}
+
+function runSim() {
+  const n = parseInt(document.getElementById('n-slider').value);
+  const dist = document.getElementById('dist-select').value;
+  updateSim();
+
+  const TRIALS = 10000;
+  const means = [];
+  for (let t = 0; t < TRIALS; t++) {
+    let s = 0;
+    for (let i = 0; i < n; i++) s += sample(dist);
+    means.push(s / n);
+  }
+
+  const mu = means.reduce((a, b) => a + b, 0) / TRIALS;
+  const variance = means.reduce((a, b) => a + (b - mu) ** 2, 0) / TRIALS;
+  const sd = Math.sqrt(variance);
+
+  const canvas = document.getElementById('sim-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+  canvas.height = 280 * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  const W = canvas.offsetWidth, H = 280;
+  ctx.clearRect(0, 0, W, H);
+
+  // 히스토그램
+  const bins = 50;
+  const minV = Math.min(...means), maxV = Math.max(...means);
+  const range = maxV - minV || 1;
+  const hist = new Array(bins).fill(0);
+  means.forEach(v => {
+    const b = Math.min(bins - 1, Math.floor(((v - minV) / range) * bins));
+    hist[b]++;
+  });
+  const maxH = Math.max(...hist);
+
+  const PAD = 44, plotW = W - PAD * 2, plotH = H - 60;
+  const bw = plotW / bins;
+
+  for (let b = 0; b < bins; b++) {
+    const bh = (hist[b] / maxH) * plotH * 0.9;
+    ctx.fillStyle = '#c4bfec';
+    ctx.fillRect(PAD + b * bw, H - 30 - bh, bw - 1, bh);
+  }
+
+  // 정규 곡선 오버레이
+  ctx.beginPath();
+  ctx.strokeStyle = '#4338ca';
+  ctx.lineWidth = 2.5;
+  for (let px = 0; px <= plotW; px++) {
+    const xv = minV + (px / plotW) * range;
+    const z = (xv - mu) / (sd || 0.001);
+    const density = Math.exp(-0.5 * z * z) / ((sd || 0.001) * Math.sqrt(2 * Math.PI));
+    // scale to match histogram
+    const scaledDensity = density * (TRIALS * range / bins);
+    const py = H - 30 - (scaledDensity / maxH) * plotH * 0.9;
+    if (px === 0) ctx.moveTo(PAD + px, py); else ctx.lineTo(PAD + px, py);
+  }
+  ctx.stroke();
+
+  // 범례
+  ctx.fillStyle = '#c4bfec';
+  ctx.fillRect(PAD, 10, 14, 14);
+  ctx.fillStyle = '#555';
+  ctx.font = '13px Segoe UI, sans-serif';
+  ctx.fillText('표본평균 분포', PAD + 20, 21);
+
+  ctx.strokeStyle = '#4338ca';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(PAD + 150, 17);
+  ctx.lineTo(PAD + 168, 17);
+  ctx.stroke();
+  ctx.fillStyle = '#555';
+  ctx.fillText('정규분포 곡선', PAD + 174, 21);
+
+  // 축
+  ctx.strokeStyle = '#ddd';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD, H - 30);
+  ctx.lineTo(W - PAD, H - 30);
+  ctx.stroke();
+
+  ctx.fillStyle = '#aaa';
+  ctx.font = '11px Segoe UI, sans-serif';
+  ctx.fillText(minV.toFixed(2), PAD, H - 14);
+  ctx.fillText(mu.toFixed(2), W / 2 - 12, H - 14);
+  ctx.fillText(maxV.toFixed(2), W - PAD - 20, H - 14);
+
+  // 통계 표시
+  document.getElementById('sim-stats').innerHTML =
+    `<strong>시뮬레이션 결과 (n = ${n}, ${TRIALS.toLocaleString()}회 반복):</strong><br>
+    표본평균의 평균 = <strong>${mu.toFixed(4)}</strong> &nbsp;|&nbsp;
+    표본평균의 표준편차 = <strong>${sd.toFixed(4)}</strong>
+    &nbsp;(이론값 σ/√n = ${(getTheoSD(dist) / Math.sqrt(n)).toFixed(4)})`;
+}
+
+function getTheoSD(dist) {
+  // 각 분포의 이론 표준편차
+  switch (dist) {
+    case 'uniform': return 1 / Math.sqrt(12);
+    case 'exp': return 1;
+    case 'binom': return Math.sqrt(10 * 0.3 * 0.7);
+    case 'bimodal': return 0.22;
+    default: return 1;
+  }
+}
+</script>
+</body>
+</html>
