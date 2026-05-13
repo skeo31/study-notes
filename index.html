@@ -140,10 +140,11 @@
   const GITHUB_REPO = pathParts[0] || '';
 
   const SUBJECTS = [
-    { folder: "stats",  name: "확률과 통계",   color: "#58a6ff", label: "ST" },
-    { folder: "cprog",  name: "C 프로그래밍",  color: "#f78166", label: "C"  },
-    { folder: "python", name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
-    { folder: "ethics", name: "AI 윤리",       color: "#d2a8ff", label: "AI" },
+    { folder: "stats",    name: "확률과 통계",   color: "#58a6ff", label: "ST" },
+    { folder: "calculus", name: "미적분",        color: "#ffa657", label: "CA" },
+    { folder: "cprog",    name: "C 프로그래밍",  color: "#f78166", label: "C"  },
+    { folder: "python",   name: "고급 프로그래밍 (Python)", color: "#3fb950", label: "PY" },
+    { folder: "ethics",   name: "AI 윤리",       color: "#d2a8ff", label: "AI" },
   ];
 
   async function fetchFolder(folder) {
