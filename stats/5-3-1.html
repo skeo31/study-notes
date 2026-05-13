@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.3 여러 가지 표본분포</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+  :root {
+    --bg:         #0e1520;
+    --surface:    #19243a;
+    --surface2:   #1f2e47;
+    --accent:     #4da6ff;   /* 파랑 — χ² */
+    --accent2:    #f5a623;   /* 주황 — 강조 */
+    --accent3:    #5ce6a0;   /* 초록 — 응용 */
+    --accentR:    #e06c75;   /* 빨강 — t-분포 */
+    --text:       #e8edf5;
+    --text-muted: #7a8faf;
+    --border:     #2a3d5e;
+    --formula-bg: #111c2e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 22px;
+    line-height: 1.8;
+    padding: 0 0 80px;
+  }
+
+  /* ── 슬라이드 공통 ── */
+  .slide {
+    max-width: 1100px;
+    margin: 56px auto;
+    background: var(--surface);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.55);
+  }
+
+  .slide-header {
+    padding: 20px 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--accent);
+  }
+  .slide-header.chi  { background: linear-gradient(135deg,#152040,#0b1730); border-bottom-color: var(--accent); }
+  .slide-header.tdist{ background: linear-gradient(135deg,#2a1020,#1a0a18); border-bottom-color: var(--accentR); }
+
+  .slide-header .chap { font-size:17px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+  .slide-header .chap.chi   { color: var(--accent); }
+  .slide-header .chap.tdist { color: var(--accentR); }
+  .slide-header h2 { font-size:28px; font-weight:900; color:var(--text); }
+
+  .slide-body  { padding: 38px 50px 44px; }
+  .slide-footer{ background:#0d1422; padding:11px 50px; display:flex; justify-content:flex-end;
+                 font-size:15px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;
+                 border-top:1px solid var(--border); }
+
+  /* ── 섹션 제목 ── */
+  .sec { display:flex; align-items:center; gap:12px; font-size:26px; font-weight:800; margin-bottom:26px; }
+  .sec::before { content:''; display:inline-block; width:7px; height:28px; border-radius:4px; }
+  .sec.chi   { color:var(--accent); }
+  .sec.chi::before { background:var(--accent); }
+  .sec.tdist { color:var(--accentR); }
+  .sec.tdist::before { background:var(--accentR); }
+
+  /* ── 본문 텍스트 ── */
+  p.bt { font-size:22px; line-height:1.85; margin-bottom:18px; }
+
+  /* ── 수식 박스 ── */
+  .fb {
+    background: var(--formula-bg);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:26px 34px;
+    margin:20px 0;
+    font-size:23px;
+  }
+  .fb.chi   { border-left:4px solid var(--accent); }
+  .fb.tdist { border-left:4px solid var(--accentR); }
+  .fb.warn  { border-left:4px solid var(--accent2); }
+
+  /* ── 성질 목록 ── */
+  .prop-list { list-style:none; padding:0; margin:0; }
+  .prop-list li {
+    display:flex; gap:14px; align-items:flex-start;
+    padding:14px 0; border-bottom:1px solid var(--border);
+    font-size:22px; line-height:1.8;
+  }
+  .prop-list li:last-child { border-bottom:none; }
+  .prop-num {
+    min-width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:16px; flex-shrink:0; margin-top:3px;
+  }
+  .prop-num.chi   { background:#1a3060; color:var(--accent); border:2px solid var(--accent); }
+  .prop-num.tdist { background:#3a1020; color:var(--accentR); border:2px solid var(--accentR); }
+
+  /* ── 강조 텍스트 ── */
+  .hl  { color:var(--accent2); font-weight:700; }
+  .hlb { color:var(--accent);  font-weight:700; }
+  .hlr { color:var(--accentR); font-weight:700; }
+  .hlg { color:var(--accent3); font-weight:700; }
+
+  /* ── 전자공학 응용 박스 ── */
+  .app-box {
+    background: linear-gradient(135deg,#0b2418,#091e12);
+    border:1px solid #2a5a3a; border-left:5px solid var(--accent3);
+    border-radius:12px; padding:26px 34px; margin-top:26px;
+  }
+  .app-title {
+    display:flex; align-items:center; gap:10px;
+    font-size:21px; font-weight:800; color:var(--accent3); margin-bottom:16px;
+  }
+  .app-item { display:flex; gap:14px; align-items:flex-start; margin-bottom:13px; font-size:21px; line-height:1.75; }
+  .app-item:last-child { margin-bottom:0; }
+  .app-dot { width:8px; height:8px; border-radius:50%; background:var(--accent3); flex-shrink:0; margin-top:10px; }
+
+  /* ── 단계 박스 (직관 설명용) ── */
+  .insight {
+    background:#1c2a1a; border:1px solid #3a5a2a; border-left:5px solid var(--accent3);
+    border-radius:10px; padding:20px 28px; margin:20px 0; font-size:21px; line-height:1.8;
+  }
+  .insight-title { font-size:20px; font-weight:800; color:var(--accent3); margin-bottom:8px; }
+
+  /* ── 비교 카드 ── */
+  .compare {
+    display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0;
+  }
+  .ccard {
+    border-radius:10px; padding:20px 24px; font-size:21px; line-height:1.8;
+  }
+  .ccard.chi   { background:#101e38; border:1px solid #2a4a7a; }
+  .ccard.tdist { background:#28101a; border:1px solid #6a2038; }
+  .ccard-title { font-size:20px; font-weight:800; margin-bottom:10px; }
+  .ccard.chi   .ccard-title { color:var(--accent); }
+  .ccard.tdist .ccard-title { color:var(--accentR); }
+
+  /* ── 주의 박스 ── */
+  .warn-box {
+    background:#2a1a08; border:1px solid #6a4010; border-left:5px solid var(--accent2);
+    border-radius:10px; padding:18px 26px; margin:18px 0; font-size:21px; line-height:1.75;
+  }
+  .warn-title { font-weight:800; color:var(--accent2); margin-bottom:6px; font-size:20px; }
+
+  /* ── 예제 박스 ── */
+  .ex-box {
+    background:#111c30; border:1px solid var(--border); border-radius:12px;
+    padding:26px 34px; margin:22px 0;
+  }
+  .ex-label {
+    display:inline-block; background:#1a3060; color:var(--accent);
+    border:1px solid var(--accent); border-radius:6px; padding:4px 16px;
+    font-weight:800; font-size:19px; margin-bottom:16px;
+  }
+  .ex-label.tdist { background:#3a1028; color:var(--accentR); border-color:var(--accentR); }
+
+  mjx-container { font-size:1.1em !important; }
+
+  /* 구분선 */
+  hr.div { border:none; border-top:1px solid var(--border); margin:28px 0; }
+
+  /* 챕터 구분 배너 */
+  .chapter-banner {
+    max-width:1100px; margin:70px auto 0;
+    padding:30px 50px;
+    background: linear-gradient(135deg,#152040,#0a1228);
+    border-radius:14px; border:1px solid var(--border);
+    text-align:center;
+  }
+  .chapter-banner h1 { font-size:36px; font-weight:900; color:var(--text); }
+  .chapter-banner p  { font-size:21px; color:var(--text-muted); margin-top:8px; }
+
+  /* 부제목 */
+  .sub-sec { font-size:22px; font-weight:700; color:var(--accent2); margin:24px 0 10px; }
+  .sub-sec.r { color:var(--accentR); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     챕터 배너
+══════════════════════════════════════════════ -->
+<div class="chapter-banner">
+  <h1>Chapter 05 &nbsp;·&nbsp; 표본분포</h1>
+  <p>5.3 &nbsp;여러 가지 표본분포 — &nbsp;\(\chi^2\)-분포 &nbsp;&amp;&nbsp; \(t\)-분포</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 1 : χ² 분포 — 왜 필요한가?
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header chi">
+    <span class="chap chi">χ²-분포</span>
+    <h2>χ²-분포 — 왜 필요한가?</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec chi">출발점 : 분산을 추정하고 싶다</div>
+
+    <p class="bt">
+      지금까지는 <span class="hlb">평균 \(\mu\)</span>를 추정하는 데 집중했다.
+      그런데 공학 현장에서는 <span class="hl">산포(분산 \(\sigma^2\))</span>도 매우 중요하다.<br>
+      예) 반도체 칩의 특성이 얼마나 <em>고르게</em> 생산되는가?
+    </p>
+
+    <div class="compare">
+      <div class="ccard chi">
+        <div class="ccard-title">📐 평균 추정</div>
+        표본평균 \(\overline{X}\)의 분포<br>
+        → 정규분포 또는 <span class="hlb">Z, t 분포</span> 사용
+      </div>
+      <div class="ccard tdist" style="background:#101e30;border-color:#2a4a6a;">
+        <div class="ccard-title" style="color:var(--accent);">📊 분산 추정</div>
+        표본분산 \(S^2\)의 분포<br>
+        → <span class="hlb">\(\chi^2\) 분포</span>가 필요!
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-title">💡 핵심 직관</div>
+      표본분산 \(S^2 = \dfrac{1}{n-1}\sum_{i=1}^{n}(X_i-\overline{X})^2\)은
+      <span class="hl">편차의 제곱합</span>을 포함한다.
+      정규분포를 따르는 변수를 표준화한 뒤 제곱하면 χ² 분포가 된다는 것이 핵심이다.
+    </div>
+
+    <div class="app-box">
+      <div class="app-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5ce6a0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        전자공학 응용 — 공정 산포 관리
+      </div>
+      <div class="app-item">
+        <div class="app-dot"></div>
+        <div>
+          반도체 팹에서 게이트 산화막 두께를 \(n\)개 측정해 표본분산 \(S^2\)을 구한다.
+          이 \(S^2\)이 <strong>허용 범위 안에 있는지</strong> 판단하려면
+          \(S^2\)이 어떤 분포를 따르는지 알아야 한다. → <span class="hlb">\(\chi^2\) 분포</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="slide-footer">1 / 8</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 2 : χ² 분포 정의 & PDF 그래프
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header chi">
+    <span class="chap chi">χ²-분포</span>
+    <h2>χ²-분포의 정의</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec chi">χ²-분포의 정의</div>
+
+    <p class="bt">
+      확률변수 \(X\)로 확률밀도함수가 다음과 같이 주어질 때,<br>
+      확률변수 \(X\)는 <span class="hlb">자유도(degree of freedom)가 \(n\)인 \(\chi^2\)-분포</span>를 따른다고 한다.
+    </p>
+
+    <div class="fb chi">
+      \[
+        f(x) = \frac{1}{2^{n/2}\,\Gamma\!\left(\dfrac{n}{2}\right)}\;
+               x^{\frac{n}{2}-1}\,e^{-\frac{x}{2}}, \quad 0 < x < \infty
+      \]
+      <div style="margin-top:14px;font-size:20px;color:var(--text-muted);">
+        여기서 \(\Gamma(n)\)은 감마함수로,&ensp;
+        \(\Gamma(n) = \displaystyle\int_0^{\infty} x^{n-1}e^{-x}\,dx\;\;(n>0)\)
+      </div>
+    </div>
+
+    <!-- SVG 그래프 (χ² pdf 개형) -->
+    <div style="margin:24px 0 8px;">
+      <div style="font-size:20px;font-weight:700;color:var(--accent);margin-bottom:10px;">[그림] 자유도에 따른 χ²-분포의 확률밀도함수</div>
+      <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;">
+        <rect width="700" height="300" fill="#111c2e" rx="10"/>
+        <!-- axes -->
+        <line x1="60" y1="250" x2="660" y2="250" stroke="#4a6080" stroke-width="1.5"/>
+        <line x1="60" y1="20"  x2="60"  y2="258" stroke="#4a6080" stroke-width="1.5"/>
+        <!-- x labels -->
+        <text x="60"  y="270" fill="#7a8faf" font-size="15" text-anchor="middle">0</text>
+        <text x="160" y="270" fill="#7a8faf" font-size="15" text-anchor="middle">2</text>
+        <text x="260" y="270" fill="#7a8faf" font-size="15" text-anchor="middle">4</text>
+        <text x="360" y="270" fill="#7a8faf" font-size="15" text-anchor="middle">6</text>
+        <text x="460" y="270" fill="#7a8faf" font-size="15" text-anchor="middle">8</text>
+        <text x="560" y="270" fill="#7a8faf" font-size="15" text-anchor="middle">10</text>
+        <text x="660" y="270" fill="#7a8faf" font-size="15" text-anchor="middle">x</text>
+        <!-- y labels -->
+        <text x="50" y="250" fill="#7a8faf" font-size="14" text-anchor="end">0.00</text>
+        <text x="50" y="180" fill="#7a8faf" font-size="14" text-anchor="end">0.01</text>
+        <text x="50" y="110" fill="#7a8faf" font-size="14" text-anchor="end">0.02</text>
+        <text x="50" y="40"  fill="#7a8faf" font-size="14" text-anchor="end">0.03</text>
+        <text x="16" y="150" fill="#7a8faf" font-size="14" transform="rotate(-90,16,150)" text-anchor="middle">f(x)</text>
+        <!-- n=2: exponential-like decay -->
+        <polyline fill="none" stroke="#e06c75" stroke-width="2.5"
+          points="62,42 80,68 100,90 120,108 140,121 160,131 200,145 260,160 360,178 460,192 560,204 660,213"/>
+        <text x="85" y="62" fill="#e06c75" font-size="15" font-weight="700">n=2</text>
+        <!-- n=3 -->
+        <polyline fill="none" stroke="#f5a623" stroke-width="2.5"
+          points="62,250 80,200 100,175 120,162 140,156 160,155 200,155 260,159 360,172 460,185 560,197 660,207"/>
+        <text x="155" y="148" fill="#f5a623" font-size="15" font-weight="700">n=3</text>
+        <!-- n=5 -->
+        <polyline fill="none" stroke="#4da6ff" stroke-width="2.5"
+          points="62,250 80,248 100,235 120,218 140,202 160,190 200,175 260,168 360,170 460,178 560,190 660,200"/>
+        <text x="200" y="165" fill="#4da6ff" font-size="15" font-weight="700">n=5</text>
+        <!-- n=8 -->
+        <polyline fill="none" stroke="#5ce6a0" stroke-width="2.5"
+          points="62,250 80,250 100,249 120,244 140,234 160,222 200,200 260,180 360,172 460,174 560,182 660,192"/>
+        <text x="285" y="172" fill="#5ce6a0" font-size="15" font-weight="700">n=8</text>
+      </svg>
+    </div>
+
+    <div class="insight">
+      <div class="insight-title">💡 그래프에서 읽어야 할 것</div>
+      <span class="hlb">자유도 \(n\)이 작을수록</span> 분포가 오른쪽으로 심하게 치우친다(오른쪽 꼬리).
+      자유도가 커질수록 점점 종 모양(정규분포)에 가까워진다.
+      χ² 분포는 항상 <span class="hl">양수 값</span>만 가진다 — 분산은 음수일 수 없기 때문!
+    </div>
+
+  </div>
+  <div class="slide-footer">2 / 8</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 3 : χ² 분포 성질
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header chi">
+    <span class="chap chi">χ²-분포</span>
+    <h2>χ²-분포의 성질</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec chi">χ²-분포의 성질</div>
+
+    <ul class="prop-list">
+      <li>
+        <div class="prop-num chi">1</div>
+        <div>
+          표준정규분포를 따르는 확률변수 \(Z\)의 제곱 <span class="hlb">\(Z^2\)</span>은
+          <span class="hlb">자유도 1인 \(\chi^2\)-분포</span>를 따른다.
+          <div class="fb chi" style="margin-top:12px;">
+            \(Z \sim \mathrm{N}(0,1) \;\Longrightarrow\; Z^2 \sim \chi^2(1)\)
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="prop-num chi">2</div>
+        <div>
+          <span class="hlb">독립인 χ² 확률변수의 합</span>도 χ² 분포를 따른다. (재생성)
+          <div class="fb chi" style="margin-top:12px;">
+            \(X_i \sim \chi^2(n_i)\) 이고 서로 독립이면 &ensp;
+            \(\displaystyle Y = \sum_{i=1}^n X_i \sim \chi^2\!\!\left(\sum_{i=1}^n n_i\right)\)
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="prop-num chi">3</div>
+        <div>
+          정규분포 \(\mathrm{N}(\mu,\sigma^2)\)에서 크기 \(n\)인 확률표본의
+          표본평균 \(\overline{X}\)와 표본분산 \(S^2 = \dfrac{1}{n-1}\sum_{i=1}^n(X_i-\overline{X})^2\)에 대하여:
+          <div class="fb chi" style="margin-top:12px;">
+            <div style="margin-bottom:10px;">
+              (i) &ensp; \(\overline{X}\)와 \(S^2\)은 <span class="hlb">서로 독립</span>
+            </div>
+            <div>
+              (ii) &ensp;
+              \(Y = \dfrac{(n-1)S^2}{\sigma^2}
+                = \dfrac{1}{\sigma^2}\sum_{i=1}^n(X_i-\overline{X})^2
+                \;\sim\; \chi^2(n-1)\)
+            </div>
+          </div>
+          <div class="warn-box" style="margin-top:12px;">
+            <div class="warn-title">⚠ 자유도가 왜 n-1인가?</div>
+            편차 \((X_i - \overline{X})\)를 \(n\)개 모두 더하면 항상 0이 된다.
+            즉 마지막 편차는 앞의 \((n-1)\)개가 정해지면 자동으로 결정된다.
+            따라서 <span class="hl">실질적으로 자유롭게 변할 수 있는 값은 \((n-1)\)개</span>뿐이다.
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="prop-num chi">4</div>
+        <div>
+          확률변수 \(X \sim \chi^2(n)\)일 때 기댓값과 분산:
+          <div class="fb chi" style="margin-top:12px;">
+            \(\mathrm{E}(X) = n, \qquad \mathrm{Var}(X) = 2n\)
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="prop-num chi">5</div>
+        <div>
+          \(X \sim \chi^2(n)\)일 때 적률생성함수(MGF):
+          <div class="fb chi" style="margin-top:12px;">
+            \(M_X(t) = (1-2t)^{-n/2}\)
+          </div>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+  <div class="slide-footer">3 / 8</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 4 : χ² 분포 예제 5-7
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header chi">
+    <span class="chap chi">χ²-분포</span>
+    <h2>χ²-분포 — 예제 5-7</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec chi">예제 풀이 & 전자공학 해석</div>
+
+    <div class="ex-box">
+      <div class="ex-label">예제 5-7</div>
+      <p class="bt" style="margin-bottom:0;">
+        평균이 100이고, 표준편차가 2인 정규분포로부터 5개의 표본을 추출하여
+        표본분산 \(S^2\)을 구했을 때, \(S^2\)이 11.14보다 크거나 같을 확률을 구하라.
+      </p>
+    </div>
+
+    <div class="sub-sec">📋 풀이</div>
+
+    <p class="bt">
+      \(X \sim \mathrm{N}(100,\,2^2)\)이므로 확률변수
+      \(Y = \dfrac{(n-1)S^2}{\sigma^2}\)은 자유도 \(4\,(=5-1)\)인 \(\chi^2\)-분포를 따른다.
+    </p>
+
+    <div class="fb chi">
+      \[
+        \mathrm{P}(S^2 \ge 11.14)
+        = \mathrm{P}\!\left(\frac{(n-1)S^2}{\sigma^2} \ge \frac{(n-1)\times 11.14}{\sigma^2}\right)
+        = \mathrm{P}\!\left(Y \ge \frac{4\times 11.14}{2^2}\right)
+        = \mathrm{P}(Y \ge 11.14) = 0.025
+      \]
+    </div>
+
+    <div class="warn-box">
+      <div class="warn-title">🔑 계산 핵심 — 변환 공식 이해</div>
+      \(S^2\)을 바로 다루지 않고 <span class="hl">\(Y = \dfrac{(n-1)S^2}{\sigma^2}\)</span> 로 변환하는 이유:
+      이 변환을 통해 \(S^2\)의 분포를 표준적인 \(\chi^2\) 분포표로 읽을 수 있게 된다.
+      부록표에서 \(\chi^2_{0.025}(4) = 11.14\)임을 확인하여 확률 = <span class="hlb">0.025</span>를 얻는다.
+    </div>
+
+    <div class="app-box">
+      <div class="app-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5ce6a0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        전자공학 응용 — 전원 노이즈 분산 관리
+      </div>
+      <div class="app-item">
+        <div class="app-dot"></div>
+        <div>
+          <strong>같은 문제 구조:</strong>
+          전원 전압 노이즈가 \(\mathrm{N}(\mu, \sigma^2)\)을 따른다고 가정할 때,
+          5회 측정한 표본분산 \(S^2\)이 허용 임계값 이상일 확률을 구하면
+          → 동일하게 \(\chi^2(4)\) 분포를 사용하여 <strong>불량 경보 확률</strong>을 계산할 수 있다.
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="slide-footer">4 / 8</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 5 : t-분포 — 왜 5장에 등장하는가?
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header tdist">
+    <span class="chap tdist">t-분포</span>
+    <h2>t-분포 — 왜 5.3에 등장하는가?</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec tdist">5.2의 결과에서 출발하자</div>
+
+    <p class="bt">
+      5.2에서 우리는 표본평균의 분포를 구했다.
+      정규분포 모집단 \(\mathrm{N}(\mu,\sigma^2)\)에서 크기 \(n\)인 표본을 뽑으면:
+    </p>
+
+    <div class="fb tdist">
+      \[\overline{X} \sim \mathrm{N}\!\left(\mu,\,\frac{\sigma^2}{n}\right)
+      \qquad \Longrightarrow \qquad
+      Z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \sim \mathrm{N}(0,1)\]
+    </div>
+
+    <!-- 결정적 문제 박스 -->
+    <div style="background:#2a1808;border:1px solid #8a4010;border-left:5px solid var(--accent2);border-radius:10px;padding:22px 28px;margin:20px 0;font-size:22px;line-height:1.85;">
+      <div style="font-size:21px;font-weight:800;color:var(--accent2);margin-bottom:10px;">⚠ 결정적 문제</div>
+      분모에 <span class="hl">모표준편차 \(\sigma\)</span>가 있다.
+      그런데 <span class="hl">\(\sigma\)는 모집단의 값 — 현실에서는 알 수 없다.</span><br>
+      5.2의 Z 통계량은 <strong>\(\sigma\)를 알아야만</strong> 쓸 수 있다.
+    </div>
+
+    <div class="sec tdist" style="margin-top:28px;">해결책 — \(\sigma\) 대신 \(S\)를 쓰면?</div>
+
+    <p class="bt">
+      모르는 \(\sigma\) 자리에 표본에서 계산한 <span class="hlr">표본표준편차 \(S\)</span>를 대입하면:
+    </p>
+
+    <!-- 3단계 흐름 -->
+    <div style="display:flex;gap:0;align-items:stretch;margin:18px 0;">
+      <!-- STEP 1 -->
+      <div style="flex:1;background:#101e38;border:1px solid #2a4a7a;border-radius:10px 0 0 10px;padding:20px 22px;font-size:21px;line-height:1.8;">
+        <div style="font-size:18px;font-weight:800;color:var(--accent);margin-bottom:8px;">5.2 — σ 아는 경우</div>
+        \[Z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\]
+        <div style="font-size:18px;color:var(--text-muted);margin-top:8px;">\(\sim \mathrm{N}(0,1)\)</div>
+        <div style="font-size:17px;color:var(--text-muted);margin-top:6px;">σ를 알아야만 사용 가능</div>
+      </div>
+      <!-- 화살표 -->
+      <div style="display:flex;align-items:center;padding:0 14px;background:#1a2236;font-size:26px;color:var(--accent2);font-weight:900;">
+        σ→S
+      </div>
+      <!-- STEP 2 -->
+      <div style="flex:1;background:#28101a;border:1px solid #6a2038;border-radius:0 10px 10px 0;padding:20px 22px;font-size:21px;line-height:1.8;">
+        <div style="font-size:18px;font-weight:800;color:var(--accentR);margin-bottom:8px;">5.3 — σ 모르는 경우</div>
+        \[T = \frac{\overline{X}-\mu}{S/\sqrt{n}}\]
+        <div style="font-size:18px;color:var(--accentR);margin-top:8px;">\(\sim t(n-1)\)</div>
+        <div style="font-size:17px;color:var(--text-muted);margin-top:6px;">S만 있으면 사용 가능!</div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-title">💡 5장의 흐름에서 t-분포의 위치</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:21px;">
+        <div style="background:#1a2d50;border:1px solid var(--accent);border-radius:8px;padding:8px 16px;">
+          5.1<br><span style="font-size:17px;color:var(--text-muted);">모집단·표본 개념</span>
+        </div>
+        <div style="color:var(--accent2);font-size:22px;">→</div>
+        <div style="background:#1a2d50;border:1px solid var(--accent);border-radius:8px;padding:8px 16px;">
+          5.2<br><span style="font-size:17px;color:var(--text-muted);">\(\overline{X}\)의 분포<br>(σ 알 때)</span>
+        </div>
+        <div style="color:var(--accent2);font-size:22px;">→</div>
+        <div style="background:#3a1020;border:2px solid var(--accentR);border-radius:8px;padding:8px 16px;">
+          <span class="hlr">5.3 t-분포</span><br><span style="font-size:17px;color:var(--text-muted);">\(\overline{X}\)의 분포<br>(σ 모를 때)</span>
+        </div>
+        <div style="color:var(--accent2);font-size:22px;">→</div>
+        <div style="background:#1a2a18;border:1px solid var(--accent3);border-radius:8px;padding:8px 16px;">
+          이후 챕터<br><span style="font-size:17px;color:var(--text-muted);">추정·검정</span>
+        </div>
+      </div>
+      <div style="margin-top:14px;font-size:21px;">
+        즉 t-분포는 <span class="hl">"5.2를 현실에서 실제로 쓸 수 있게 만드는"</span> 도구로 5.3에 배치된 것이다.
+        이후 챕터의 추정·검정은 모두 이 T 통계량을 기반으로 한다.
+      </div>
+    </div>
+
+    <div class="insight" style="background:#1c1a2a;border-color:#4a3a7a;border-left-color:#a070ff;margin-top:16px;">
+      <div class="insight-title" style="color:#a070ff;">💡 꼬리가 두꺼운 이유</div>
+      \(\sigma\) 대신 \(S\)를 쓰면 <span class="hl">추정 불확실성이 하나 더 추가</span>된다.
+      \(S\)도 표본마다 달라지는 확률변수이기 때문이다.
+      표본이 작을수록 \(S\)가 \(\sigma\)와 크게 다를 수 있어 꼬리가 두터워진다.
+      \(n\)이 커지면 \(S \to \sigma\)가 되어 t-분포는 표준정규분포에 수렴한다.
+    </div>
+
+    <div class="app-box">
+      <div class="app-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5ce6a0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        전자공학 — σ를 모르는 상황이 현실이다
+      </div>
+      <div class="app-item">
+        <div class="app-dot"></div>
+        <div>
+          반도체 신규 공정을 개발할 때 <strong>모집단 전체의 \(\sigma\)를 사전에 아는 것은 불가능</strong>하다.
+          시제품 5~10개를 만들어 \(S\)를 계산하고, 이 \(S\)로 모평균을 추론할 때
+          <span class="hlr">t-분포</span>가 필수적으로 쓰인다.
+        </div>
+      </div>
+      <div class="app-item">
+        <div class="app-dot"></div>
+        <div>
+          t-분포는 <strong>윌리엄 실리 고셋(William S. Gosset)</strong>이
+          맥주 공장 소표본 데이터에서 \(\sigma\) 없이 평균을 추론하려다 고안했다 — "Student"라는 필명으로 발표.
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="slide-footer">5 / 8</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 6 : t-분포 정의 & 성질
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header tdist">
+    <span class="chap tdist">t-분포</span>
+    <h2>t-분포의 정의와 성질</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="sec tdist">t-분포의 정의</div>
+
+    <p class="bt">
+      서로 독립인 두 확률변수 \(Z\)와 \(V\)가 각각
+      \(Z \sim \mathrm{N}(0,1)\), &ensp; \(V \sim \chi^2(n)\)일 때,
+      다음 확률변수를 <span class="hlr">자유도가 \(n\)인 t-분포</span>라 하고 \(T \sim t(n)\)으로 나타낸다.
+    </p>
+
+    <div class="fb tdist">
+      \[T = \frac{Z}{\sqrt{V/n}} \;\sim\; t(n)\]
+      <div style="margin-top:12px;font-size:20px;color:var(--text-muted);">
+        ※ \(Z\)와 \(V\)는 반드시 <span class="hlr">서로 독립</span>이어야 한다.
+      </div>
+    </div>
+
+    <hr class="div">
+    <div class="sec tdist" style="margin-top:0;">t-분포의 성질</div>
+
+    <ul class="prop-list">
+      <li>
+        <div class="prop-num tdist">1</div>
+        <div>
+          정규분포 \(\mathrm{N}(\mu,\sigma^2)\)에서 크기 \(n\)인 표본의 표본평균 \(\overline{X}\), 표본표준편차 \(S\)에 대하여:
+          <div class="fb tdist" style="margin-top:12px;">
+            \[T = \frac{\overline{X}-\mu}{S/\sqrt{n}} \;\sim\; t(n-1)\]
+          </div>
+          <div class="warn-box" style="margin-top:10px;">
+            <div class="warn-title">🔑 자유도가 왜 (n-1)인가?</div>
+            분모의 \(S\)를 계산할 때 이미 자유도 \((n-1)\)인 \(\chi^2\) 분포를 사용했기 때문이다.
+            (\(S^2\)에 자유도 \(n-1\)이 소모됨)
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="prop-num tdist">2</div>
+        <div>
+          확률변수 \(T \sim t(n)\)일 때 기댓값과 분산:
+          <div class="fb tdist" style="margin-top:12px;">
+            \[\mathrm{E}(T) = 0, \qquad \mathrm{Var}(T) = \frac{n}{n-2} \quad (n > 2)\]
+          </div>
+          <div style="font-size:20px;color:var(--text-muted);margin-top:10px;">
+            분산이 \(\dfrac{n}{n-2} > 1\) : 표준정규분포(\(\mathrm{Var}=1\))보다 산포가 크다.
+            \(n\to\infty\)이면 \(\mathrm{Var}\to 1\), 즉 <span class="hlr">표준정규분포에 수렴</span>.
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="prop-num tdist">3</div>
+        <div>
+          t-분포는 <span class="hlr">0을 중심으로 좌우 대칭</span>이며 표준정규분포보다 꼬리가 두껍다.
+          자유도가 클수록 표준정규분포에 가까워진다.
+        </div>
+      </li>
+    </ul>
+
+  </div>
+  <div class="slide-footer">6 / 8</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 7 : t-분포 그래프 & Z·t 비교
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header tdist">
+    <span class="chap tdist">t-분포</span>
+    <h2>t-분포 그래프 — 표준정규분포와 비교</h2>
+  </div>
+  <div class="slide-body">
+
+    <!-- SVG 그래프 -->
+    <div style="margin-bottom:10px;">
+      <div style="font-size:20px;font-weight:700;color:var(--accentR);margin-bottom:10px;">[그림] 자유도에 따른 t-분포의 확률밀도함수</div>
+      <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;">
+        <rect width="720" height="320" fill="#111c2e" rx="10"/>
+        <!-- axes -->
+        <line x1="40"  y1="280" x2="690" y2="280" stroke="#4a6080" stroke-width="1.5"/>
+        <line x1="365" y1="20"  x2="365" y2="288" stroke="#4a6080" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <!-- x labels -->
+        <text x="40"  y="298" fill="#7a8faf" font-size="13" text-anchor="middle">-4.0</text>
+        <text x="125" y="298" fill="#7a8faf" font-size="13" text-anchor="middle">-2.0</text>
+        <text x="210" y="298" fill="#7a8faf" font-size="13" text-anchor="middle">-1.0</text>
+        <text x="365" y="298" fill="#7a8faf" font-size="13" text-anchor="middle">0</text>
+        <text x="520" y="298" fill="#7a8faf" font-size="13" text-anchor="middle">1.0</text>
+        <text x="605" y="298" fill="#7a8faf" font-size="13" text-anchor="middle">2.0</text>
+        <text x="690" y="298" fill="#7a8faf" font-size="13" text-anchor="middle">4.0</text>
+        <!-- 표준정규분포 (파랑) — 가장 높고 좁음 -->
+        <polyline fill="none" stroke="#4da6ff" stroke-width="2.8"
+          points="40,278 80,276 125,268 170,240 210,192 250,135 295,75 340,42 365,36 390,42 420,75 465,135 510,192 550,240 595,268 640,276 690,278"/>
+        <text x="430" y="30" fill="#4da6ff" font-size="15" font-weight="700">표준정규분포</text>
+        <!-- 자유도 7 (회색) -->
+        <polyline fill="none" stroke="#9aa8b8" stroke-width="2.2"
+          points="40,278 80,276 125,268 170,238 210,190 250,133 295,76 340,46 365,40 390,46 420,76 465,133 510,190 550,238 595,268 640,276 690,278"/>
+        <text x="430" y="52" fill="#9aa8b8" font-size="15" font-weight="700">자유도 7</text>
+        <!-- 자유도 3 (주황) -->
+        <polyline fill="none" stroke="#f5a623" stroke-width="2.2"
+          points="40,277 80,275 125,265 170,232 210,182 250,126 295,74 340,50 365,44 390,50 420,74 465,126 510,182 550,232 595,265 640,275 690,277"/>
+        <text x="430" y="72" fill="#f5a623" font-size="15" font-weight="700">자유도 3</text>
+        <!-- 자유도 1 (빨강) — 가장 낮고 넓음 -->
+        <polyline fill="none" stroke="#e06c75" stroke-width="2.2"
+          points="40,274 80,270 125,256 170,218 210,170 250,118 295,73 340,57 365,52 390,57 420,73 465,118 510,170 550,218 595,256 640,270 690,274"/>
+        <text x="430" y="92" fill="#e06c75" font-size="15" font-weight="700">자유도 1</text>
+        <!-- 꼬리 화살표 강조 -->
+        <text x="42" y="262" fill="#f5a623" font-size="13">← 두꺼운 꼬리</text>
+      </svg>
+    </div>
+
+    <div class="compare" style="margin-top:18px;">
+      <div class="ccard chi" style="background:#101e38;border-color:#2a4a7a;">
+        <div class="ccard-title" style="color:var(--accent);">표준정규분포 Z</div>
+        • 분산 = 1<br>
+        • \(\sigma^2\)을 <strong>알 때</strong><br>
+        • 대표본(\(n \geq 30\)이상) 가능
+      </div>
+      <div class="ccard tdist">
+        <div class="ccard-title">t-분포 T</div>
+        • 분산 = \(\dfrac{n}{n-2} > 1\)<br>
+        • \(\sigma^2\)을 <strong>모를 때</strong><br>
+        • <span class="hlr">소표본에서 필수</span>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:18px;">
+      <div class="insight-title">💡 실용적 기준</div>
+      일반적으로 <span class="hl">\(n \geq 30\)</span>이면 t-분포를 Z-분포로 근사해도 무방하다.
+      전자공학 실험에서 시제품이 30개 미만이면 반드시 <span class="hlr">t-분포</span>를 사용해야 한다.
+    </div>
+
+  </div>
+  <div class="slide-footer">7 / 8</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     슬라이드 8 : 예제 5-8 — 세 가지 경우 비교
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header tdist">
+    <span class="chap tdist">t-분포</span>
+    <h2>예제 5-8 — σ를 아는 경우 vs 모르는 경우</h2>
+  </div>
+  <div class="slide-body">
+
+    <div class="ex-box">
+      <div class="ex-label tdist">예제 5-8</div>
+      <p class="bt" style="margin-bottom:0;">
+        어느 전자제품 생산공정에서 제품의 평균 사용 시간이 정규분포를 따르며,
+        목표 평균 \(\mu_0 = 1200\)(시간)이 되도록 관리하고 있다.
+        \(n=9\)인 표본을 추출한 결과 표본평균 \(\overline{X}=1100\)(시간),
+        표본표준편차 \(S=104\)(시간)을 얻었다.
+        평균이 1200시간이라는 가정 하에 \(\mathrm{P}(\overline{X} \le 1100)\)을 구하라.
+      </p>
+    </div>
+
+    <!-- Case 1 : σ 아는 경우 -->
+    <div style="background:#101e38;border:1px solid #2a4a7a;border-left:5px solid var(--accent);border-radius:12px;padding:24px 30px;margin:22px 0;">
+      <div style="font-size:21px;font-weight:800;color:var(--accent);margin-bottom:14px;">
+        Case 1 &nbsp;—&nbsp; σ = 104를 <u>아는</u> 경우 &nbsp;→&nbsp; Z 사용
+      </div>
+      <p class="bt" style="margin-bottom:12px;">
+        모표준편차 σ를 알고 있으므로 표준정규분포 Z를 그대로 사용한다.
+      </p>
+      <div class="fb chi" style="margin:0 0 12px;">
+        \[Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} = \frac{1100-1200}{104/\sqrt{9}} = \frac{-100}{34.67} \approx -2.885 \;\sim\; \mathrm{N}(0,1)\]
+      </div>
+      <div class="fb chi" style="margin:0;">
+        \[\mathrm{P}(\overline{X} \le 1100) = \mathrm{P}(Z \le -2.885) \approx \mathbf{0.0020}\]
+      </div>
+    </div>
+
+    <!-- Case 2 : σ 모르는 경우 -->
+    <div style="background:#28101a;border:1px solid #6a2038;border-left:5px solid var(--accentR);border-radius:12px;padding:24px 30px;margin:22px 0;">
+      <div style="font-size:21px;font-weight:800;color:var(--accentR);margin-bottom:14px;">
+        Case 2 &nbsp;—&nbsp; σ를 <u>모르는</u> 경우 &nbsp;→&nbsp; t 사용 &nbsp;<span style="font-size:17px;font-weight:400;color:var(--text-muted);">(교과서 원래 풀이)</span>
+      </div>
+      <p class="bt" style="margin-bottom:12px;">
+        σ를 모르므로 S로 대체한다. 이때 통계량은 t 분포를 따른다.
+      </p>
+      <div class="fb tdist" style="margin:0 0 12px;">
+        \[T = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} = \frac{1100-1200}{104/\sqrt{9}} \approx -2.885 \;\sim\; t(8)\]
+      </div>
+      <div class="fb tdist" style="margin:0;">
+        \[\mathrm{P}(\overline{X} \le 1100) = \mathrm{P}(t \le -2.885) \approx \mathbf{0.01}\]
+        <div style="font-size:18px;color:var(--text-muted);margin-top:10px;">
+          자유도 8인 t-분포에서 \(t_{0.01}(8) = 2.896 \approx 2.885\)
+        </div>
+      </div>
+    </div>
+
+    <!-- 핵심 비교 -->
+    <div style="background:#1a1a08;border:1px solid #6a6a10;border-left:5px solid var(--accent2);border-radius:12px;padding:24px 30px;margin:22px 0;">
+      <div style="font-size:21px;font-weight:800;color:var(--accent2);margin-bottom:16px;">
+        ⚠ 같은 숫자, 다른 결과 — 왜 t를 써야 하는가?
+      </div>
+
+      <!-- 비교 표 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;text-align:center;">
+        <div style="background:#111c2e;border:1px solid var(--border);border-radius:8px;padding:14px;font-size:20px;">
+          <div style="font-size:17px;color:var(--text-muted);margin-bottom:6px;">경우</div>
+          <div style="font-weight:800;">σ 아는 경우</div>
+          <div style="font-weight:800;margin-top:4px;">σ 모르는 경우</div>
+          <div style="font-weight:800;margin-top:4px;color:var(--accentR);">σ 모르는데 Z 강행</div>
+        </div>
+        <div style="background:#111c2e;border:1px solid var(--border);border-radius:8px;padding:14px;font-size:20px;">
+          <div style="font-size:17px;color:var(--text-muted);margin-bottom:6px;">사용 분포</div>
+          <div class="hlb">Z (정규)</div>
+          <div class="hlr" style="margin-top:4px;">t(8)</div>
+          <div style="color:#888;margin-top:4px;">Z (잘못)</div>
+        </div>
+        <div style="background:#111c2e;border:1px solid var(--border);border-radius:8px;padding:14px;font-size:20px;">
+          <div style="font-size:17px;color:var(--text-muted);margin-bottom:6px;">계산 결과</div>
+          <div class="hlb">0.0020</div>
+          <div class="hlr" style="margin-top:4px;">0.01</div>
+          <div style="color:#888;margin-top:4px;">0.0020 ← <span style="color:var(--accentR);">오류!</span></div>
+        </div>
+      </div>
+
+      <p class="bt" style="margin-bottom:10px;">
+        수식에서 분모가 동일(\(104/\sqrt{9}\))하더라도, <span class="hl">σ를 안다는 것과 S로 추정한다는 것은 분포 자체가 다르다.</span>
+        σ를 모르면서 Z 표를 그대로 읽으면 확률을 <span class="hlr">5배나 과소평가</span>하는 오류가 생긴다.
+      </p>
+      <p class="bt" style="margin-bottom:0;">
+        소표본일수록 S와 σ의 차이가 커지므로 이 오류는 더 심해진다.
+        <span class="hlg">t-분포는 이 오류를 교정하기 위해 존재한다.</span>
+      </p>
+    </div>
+
+    <!-- 올바른 해석 -->
+    <div class="app-box">
+      <div class="app-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5ce6a0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        확률 0.01을 올바르게 읽는 법
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+        <div style="background:#1a1a2e;border:1px solid #3a3a6a;border-left:4px solid var(--accent);border-radius:8px;padding:16px 18px;font-size:20px;line-height:1.75;">
+          <div style="font-size:18px;font-weight:800;color:var(--accent);margin-bottom:8px;">전제 (가정)</div>
+          "평균이 1200시간이라면"<br>
+          → 이 가정 하에서 계산한 확률<br>
+          <span class="hlb">\(\mathrm{P}(\overline{X} \le 1100) \approx 0.01\)</span>
+        </div>
+        <div style="background:#1a1a2e;border:1px solid #3a3a6a;border-left:4px solid var(--accentR);border-radius:8px;padding:16px 18px;font-size:20px;line-height:1.75;">
+          <div style="font-size:18px;font-weight:800;color:var(--accentR);margin-bottom:8px;">관측 (현실)</div>
+          실제로 측정하니<br>
+          \(\overline{X} = 1100\)이 나왔다.<br>
+          <span class="hlr">→ 확률 1%짜리 일이 벌어진 것</span>
+        </div>
+      </div>
+
+      <div style="background:#0e1e10;border:1px solid #2a5a2a;border-left:5px solid var(--accent3);border-radius:8px;padding:18px 22px;font-size:21px;line-height:1.85;margin-bottom:14px;">
+        <div style="font-size:20px;font-weight:800;color:var(--accent3);margin-bottom:8px;">🔑 올바른 해석</div>
+        <span class="hl">"1%"는 "1100보다 클 확률 99%"가 아니다.</span><br>
+        "평균이 1200이라는 <strong>전제가 맞다면</strong>, 이런 표본이 우연히 나올 확률이 1%"라는 뜻이다.<br><br>
+        → <span class="hlr">이 전제 자체가 틀렸을 가능성이 매우 크다</span>는 증거<br>
+        → 실제 모평균은 1200시간보다 낮다고 판단 → <span class="hl">생산라인 점검 필요</span>
+      </div>
+
+      <div class="app-item">
+        <div class="app-dot"></div>
+        <div>
+          이것이 이후 챕터의 <span class="hlr">가설 검정</span> 핵심 논리다.
+          t-분포는 σ를 모르는 현실에서 이 확률을 <strong>정확하게</strong> 계산하기 위한 도구다.
+          Z를 잘못 쓰면 확률이 5배 어긋나고, 잘못된 공학적 판단으로 이어진다.
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="slide-footer">8 / 8</div>
+</div>
+
+<div style="height:60px;"></div>
+</body>
+</html>
