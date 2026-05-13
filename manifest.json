@@ -1,13 +1,13 @@
 {
   "stats": [
-    { "file": "7-Binary-distributions-Normal-approximation-Process-Description.html", "title": "이항분포의 정규근사 과정" },
-    { "file": "7-Central-limit-theorn.html", "title": "중심극한정리" },
-    { "file": "7-Normal-approximation-and-continuity-of-binomial-distributions.html", "title": "이항분포의 정규근사와 연속성" },
-    { "file": "7-genealogy-of-probability-distribution.html", "title": "확률분포의 계보" },
-    { "file": "Poisson-Index-Elyang-Distribution.html", "title": "포아송분포·지수분포·이항분포" },
-    { "file": "Z-Score--Standardizing-the-position-of-data-above-a-normal-distribution.html", "title": "Z-Score: 정규분포에서의 위치 표준화" },
-    { "file": "chi--square-and-Rayleigh-distributions-derived-from-normal-distributions.html", "title": "정규분포에서 유도되는 카이제곱·레일리 분포" },
-    { "file": "from-binomial-to-normal.html", "title": "이항분포에서 정규분포로" }
+    { "file": "7-Binary-distributions-Normal-approximation-Process-Description.html", "title": "7.이항분포의 정규근사 과정" },
+    { "file": "7-Central-limit-theorn.html", "title": "7.중심극한정리" },
+    { "file": "7-Normal-approximation-and-continuity-of-binomial-distributions.html", "title": "7.이항분포의 정규근사와 연속성" },
+    { "file": "7-genealogy-of-probability-distribution.html", "title": "7.확률분포의 계보" },
+    { "file": "Poisson-Index-Elyang-Distribution.html", "title": "7.포아송분포·지수분포·이항분포" },
+    { "file": "Z-Score--Standardizing-the-position-of-data-above-a-normal-distribution.html", "title": "7.Z-Score: 정규분포에서의 위치 표준화" },
+    { "file": "chi--square-and-Rayleigh-distributions-derived-from-normal-distributions.html", "title": "7.정규분포에서 유도되는 카이제곱·레일리 분포" },
+    { "file": "from-binomial-to-normal.html", "title": "7.이항분포에서 정규분포로" }
   ],
   "cprog": [],
   "python": [],
