@@ -1,0 +1,284 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.lecture { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+.header { border-bottom: 1px solid var(--color-border-tertiary); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+.badge { display: inline-block; font-size: 11px; background: var(--color-background-info); color: var(--color-text-info); border-radius: 6px; padding: 3px 10px; margin-bottom: 8px; }
+h1 { font-size: 24px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; }
+.subtitle { font-size: 14px; color: var(--color-text-secondary); margin-top: 6px; }
+.section { margin-bottom: 2.5rem; }
+.section-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.75rem; padding-left: 10px; border-left: 3px solid #5DCAA5; }
+p { font-size: 14px; color: var(--color-text-secondary); line-height: 1.75; margin-bottom: 0.75rem; }
+.formula-box { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 1.25rem 1.5rem; text-align: center; margin: 1rem 0; }
+.formula { font-size: 22px; font-weight: 500; color: var(--color-text-primary); font-family: var(--font-mono); letter-spacing: 0.5px; }
+.formula sub, .formula sup { font-size: 14px; }
+.formula-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 8px; }
+.var-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 0.75rem; }
+.var-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; padding: 0.75rem; text-align: center; }
+.var-symbol { font-size: 18px; font-weight: 500; font-family: var(--font-mono); }
+.var-name { font-size: 11px; color: var(--color-text-secondary); margin-top: 4px; line-height: 1.4; }
+.chart-wrap { position: relative; width: 100%; height: 220px; margin: 1rem 0; }
+.slider-row { display: flex; align-items: center; gap: 10px; margin: 0.5rem 0; font-size: 13px; color: var(--color-text-secondary); }
+.slider-row label { min-width: 50px; }
+.slider-row span { min-width: 40px; text-align: right; font-weight: 500; color: var(--color-text-primary); font-family: var(--font-mono); }
+.result-row { display: flex; gap: 10px; margin-top: 1rem; }
+.result-card { flex: 1; background: var(--color-background-secondary); border-radius: 8px; padding: 0.75rem 1rem; text-align: center; }
+.result-label { font-size: 11px; color: var(--color-text-secondary); }
+.result-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); font-family: var(--font-mono); margin-top: 4px; }
+.result-value.highlight { color: #0F6E56; }
+.example-box { border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+.example-header { background: var(--color-background-secondary); padding: 0.75rem 1rem; font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.example-body { padding: 1rem; }
+.step { display: flex; gap: 10px; margin-bottom: 0.75rem; align-items: flex-start; }
+.step-num { width: 22px; height: 22px; min-width: 22px; border-radius: 50%; background: #1D9E75; color: #fff; font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.step-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+.step-text strong { color: var(--color-text-primary); font-weight: 500; }
+.key-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 0.5rem; }
+.key-table th { text-align: left; padding: 8px 10px; font-weight: 500; font-size: 12px; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+.key-table td { padding: 8px 10px; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); line-height: 1.5; }
+.key-table td:first-child { font-family: var(--font-mono); font-weight: 500; color: var(--color-text-primary); }
+.key-table tr:last-child td { border-bottom: none; }
+.callout { background: var(--color-background-warning); border: 0.5px solid var(--color-border-warning); border-radius: 10px; padding: 0.875rem 1rem; font-size: 13px; color: var(--color-text-warning); line-height: 1.65; margin: 1rem 0; }
+.callout strong { font-weight: 500; }
+.tab-wrap { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+.tab-btn { padding: 5px 14px; font-size: 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; }
+.tab-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; font-weight: 500; }
+.scenario { display: none; }
+.scenario.active { display: block; }
+
+/* ── 새로 추가: 이름 정리 박스 ── */
+.alias-box { border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+.alias-header { background: var(--color-background-secondary); padding: 0.6rem 1rem; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.3px; }
+.alias-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.alias-cell { padding: 0.9rem 1rem; }
+.alias-cell:first-child { border-right: 0.5px solid var(--color-border-tertiary); }
+.alias-term { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.alias-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+.alias-eq { font-family: var(--font-mono); font-size: 13px; color: #0F6E56; margin-top: 6px; }
+.alias-arrow { display: flex; align-items: center; justify-content: center; padding: 0 0.5rem; color: var(--color-text-secondary); font-size: 18px; }
+.alias-grid-3 { display: grid; grid-template-columns: 1fr 36px 1fr; align-items: center; }
+</style>
+
+<div class="lecture">
+  <div class="header">
+    <span class="badge">확률 및 통계 | 1학년</span>
+    <h1>Z점수 (Z-Score)</h1>
+    <p class="subtitle">정규분포 위에서 데이터의 위치를 표준화하기</p>
+  </div>
+
+  <!-- 0. 용어 정리 — 새로 추가 -->
+  <div class="section">
+    <div class="section-title">먼저 이름부터 정리하자</div>
+    <p>같은 공식을 부르는 이름이 두 가지입니다. 헷갈리지 않도록 미리 확인하고 넘어갑니다.</p>
+    <div class="alias-box">
+      <div class="alias-header">같은 공식, 두 가지 이름</div>
+      <div class="alias-grid-3">
+        <div class="alias-cell">
+          <div class="alias-term">Z점수</div>
+          <div class="alias-desc">하나의 관측값이 평균에서 얼마나 떨어져 있는지 나타낼 때 사용하는 이름.</div>
+          <div class="alias-eq">Z = (X − μ) / σ</div>
+        </div>
+        <div class="alias-arrow">=</div>
+        <div class="alias-cell">
+          <div class="alias-term">Z변환 (표준화)</div>
+          <div class="alias-desc">임의의 정규분포 전체를 표준 정규분포 N(0,1)로 바꾸는 변환으로 부를 때.</div>
+          <div class="alias-eq">Z = (X − μ) / σ</div>
+        </div>
+      </div>
+    </div>
+    <p>공식은 완전히 동일합니다. <strong style="color:var(--color-text-primary);font-weight:500">"한 값의 상대적 위치를 구한다"</strong>고 볼 때는 Z점수, <strong style="color:var(--color-text-primary);font-weight:500">"분포 전체를 N(0,1)로 옮긴다"</strong>고 볼 때는 Z변환이라고 부를 뿐입니다. 교재마다 다른 이름을 쓰더라도 당황하지 마세요.</p>
+  </div>
+
+  <!-- 1. 왜 필요한가 -->
+  <div class="section">
+    <div class="section-title">왜 Z점수가 필요할까?</div>
+    <p>시험 결과를 비교해 봅시다. 물리 시험에서 75점, 수학 시험에서 82점을 받았다면 어떤 시험을 더 잘 본 걸까요? 단순히 점수만 보면 수학을 더 잘 본 것 같지만, 물리 시험 평균이 60점이고 수학 평균이 90점이라면 이야기가 달라집니다.</p>
+    <p>서로 다른 척도를 가진 데이터를 비교하려면 <strong style="color:var(--color-text-primary);font-weight:500">표준화(standardization)</strong>가 필요합니다. Z점수(=Z변환)는 모든 정규분포를 평균 0, 표준편차 1인 <strong style="color:var(--color-text-primary);font-weight:500">표준 정규분포 N(0,1)</strong>로 변환해 줍니다.</p>
+  </div>
+
+  <!-- 2. 공식 -->
+  <div class="section">
+    <div class="section-title">Z점수 공식</div>
+    <div class="formula-box">
+      <div class="formula">Z = (X − μ) / σ</div>
+      <div class="formula-note">X: 관측값 &nbsp;|&nbsp; μ (뮤): 모집단 평균 &nbsp;|&nbsp; σ (시그마): 모집단 표준편차</div>
+    </div>
+    <div class="var-grid">
+      <div class="var-card">
+        <div class="var-symbol" style="color:#1D9E75">X</div>
+        <div class="var-name">내가 비교하고 싶은 관측값</div>
+      </div>
+      <div class="var-card">
+        <div class="var-symbol" style="color:#185FA5">μ</div>
+        <div class="var-name">전체 데이터의 평균값</div>
+      </div>
+      <div class="var-card">
+        <div class="var-symbol" style="color:#993C1D">σ</div>
+        <div class="var-name">전체 데이터의 표준편차</div>
+      </div>
+    </div>
+    <p style="margin-top:0.75rem">Z점수는 <strong style="color:var(--color-text-primary);font-weight:500">"평균으로부터 표준편차 몇 개 만큼 떨어져 있는가"</strong>를 나타냅니다. 단위가 없는 순수한 수치이므로 어떤 분포끼리도 비교할 수 있습니다.</p>
+  </div>
+
+  <!-- 3. 인터랙티브 계산기 -->
+  <div class="section">
+    <div class="section-title">인터랙티브: Z점수 계산기</div>
+    <p>슬라이더를 조정해 정규분포 곡선 위에서 값의 위치가 어떻게 변하는지 확인해 보세요.</p>
+    <div class="slider-row">
+      <label>평균 μ</label>
+      <input type="range" id="mu" min="40" max="80" value="60" style="flex:1;max-width:300px">
+      <span id="mu-val">60</span>
+    </div>
+    <div class="slider-row">
+      <label>표준편차 σ</label>
+      <input type="range" id="sig" min="3" max="20" value="10" style="flex:1;max-width:300px">
+      <span id="sig-val">10</span>
+    </div>
+    <div class="slider-row">
+      <label>관측값 X</label>
+      <input type="range" id="xval" min="20" max="100" value="75" style="flex:1;max-width:300px">
+      <span id="x-val">75</span>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="distChart" role="img" aria-label="정규분포 곡선과 Z점수 시각화">정규분포 곡선 위에서 선택한 값의 위치를 보여줍니다.</canvas>
+    </div>
+    <div class="result-row">
+      <div class="result-card">
+        <div class="result-label">Z점수</div>
+        <div class="result-value highlight" id="z-result">1.50</div>
+      </div>
+      <div class="result-card">
+        <div class="result-label">하위 백분위 (누적 확률)</div>
+        <div class="result-value" id="pct-result">93.3%</div>
+      </div>
+      <div class="result-card">
+        <div class="result-label">해석</div>
+        <div class="result-value" style="font-size:13px;color:var(--color-text-secondary);font-family:var(--font-sans)" id="interpret-result">평균보다 위</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 예제 풀이 -->
+  <div class="section">
+    <div class="section-title">예제 풀이</div>
+    <div class="tab-wrap">
+      <button class="tab-btn active" onclick="showScenario('s1',this)">물리 vs 수학 점수</button>
+      <button class="tab-btn" onclick="showScenario('s2',this)">제품 품질 관리</button>
+      <button class="tab-btn" onclick="showScenario('s3',this)">역방향: X 구하기</button>
+    </div>
+    <div id="s1" class="scenario active example-box">
+      <div class="example-header">📘 어느 시험을 더 잘 봤을까?</div>
+      <div class="example-body">
+        <p style="margin-bottom:0.75rem">물리: X=75, μ=60, σ=15 &nbsp;|&nbsp; 수학: X=82, μ=90, σ=8</p>
+        <div class="step"><div class="step-num">1</div><div class="step-text">물리 Z점수: <strong>Z = (75−60)/15 = 1.00</strong> → 상위 약 15.9%</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">수학 Z점수: <strong>Z = (82−90)/8 = −1.00</strong> → 하위 약 15.9%</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">점수는 수학이 높지만, 상대적으로는 <strong>물리를 훨씬 잘 본 것</strong>입니다. Z점수 없이는 알 수 없는 사실이에요.</div></div>
+      </div>
+    </div>
+    <div id="s2" class="scenario example-box">
+      <div class="example-header">🔧 제조 공정 품질 관리</div>
+      <div class="example-body">
+        <p style="margin-bottom:0.75rem">볼트 직경 규격: μ=10.00mm, σ=0.05mm. 측정값 X=10.12mm — 불량 판정 기준은 |Z|>2.5</p>
+        <div class="step"><div class="step-num">1</div><div class="step-text">Z = (10.12 − 10.00) / 0.05 = <strong>2.40</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">|Z| = 2.40 &lt; 2.5 → <strong>정상 범위 내</strong> (불량 아님)</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">공학에서는 이런 방식으로 품질 허용 범위(공정 능력)를 Z점수로 표현합니다.</div></div>
+      </div>
+    </div>
+    <div id="s3" class="scenario example-box">
+      <div class="example-header">🔄 역방향 문제: X 구하기</div>
+      <div class="example-body">
+        <p style="margin-bottom:0.75rem">강의 성적 μ=70, σ=12. 상위 10%에 들려면 최소 몇 점이 필요한가?</p>
+        <div class="step"><div class="step-num">1</div><div class="step-text">상위 10% → 누적 확률 0.90 → Z표에서 <strong>Z = 1.28</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">공식 역산: <strong>X = μ + Z·σ = 70 + 1.28×12 = 85.36점</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">최소 <strong>86점</strong> (올림)을 받아야 상위 10%에 진입합니다.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 핵심 Z값 -->
+  <div class="section">
+    <div class="section-title">꼭 암기할 Z점수 기준값</div>
+    <table class="key-table">
+      <thead><tr><th>Z값</th><th>누적 확률</th><th>의미 (대칭 구간)</th><th>활용 예</th></tr></thead>
+      <tbody>
+        <tr><td>±1.00</td><td>68.27%</td><td>평균 ±1σ 내 데이터</td><td>일반 품질 허용 범위</td></tr>
+        <tr><td>±1.645</td><td>90%</td><td>상·하위 5% 기준선</td><td>단측 90% 신뢰구간</td></tr>
+        <tr><td>±1.96</td><td>95%</td><td>상·하위 2.5% 기준선</td><td>가장 많이 쓰는 기준</td></tr>
+        <tr><td>±2.576</td><td>99%</td><td>상·하위 0.5% 기준선</td><td>엄격한 품질 규격</td></tr>
+        <tr><td>±3.00</td><td>99.73%</td><td>Six Sigma의 반 (3σ)</td><td>제조업 공정 관리</td></tr>
+      </tbody>
+    </table>
+    <div class="callout" style="margin-top:1rem">
+      <strong>⚠ 주의:</strong> Z점수는 데이터가 정규분포를 따를 때만 유효합니다. 분포 모양이 크게 치우쳐 있거나, 표본 크기가 매우 작을 경우 Z점수를 그대로 사용하면 오류가 발생할 수 있습니다. 다음 시간에 배울 t-분포가 작은 표본에서 이 문제를 해결해 줍니다.
+    </div>
+  </div>
+
+  <!-- 6. 정리 -->
+  <div class="section">
+    <div class="section-title">핵심 정리</div>
+    <table class="key-table">
+      <thead><tr><th>Z값 범위</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td>Z > 0</td><td>평균보다 큰 값 (오른쪽)</td></tr>
+        <tr><td>Z < 0</td><td>평균보다 작은 값 (왼쪽)</td></tr>
+        <tr><td>Z = 0</td><td>정확히 평균값</td></tr>
+        <tr><td>|Z| > 2</td><td>드문 값 (상·하위 약 2.3%)</td></tr>
+        <tr><td>|Z| > 3</td><td>매우 드문 이상치 의심</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function normalPDF(x,mu,sig){return Math.exp(-0.5*((x-mu)/sig)**2)/(sig*Math.sqrt(2*Math.PI));}
+function normalCDF(z){
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const sign=z<0?-1:1; z=Math.abs(z)/Math.sqrt(2);
+  const t=1/(1+p*z);
+  const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-z*z);
+  return 0.5*(1+sign*y);
+}
+const isDark=matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor=isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)';
+const textColor=isDark?'#a0a09a':'#73726c';
+let mu=60,sig=10,xv=75;
+const N=200;
+function buildData(){
+  const lo=mu-4*sig,hi=mu+4*sig,step=(hi-lo)/N;
+  const full=[],fill=[];
+  for(let i=0;i<=N;i++){const x=lo+i*step,y=normalPDF(x,mu,sig);full.push({x,y});fill.push({x,y:x<=xv?y:0});}
+  return{full,fill};
+}
+let chart;
+function initChart(){
+  const ctx=document.getElementById('distChart').getContext('2d');
+  const{full,fill}=buildData();
+  chart=new Chart(ctx,{type:'line',data:{datasets:[
+    {data:full,borderColor:'#1D9E75',borderWidth:2,fill:false,pointRadius:0,tension:0.4,label:'분포 곡선'},
+    {data:fill,borderColor:'transparent',backgroundColor:'rgba(29,158,117,0.18)',fill:true,pointRadius:0,tension:0.4,label:'누적 확률 영역'},
+  ]},options:{responsive:true,maintainAspectRatio:false,parsing:{xAxisKey:'x',yAxisKey:'y'},
+    plugins:{legend:{display:false},tooltip:{enabled:false}},
+    scales:{x:{type:'linear',min:mu-4*sig,max:mu+4*sig,ticks:{color:textColor,maxTicksLimit:7,callback:v=>v.toFixed(0)},grid:{color:gridColor}},
+    y:{ticks:{display:false},grid:{display:false},border:{display:false}}},animation:{duration:0}}});
+}
+function updateAll(){
+  const z=(xv-mu)/sig,pct=normalCDF(z);
+  document.getElementById('z-result').textContent=z.toFixed(2);
+  document.getElementById('pct-result').textContent=(pct*100).toFixed(1)+'%';
+  document.getElementById('interpret-result').textContent=z>0.5?'평균보다 위':z<-0.5?'평균보다 아래':'평균 근방';
+  const{full,fill}=buildData();
+  chart.data.datasets[0].data=full;chart.data.datasets[1].data=fill;
+  chart.options.scales.x.min=mu-4*sig;chart.options.scales.x.max=mu+4*sig;chart.update();
+}
+document.getElementById('mu').addEventListener('input',e=>{mu=+e.target.value;document.getElementById('mu-val').textContent=mu;updateAll();});
+document.getElementById('sig').addEventListener('input',e=>{sig=+e.target.value;document.getElementById('sig-val').textContent=sig;updateAll();});
+document.getElementById('xval').addEventListener('input',e=>{xv=+e.target.value;document.getElementById('x-val').textContent=xv;updateAll();});
+initChart();updateAll();
+function showScenario(id,btn){
+  document.querySelectorAll('.scenario').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');btn.classList.add('active');
+}
+</script>
