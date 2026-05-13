@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 05 – 표본분포 | 5.1 모집단과 표본분포</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2336;
+    --border: #2a3050;
+    --accent: #4a90d9;
+    --accent2: #e05c5c;
+    --accent3: #50c8a0;
+    --accent4: #f0b840;
+    --text: #e8ecf5;
+    --text-muted: #8a94b0;
+    --highlight: #4a90d9;
+    --card-bg: #1a1f30;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 20px;
+    line-height: 1.75;
+    padding: 0 0 80px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0d1a3a 0%, #1a2a5e 50%, #0d2444 100%);
+    border-bottom: 3px solid var(--accent);
+    padding: 60px 80px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(74,144,217,0.15) 0%, transparent 70%);
+  }
+  .chapter-tag {
+    font-size: 15px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 14px;
+  }
+  .header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 54px; font-weight: 700;
+    color: #fff; line-height: 1.2;
+  }
+  .header h1 span { color: var(--accent); }
+  .header-sub {
+    margin-top: 14px; font-size: 19px; color: var(--text-muted);
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section {
+    max-width: 1100px;
+    margin: 60px auto 0;
+    padding: 0 40px;
+  }
+
+  /* ── SECTION TITLE ── */
+  .sec-title {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 30px; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+  }
+  .sec-title .num {
+    background: var(--accent);
+    color: #fff;
+    font-size: 17px; font-weight: 700;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── TERM HIGHLIGHT ── */
+  .term { color: var(--accent); font-weight: 700; }
+  .term-red { color: var(--accent2); font-weight: 700; }
+  .term-green { color: var(--accent3); font-weight: 700; }
+  .term-yellow { color: var(--accent4); font-weight: 700; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent);
+    border-radius: 4px 0 0 4px;
+  }
+  .card.red::before { background: var(--accent2); }
+  .card.green::before { background: var(--accent3); }
+  .card.yellow::before { background: var(--accent4); }
+
+  .card-title {
+    font-size: 22px; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .card p { font-size: 19px; color: var(--text-muted); line-height: 1.8; }
+  .card p + p { margin-top: 10px; }
+
+  /* ── GRID ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  /* ── SVG DIAGRAM CONTAINER ── */
+  .diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .diagram-title {
+    font-size: 16px; color: var(--text-muted);
+    margin-bottom: 16px; letter-spacing: 1px;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .diagram svg { width: 100%; max-width: 680px; }
+
+  /* ── FORMULA BOX ── */
+  .formula-box {
+    background: #0a0e1a;
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px 32px;
+    text-align: center;
+    font-size: 24px;
+    margin: 20px 0;
+    color: #fff;
+  }
+  .formula-box .MathJax { font-size: 1.3em !important; }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%; border-collapse: collapse; font-size: 18px;
+    margin: 20px 0;
+  }
+  th {
+    background: var(--surface2); color: var(--accent);
+    padding: 14px 20px; text-align: left;
+    border-bottom: 2px solid var(--accent);
+  }
+  td {
+    padding: 13px 20px; border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  tr:hover td { background: var(--surface2); color: var(--text); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 4px 14px; border-radius: 20px;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+    margin: 0 4px;
+  }
+  .badge-blue { background: rgba(74,144,217,0.2); color: var(--accent); border: 1px solid var(--accent); }
+  .badge-red  { background: rgba(224,92,92,0.2);  color: var(--accent2); border: 1px solid var(--accent2); }
+
+  /* ── KEY POINTS BLOCK ── */
+  .keypoints {
+    background: linear-gradient(135deg, rgba(74,144,217,0.08), rgba(80,200,160,0.08));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin: 24px 0;
+  }
+  .keypoints li {
+    list-style: none; padding: 8px 0 8px 28px; position: relative;
+    font-size: 19px; color: var(--text-muted); line-height: 1.7;
+  }
+  .keypoints li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    color: var(--accent3); font-size: 16px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    max-width: 1100px; margin: 50px auto;
+    border: none; border-top: 1px solid var(--border);
+    padding: 0 40px;
+  }
+
+  /* ── METHOD CARD ── */
+  .method-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 28px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .method-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .method-icon {
+    font-size: 32px; margin-bottom: 10px;
+  }
+  .method-name {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .method-en {
+    font-size: 14px; color: var(--text-muted); margin-bottom: 12px;
+  }
+  .method-desc {
+    font-size: 17px; color: var(--text-muted); line-height: 1.7;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    max-width: 1100px; margin: 60px auto 0; padding: 0 40px;
+    font-size: 14px; color: var(--text-muted); text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ HEADER ══════════════════════ -->
+<div class="header">
+  <div class="chapter-tag">Chapter 05 · 표본분포</div>
+  <h1>5.1 &nbsp;<span>모집단</span>과 표본분포</h1>
+  <div class="header-sub">Population &amp; Sampling Distribution</div>
+</div>
+
+
+<!-- ══════════════════════ SECTION 1: 기본 개념 ══════════════════════ -->
+<div class="section">
+  <div class="sec-title"><div class="num">1</div> 기본 개념 — 모집단, 표본, 오차</div>
+
+  <!-- SVG: Population → Sample overview -->
+  <div class="diagram">
+    <div class="diagram-title">[그림 5-0] 모집단에서 표본추출의 흐름</div>
+    <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+      <!-- Population ellipse -->
+      <ellipse cx="160" cy="150" rx="130" ry="110" fill="rgba(74,144,217,0.08)" stroke="#4a90d9" stroke-width="2.5"/>
+      <text x="160" y="70" text-anchor="middle" fill="#4a90d9" font-size="17" font-weight="700">모집단 (N)</text>
+      <!-- dots inside population -->
+      <circle cx="110" cy="120" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="155" cy="100" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="200" cy="115" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="130" cy="155" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="175" cy="165" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="215" cy="150" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="120" cy="190" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="165" cy="200" r="7" fill="#4a90d9" opacity="0.6"/>
+      <circle cx="200" cy="185" r="7" fill="#4a90d9" opacity="0.6"/>
+
+      <!-- Arrow -->
+      <defs>
+        <marker id="arr" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#50c8a0"/>
+        </marker>
+      </defs>
+      <line x1="310" y1="150" x2="390" y2="150" stroke="#50c8a0" stroke-width="3" marker-end="url(#arr)"/>
+      <text x="350" y="136" text-anchor="middle" fill="#50c8a0" font-size="14" font-weight="700">표본추출</text>
+      <text x="350" y="175" text-anchor="middle" fill="#8a94b0" font-size="13">(sampling)</text>
+
+      <!-- Sample ellipse -->
+      <ellipse cx="540" cy="150" rx="100" ry="80" fill="rgba(80,200,160,0.08)" stroke="#50c8a0" stroke-width="2.5"/>
+      <text x="540" y="92" text-anchor="middle" fill="#50c8a0" font-size="17" font-weight="700">표본 (n)</text>
+      <circle cx="510" cy="135" r="7" fill="#50c8a0" opacity="0.7"/>
+      <circle cx="545" cy="120" r="7" fill="#50c8a0" opacity="0.7"/>
+      <circle cx="575" cy="140" r="7" fill="#50c8a0" opacity="0.7"/>
+      <circle cx="520" cy="165" r="7" fill="#50c8a0" opacity="0.7"/>
+      <circle cx="560" cy="170" r="7" fill="#50c8a0" opacity="0.7"/>
+
+      <!-- Labels bottom -->
+      <text x="160" y="275" text-anchor="middle" fill="#8a94b0" font-size="14">모수: μ, σ², p</text>
+      <text x="540" y="248" text-anchor="middle" fill="#8a94b0" font-size="14">통계량: x̄, S², p̂</text>
+
+      <!-- Sampling error note -->
+      <text x="350" y="268" text-anchor="middle" fill="#e05c5c" font-size="13" font-weight="700">← 표본오차 (sampling error) →</text>
+    </svg>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">🌐 <span class="term">모집단</span> (Population)</div>
+      <p>통계조사 대상 <strong>전체</strong>를 의미한다.</p>
+      <p>예: 우리나라 성인 남성 전체, 공장에서 생산된 전체 제품 등</p>
+    </div>
+    <div class="card green">
+      <div class="card-title">📦 <span class="term-green">표본분포</span> (Sampling Distribution)</div>
+      <p>전체 중 일부를 표본으로 추출했을 때, 그 자료에 대한 <strong>확률분포</strong>를 표본분포라 한다.</p>
+    </div>
+    <div class="card red">
+      <div class="card-title">⚠️ <span class="term-red">표본오차</span> (Sampling Error)</div>
+      <p>표본추출 과정에서 필연적으로 발생하는 오차.</p>
+      <p>표본이 모집단을 완전히 대표하지 못해 생기는 차이</p>
+    </div>
+    <div class="card yellow">
+      <div class="card-title">🚫 <span class="term-yellow">비표본오차</span> (Non-sampling Error)</div>
+      <p>응답자가 <strong>정확하게 응답하지 않아</strong> 발생하는 오차.</p>
+      <p>예: 무응답, 응답 오기입, 측정 도구 오류 등</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════ SECTION 2: 모수 vs 통계량 ══════════════════════ -->
+<div class="section">
+  <div class="sec-title"><div class="num">2</div> 모수(Parameter) vs 통계량(Statistics)</div>
+
+  <!-- SVG: Parameter vs Statistics -->
+  <div class="diagram">
+    <div class="diagram-title">[그림 5-1] 모집단과 표본의 관계</div>
+    <svg viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+      <!-- Population box -->
+      <rect x="30" y="40" width="240" height="200" rx="16" fill="rgba(74,144,217,0.07)" stroke="#4a90d9" stroke-width="2"/>
+      <text x="150" y="34" text-anchor="middle" fill="#4a90d9" font-size="16" font-weight="700">모집단 (N)</text>
+      <text x="150" y="110" text-anchor="middle" fill="#8a94b0" font-size="14">모수 (Parameter)</text>
+      <!-- mu -->
+      <text x="150" y="150" text-anchor="middle" fill="#e8ecf5" font-size="20" font-weight="700">μ ,  σ² ,  p</text>
+      <text x="90"  y="175" text-anchor="middle" fill="#8a94b0" font-size="13">모평균</text>
+      <text x="150" y="175" text-anchor="middle" fill="#8a94b0" font-size="13">모분산</text>
+      <text x="210" y="175" text-anchor="middle" fill="#8a94b0" font-size="13">모비율</text>
+      <text x="150" y="218" text-anchor="middle" fill="#4a90d9" font-size="13">※ 보통 알 수 없음</text>
+
+      <!-- Arrow -->
+      <defs>
+        <marker id="arr2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#50c8a0"/>
+        </marker>
+      </defs>
+      <line x1="290" y1="140" x2="390" y2="140" stroke="#50c8a0" stroke-width="3" stroke-dasharray="8 4" marker-end="url(#arr2)"/>
+      <text x="340" y="128" text-anchor="middle" fill="#50c8a0" font-size="14" font-weight="700">표본추출</text>
+      <text x="340" y="162" text-anchor="middle" fill="#8a94b0" font-size="12">추정(estimation)</text>
+
+      <!-- Sample box -->
+      <rect x="400" y="60" width="240" height="170" rx="16" fill="rgba(80,200,160,0.07)" stroke="#50c8a0" stroke-width="2"/>
+      <text x="520" y="54" text-anchor="middle" fill="#50c8a0" font-size="16" font-weight="700">표본 (n)</text>
+      <text x="520" y="118" text-anchor="middle" fill="#8a94b0" font-size="14">통계량 (Statistics)</text>
+      <text x="520" y="158" text-anchor="middle" fill="#e8ecf5" font-size="20" font-weight="700">x̄ ,  S² ,  p̂</text>
+      <text x="460" y="183" text-anchor="middle" fill="#8a94b0" font-size="13">표본평균</text>
+      <text x="520" y="183" text-anchor="middle" fill="#8a94b0" font-size="13">표본분산</text>
+      <text x="582" y="183" text-anchor="middle" fill="#8a94b0" font-size="13">표본비율</text>
+      <text x="520" y="212" text-anchor="middle" fill="#50c8a0" font-size="13">※ 관측·계산 가능</text>
+    </svg>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>구분</th>
+        <th>모수 (Parameter)</th>
+        <th>통계량 (Statistics)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>정의</td>
+        <td>모집단의 특성을 나타내는 값</td>
+        <td>표본의 특성을 나타내는 통계적인 양</td>
+      </tr>
+      <tr>
+        <td>평균</td>
+        <td>모평균 \(\mu\)</td>
+        <td>표본평균 \(\bar{x}\)</td>
+      </tr>
+      <tr>
+        <td>분산</td>
+        <td>모분산 \(\sigma^2\)</td>
+        <td>표본분산 \(S^2\)</td>
+      </tr>
+      <tr>
+        <td>비율</td>
+        <td>모비율 \(p\)</td>
+        <td>표본비율 \(\hat{p}\)</td>
+      </tr>
+      <tr>
+        <td>알 수 있는가?</td>
+        <td>보통 <strong style="color:#e05c5c">알 수 없음</strong> (이론값)</td>
+        <td><strong style="color:#50c8a0">계산 가능</strong> (관측 데이터)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════ SECTION 3: 표본추출법 ══════════════════════ -->
+<div class="section">
+  <div class="sec-title"><div class="num">3</div> 표본추출법 — 확률 vs 비확률</div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">✅ <span class="term">확률추출법</span> (Probability Sampling)</div>
+      <p>모집단의 각 개체가 표본으로 뽑힐 가능성이 <strong>모두 동등</strong>하다는 조건에서 객관적으로 표본을 추출하는 방법</p>
+      <p style="margin-top:10px">= <span class="badge badge-blue">임의추출법</span> (random sampling)</p>
+      <p>→ 추출된 표본: <span class="badge badge-blue">확률표본</span> 또는 <span class="badge badge-blue">임의표본</span></p>
+    </div>
+    <div class="card red">
+      <div class="card-title">❌ <span class="term-red">비확률추출법</span> (Nonprobability Sampling)</div>
+      <p>모집단으로부터 표본을 추출할 때, <strong>주관적</strong>으로 모집단의 대표를 정하여 표본을 추출하는 방법</p>
+      <p style="margin-top:10px">→ 편의(convenience) 표본, 판단(judgment) 표본 등</p>
+    </div>
+  </div>
+
+  <!-- Visual comparison -->
+  <div class="diagram">
+    <div class="diagram-title">확률추출법 vs 비확률추출법 비교</div>
+    <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+      <!-- Probability sampling -->
+      <rect x="20" y="20" width="300" height="160" rx="12" fill="rgba(74,144,217,0.07)" stroke="#4a90d9" stroke-width="1.5"/>
+      <text x="170" y="50" text-anchor="middle" fill="#4a90d9" font-size="15" font-weight="700">확률추출법</text>
+      <!-- equal dots -->
+      <circle cx="80"  cy="100" r="10" fill="#4a90d9" opacity="0.9"/>
+      <circle cx="120" cy="80"  r="10" fill="#4a90d9" opacity="0.9"/>
+      <circle cx="160" cy="110" r="10" fill="#4a90d9" opacity="0.9"/>
+      <circle cx="200" cy="85"  r="10" fill="#4a90d9" opacity="0.9"/>
+      <circle cx="245" cy="100" r="10" fill="#4a90d9" opacity="0.9"/>
+      <text x="170" y="155" text-anchor="middle" fill="#8a94b0" font-size="13">모든 개체: 동등한 선택 확률</text>
+
+      <!-- Nonprobability sampling -->
+      <rect x="360" y="20" width="300" height="160" rx="12" fill="rgba(224,92,92,0.07)" stroke="#e05c5c" stroke-width="1.5"/>
+      <text x="510" y="50" text-anchor="middle" fill="#e05c5c" font-size="15" font-weight="700">비확률추출법</text>
+      <circle cx="400" cy="105" r="6"  fill="#e05c5c" opacity="0.4"/>
+      <circle cx="430" cy="90"  r="6"  fill="#e05c5c" opacity="0.4"/>
+      <circle cx="490" cy="80"  r="16" fill="#e05c5c" opacity="0.9"/>
+      <circle cx="540" cy="110" r="6"  fill="#e05c5c" opacity="0.4"/>
+      <circle cx="580" cy="95"  r="6"  fill="#e05c5c" opacity="0.4"/>
+      <circle cx="560" cy="85"  r="6"  fill="#e05c5c" opacity="0.4"/>
+      <text x="510" y="155" text-anchor="middle" fill="#8a94b0" font-size="13">주관적 선택 → 편향 가능성</text>
+    </svg>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════ SECTION 4: 확률추출법의 종류 ══════════════════════ -->
+<div class="section">
+  <div class="sec-title"><div class="num">4</div> 확률추출법의 종류</div>
+
+  <!-- 1) Simple random -->
+  <div class="card" style="margin-bottom:32px">
+    <div class="card-title">① <span class="term">단순임의추출법</span> (Simple Random Sampling)</div>
+    <p>표본을 <strong>동등한 확률</strong>로 추출하는 방법. 제비뽑기, 난수표, 컴퓨터 난수 이용.</p>
+    <div class="diagram" style="margin-top:18px">
+      <svg viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+        <!-- all balls -->
+        <text x="20" y="35" fill="#8a94b0" font-size="13">모집단 (8개)</text>
+        <circle cx="60"  cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="60"  cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">1</text>
+        <circle cx="115" cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="115" cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">2</text>
+        <circle cx="170" cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="170" cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">3</text>
+        <circle cx="225" cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="225" cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">4</text>
+        <circle cx="280" cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="280" cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">5</text>
+        <circle cx="335" cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="335" cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">6</text>
+        <circle cx="390" cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="390" cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">7</text>
+        <circle cx="445" cy="85" r="22" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+        <text x="445" cy="90" text-anchor="middle" dominant-baseline="middle" fill="#e8ecf5" font-size="15">8</text>
+
+        <!-- selected highlight -->
+        <circle cx="115" cy="85" r="22" fill="rgba(74,144,217,0.7)" stroke="#4a90d9" stroke-width="2.5"/>
+        <text x="115" y="90" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="15" font-weight="700">2</text>
+        <circle cx="280" cy="85" r="22" fill="rgba(74,144,217,0.7)" stroke="#4a90d9" stroke-width="2.5"/>
+        <text x="280" y="90" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="15" font-weight="700">5</text>
+        <circle cx="445" cy="85" r="22" fill="rgba(74,144,217,0.7)" stroke="#4a90d9" stroke-width="2.5"/>
+        <text x="445" y="90" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="15" font-weight="700">8</text>
+
+        <text x="300" y="148" text-anchor="middle" fill="#50c8a0" font-size="13" font-weight="700">→ 3개 임의 선택 (각 확률 동등: 3/8)</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 2) Stratified -->
+  <div class="card green" style="margin-bottom:32px">
+    <div class="card-title">② <span class="term-green">층화임의추출법</span> (Stratified Random Sampling)</div>
+    <p>모집단을 <strong>성질이 비슷한 것끼리</strong> 층(stratum)으로 분류하고, 각 층으로부터 임의로 표본을 추출하는 방법</p>
+    <div class="diagram" style="margin-top:18px">
+      <svg viewBox="0 0 600 180" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+        <!-- Layer A -->
+        <rect x="20" y="20" width="160" height="140" rx="10" fill="rgba(74,144,217,0.08)" stroke="#4a90d9" stroke-width="1.5"/>
+        <text x="100" y="44" text-anchor="middle" fill="#4a90d9" font-size="14" font-weight="700">층 A (남성)</text>
+        <circle cx="65"  cy="90" r="14" fill="rgba(74,144,217,0.4)" stroke="#4a90d9" stroke-width="1.5"/>
+        <circle cx="100" cy="80" r="14" fill="rgba(74,144,217,0.85)" stroke="#fff" stroke-width="2"/>
+        <circle cx="140" cy="90" r="14" fill="rgba(74,144,217,0.4)" stroke="#4a90d9" stroke-width="1.5"/>
+        <circle cx="80"  cy="120" r="14" fill="rgba(74,144,217,0.4)" stroke="#4a90d9" stroke-width="1.5"/>
+        <circle cx="120" cy="120" r="14" fill="rgba(74,144,217,0.85)" stroke="#fff" stroke-width="2"/>
+        <text x="100" y="158" text-anchor="middle" fill="#50c8a0" font-size="12">2개 추출</text>
+
+        <!-- Layer B -->
+        <rect x="220" y="20" width="160" height="140" rx="10" fill="rgba(224,92,92,0.08)" stroke="#e05c5c" stroke-width="1.5"/>
+        <text x="300" y="44" text-anchor="middle" fill="#e05c5c" font-size="14" font-weight="700">층 B (여성)</text>
+        <circle cx="265" cy="90" r="14" fill="rgba(224,92,92,0.4)" stroke="#e05c5c" stroke-width="1.5"/>
+        <circle cx="300" cy="80" r="14" fill="rgba(224,92,92,0.85)" stroke="#fff" stroke-width="2"/>
+        <circle cx="340" cy="90" r="14" fill="rgba(224,92,92,0.4)" stroke="#e05c5c" stroke-width="1.5"/>
+        <circle cx="280" cy="120" r="14" fill="rgba(224,92,92,0.85)" stroke="#fff" stroke-width="2"/>
+        <circle cx="320" cy="120" r="14" fill="rgba(224,92,92,0.4)" stroke="#e05c5c" stroke-width="1.5"/>
+        <text x="300" y="158" text-anchor="middle" fill="#50c8a0" font-size="12">2개 추출</text>
+
+        <!-- Layer C -->
+        <rect x="420" y="20" width="160" height="140" rx="10" fill="rgba(240,184,64,0.08)" stroke="#f0b840" stroke-width="1.5"/>
+        <text x="500" y="44" text-anchor="middle" fill="#f0b840" font-size="14" font-weight="700">층 C (청소년)</text>
+        <circle cx="465" cy="90" r="14" fill="rgba(240,184,64,0.4)" stroke="#f0b840" stroke-width="1.5"/>
+        <circle cx="500" cy="80" r="14" fill="rgba(240,184,64,0.85)" stroke="#fff" stroke-width="2"/>
+        <circle cx="540" cy="90" r="14" fill="rgba(240,184,64,0.4)" stroke="#f0b840" stroke-width="1.5"/>
+        <circle cx="480" cy="120" r="14" fill="rgba(240,184,64,0.4)" stroke="#f0b840" stroke-width="1.5"/>
+        <circle cx="520" cy="115" r="14" fill="rgba(240,184,64,0.4)" stroke="#f0b840" stroke-width="1.5"/>
+        <text x="500" y="158" text-anchor="middle" fill="#50c8a0" font-size="12">1개 추출</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 3) Systematic -->
+  <div class="card yellow" style="margin-bottom:32px">
+    <div class="card-title">③ <span class="term-yellow">계통임의추출법</span> (Systematic Random Sampling)</div>
+    <p>모집단으로부터 <strong>일정한 간격 k</strong>를 두고 추출하는 방법. 임의출발점 i를 정하고 그로부터 k번째마다 표본을 뽑는다.</p>
+    <p>이때 k를 <span class="term-yellow">추출 간격 (sampling interval)</span>이라 한다.</p>
+
+    <div class="formula-box">
+      \[ i \;,\; i+k \;,\; i+2k \;,\; \cdots \;,\; i+jk \;,\; \cdots \;,\; i+(n-1)k \]
+    </div>
+
+    <div class="diagram" style="margin-top:10px">
+      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+        <text x="20" y="28" fill="#8a94b0" font-size="13">예: N=12, k=3, i=2 → 선택: 2, 5, 8, 11</text>
+        <!-- 12 boxes -->
+        <defs>
+          <marker id="arr3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#f0b840"/>
+          </marker>
+        </defs>
+        <script type="text/javascript">
+          /* drawn manually below */
+        </script>
+        <!-- boxes 1–12 -->
+        <!-- row -->
+        <rect x="20"  y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="40"  y="76" text-anchor="middle" fill="#8a94b0" font-size="16">1</text>
+        <rect x="68"  y="50" width="40" height="40" rx="6" fill="rgba(240,184,64,0.25)" stroke="#f0b840" stroke-width="2"/>
+        <text x="88"  y="76" text-anchor="middle" fill="#f0b840" font-size="16" font-weight="700">2</text>
+        <rect x="116" y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="136" y="76" text-anchor="middle" fill="#8a94b0" font-size="16">3</text>
+        <rect x="164" y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="184" y="76" text-anchor="middle" fill="#8a94b0" font-size="16">4</text>
+        <rect x="212" y="50" width="40" height="40" rx="6" fill="rgba(240,184,64,0.25)" stroke="#f0b840" stroke-width="2"/>
+        <text x="232" y="76" text-anchor="middle" fill="#f0b840" font-size="16" font-weight="700">5</text>
+        <rect x="260" y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="280" y="76" text-anchor="middle" fill="#8a94b0" font-size="16">6</text>
+        <rect x="308" y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="328" y="76" text-anchor="middle" fill="#8a94b0" font-size="16">7</text>
+        <rect x="356" y="50" width="40" height="40" rx="6" fill="rgba(240,184,64,0.25)" stroke="#f0b840" stroke-width="2"/>
+        <text x="376" y="76" text-anchor="middle" fill="#f0b840" font-size="16" font-weight="700">8</text>
+        <rect x="404" y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="424" y="76" text-anchor="middle" fill="#8a94b0" font-size="16">9</text>
+        <rect x="452" y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="472" y="76" text-anchor="middle" fill="#8a94b0" font-size="16">10</text>
+        <rect x="500" y="50" width="40" height="40" rx="6" fill="rgba(240,184,64,0.25)" stroke="#f0b840" stroke-width="2"/>
+        <text x="520" y="76" text-anchor="middle" fill="#f0b840" font-size="16" font-weight="700">11</text>
+        <rect x="548" y="50" width="40" height="40" rx="6" fill="rgba(74,144,217,0.1)"  stroke="#2a3050" stroke-width="1.5"/>
+        <text x="568" y="76" text-anchor="middle" fill="#8a94b0" font-size="16">12</text>
+
+        <!-- interval arrows -->
+        <line x1="108" y1="70" x2="202" y2="70" stroke="#f0b840" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+        <line x1="252" y1="70" x2="346" y2="70" stroke="#f0b840" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+        <line x1="396" y1="70" x2="490" y2="70" stroke="#f0b840" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+        <text x="155" y="44" text-anchor="middle" fill="#f0b840" font-size="12">k=3</text>
+        <text x="299" y="44" text-anchor="middle" fill="#f0b840" font-size="12">k=3</text>
+        <text x="443" y="44" text-anchor="middle" fill="#f0b840" font-size="12">k=3</text>
+
+        <text x="300" y="120" text-anchor="middle" fill="#50c8a0" font-size="13">노란색 = 선택된 표본</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 4) Cluster Sampling — 전체 확장 카드 -->
+  <div class="card" style="border-color:#7b5ea7; margin-bottom:32px;">
+    <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#7b5ea7;border-radius:4px 0 0 4px;"></div>
+    <div class="card-title">④ <span style="color:#a07be0;font-weight:700">집락추출법</span> (Cluster Sampling)</div>
+
+    <p>모집단을 여러 개의 <strong style="color:#a07be0">집락(cluster)</strong>으로 나누고, 그 집락을 추출 단위로 하여 몇 개의 집락을 임의로 선택한 뒤 <strong>선택된 집락 내부 전체를 조사</strong>하는 방법이다.</p>
+    <p style="margin-top:10px;">집락은 학교·마을·공장 라인처럼 <strong>자연적으로 이미 존재하는 군집</strong>을 그대로 사용한다. 인위적으로 최적화해 만드는 것이 아니다.</p>
+
+    <!-- Key points -->
+    <ul class="keypoints" style="margin-top:18px;">
+      <li>전체 목록(sampling frame)이 없어도 집락 목록만 있으면 적용 가능</li>
+      <li>지리적으로 분산된 모집단에서 비용·시간을 크게 절감할 수 있음</li>
+      <li>집락 내 개체가 서로 비슷할수록(동질적) 표본오차가 커지는 단점이 있음</li>
+      <li><span style="color:#a07be0;font-weight:700">확률비례추출법(PPS)</span>: 집락 크기가 서로 다를 때, 큰 집락이 더 높은 확률로 선택되도록 조정</li>
+    </ul>
+
+    <!-- ── 핵심 개념 박스: 왜 내부가 이질적이어야 하는가 ── -->
+    <div style="margin-top:24px; padding:22px 26px; background:#0a0e1a; border-radius:14px; border:2px solid #a07be0;">
+      <div style="font-size:18px; font-weight:700; color:#f0b840; margin-bottom:14px;">
+        ⚠️ "집락 내부는 이질적, 집락 간은 동질적" — 왜 머신러닝 클러스터링과 반대일까?
+      </div>
+
+      <!-- ML vs Stat 비교 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; font-size:16px;">
+        <div style="background:rgba(74,144,217,0.08); padding:14px 16px; border-radius:10px; border:1px solid rgba(74,144,217,0.3);">
+          <div style="color:#4a90d9; font-weight:700; margin-bottom:8px;">💻 머신러닝 클러스터링</div>
+          <div style="color:#8a94b0; line-height:1.8;">
+            목적: <strong style="color:#e8ecf5">비슷한 것끼리 묶기</strong><br>
+            클러스터 내부: <strong style="color:#50c8a0">동질적</strong> ✔<br>
+            클러스터 간: <strong style="color:#e05c5c">이질적</strong> ✔<br>
+            클러스터를 <strong style="color:#e8ecf5">알고리즘이 최적화</strong>해서 생성
+          </div>
+        </div>
+        <div style="background:rgba(160,123,224,0.08); padding:14px 16px; border-radius:10px; border:1px solid rgba(160,123,224,0.3);">
+          <div style="color:#a07be0; font-weight:700; margin-bottom:8px;">📊 통계학 집락추출법</div>
+          <div style="color:#8a94b0; line-height:1.8;">
+            목적: <strong style="color:#e8ecf5">모집단을 잘 대표하는 표본 뽑기</strong><br>
+            집락 내부: <strong style="color:#e05c5c">이질적</strong>이어야 이상적<br>
+            집락 간: <strong style="color:#50c8a0">동질적</strong>이어야 이상적<br>
+            집락은 <strong style="color:#e8ecf5">자연적으로 이미 존재</strong>하는 군집
+          </div>
+        </div>
+      </div>
+
+      <!-- 핵심 이유 설명 -->
+      <div style="font-size:16px; color:#8a94b0; line-height:1.85; margin-bottom:16px;">
+        집락추출법에서는 <strong style="color:#e8ecf5">선택된 집락만 조사하고 나머지는 완전히 제외</strong>한다.
+        따라서 선택된 집락 하나가 <strong style="color:#f0b840">모집단 전체를 축소판처럼 대표</strong>해야 한다.
+      </div>
+
+      <!-- 수학 성적 예시 — 이질 vs 동질 비교 -->
+      <div style="font-size:15px; font-weight:700; color:#e8ecf5; margin-bottom:10px;">📌 예시: 전국 학생 수학 성적 조사</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; font-size:15px;">
+
+        <!-- BAD case -->
+        <div style="background:rgba(224,92,92,0.07); padding:14px 16px; border-radius:10px; border:1px solid rgba(224,92,92,0.35);">
+          <div style="color:#e05c5c; font-weight:700; margin-bottom:8px;">❌ 집락 내부가 동질적인 경우 (나쁜 설계)</div>
+          <div style="color:#8a94b0; line-height:1.8;">
+            집락 A = 강남 학교들만<br>
+            집락 B = 농촌 학교들만<br>
+            집락 C = 특목고들만<br><br>
+            → 집락 A 선택 시: <strong style="color:#e05c5c">상위권만</strong> 조사됨<br>
+            → 나머지 유형은 <strong style="color:#e05c5c">완전히 누락</strong><br>
+            → 모집단 전체를 대표 못함 😥
+          </div>
+        </div>
+
+        <!-- GOOD case -->
+        <div style="background:rgba(80,200,160,0.07); padding:14px 16px; border-radius:10px; border:1px solid rgba(80,200,160,0.35);">
+          <div style="color:#50c8a0; font-weight:700; margin-bottom:8px;">✅ 집락 내부가 이질적인 경우 (좋은 설계)</div>
+          <div style="color:#8a94b0; line-height:1.8;">
+            집락 A = 강남·강북·농촌 학생 혼합<br>
+            집락 B = 상·중·하위권 학생 혼합<br>
+            집락 C = 특목고·일반고·직업고 혼합<br><br>
+            → 집락 A 하나만 선택해도<br>
+            → <strong style="color:#50c8a0">다양한 유형</strong>이 포함됨<br>
+            → 모집단을 잘 대표함 😊
+          </div>
+        </div>
+      </div>
+
+      <!-- 집락 간 동질 이유 -->
+      <div style="margin-top:16px; padding:14px 16px; background:rgba(240,184,64,0.07); border-radius:10px; border:1px solid rgba(240,184,64,0.3); font-size:15px; color:#8a94b0; line-height:1.8;">
+        <strong style="color:#f0b840;">집락 간이 동질적이어야 하는 이유:</strong>
+        집락들이 서로 비슷하면 <strong style="color:#e8ecf5">어떤 집락을 선택해도 비슷한 결론</strong>이 나온다.
+        즉 "어떤 집락이 뽑혔느냐"에 따른 결과의 편차가 작아져 표본오차가 줄어든다.
+        반대로 집락들이 서로 크게 다르면, 운 나쁘게 편향된 집락을 뽑았을 때 결과가 크게 왜곡된다.
+      </div>
+
+      <!-- Summary table -->
+      <div style="margin-top:18px;">
+        <table style="margin:0; font-size:15px;">
+          <thead>
+            <tr>
+              <th style="padding:10px 14px;">구분</th>
+              <th style="padding:10px 14px;">머신러닝 클러스터링</th>
+              <th style="padding:10px 14px;">통계학 집락추출법</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px 14px;"><strong>목적</strong></td>
+              <td style="padding:10px 14px;">비슷한 것끼리 묶기</td>
+              <td style="padding:10px 14px;">모집단을 잘 대표하는 표본 추출</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;"><strong>집락 내부</strong></td>
+              <td style="padding:10px 14px; color:#50c8a0; font-weight:700;">동질적이어야 좋음</td>
+              <td style="padding:10px 14px; color:#e05c5c; font-weight:700;">이질적이어야 좋음</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;"><strong>집락 간</strong></td>
+              <td style="padding:10px 14px; color:#e05c5c; font-weight:700;">이질적이어야 좋음</td>
+              <td style="padding:10px 14px; color:#50c8a0; font-weight:700;">동질적이어야 좋음</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;"><strong>집락 형성</strong></td>
+              <td style="padding:10px 14px;">알고리즘이 최적화해서 생성</td>
+              <td style="padding:10px 14px;">자연적으로 이미 존재하는 군집</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 예시 다이어그램: 동질 집락(나쁨) vs 이질 집락(좋음) ── -->
+    <div class="diagram" style="margin-top:24px;">
+      <div class="diagram-title">예시 — 수학 성적 조사: 동질 집락(나쁨) vs 이질 집락(좋음)</div>
+      <svg viewBox="0 0 740 340" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+        <defs>
+          <marker id="ca1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0,8 3,0 6" fill="#e05c5c"/>
+          </marker>
+          <marker id="ca2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0,8 3,0 6" fill="#50c8a0"/>
+          </marker>
+        </defs>
+
+        <!-- ===== LEFT: BAD DESIGN ===== -->
+        <text x="185" y="20" text-anchor="middle" fill="#e05c5c" font-size="15" font-weight="700">❌ 나쁜 설계: 집락 내부 동질적</text>
+
+        <!-- Cluster A: 상위권만 -->
+        <rect x="20" y="32" width="110" height="130" rx="10" fill="rgba(224,92,92,0.08)" stroke="#e05c5c" stroke-width="2"/>
+        <text x="75" y="52" text-anchor="middle" fill="#e05c5c" font-size="12" font-weight="700">집락 A</text>
+        <text x="75" y="67" text-anchor="middle" fill="#e05c5c" font-size="11">(강남 학교)</text>
+        <!-- 상위권 아이콘 (별 모양 크게) -->
+        <text x="40" y="105" font-size="22" text-anchor="middle">⭐</text>
+        <text x="75" y="105" font-size="22" text-anchor="middle">⭐</text>
+        <text x="110" y="105" font-size="22" text-anchor="middle">⭐</text>
+        <text x="55" y="135" font-size="22" text-anchor="middle">⭐</text>
+        <text x="95" y="135" font-size="22" text-anchor="middle">⭐</text>
+        <text x="75" y="153" text-anchor="middle" fill="#8a94b0" font-size="11">상위권만</text>
+
+        <!-- Cluster B: 농촌만 -->
+        <rect x="140" y="32" width="110" height="130" rx="10" fill="rgba(74,144,217,0.05)" stroke="#2a3050" stroke-width="1.5"/>
+        <text x="195" y="52" text-anchor="middle" fill="#8a94b0" font-size="12">집락 B</text>
+        <text x="195" y="67" text-anchor="middle" fill="#8a94b0" font-size="11">(농촌 학교)</text>
+        <text x="160" y="105" font-size="22" text-anchor="middle">🌾</text>
+        <text x="195" y="105" font-size="22" text-anchor="middle">🌾</text>
+        <text x="230" y="105" font-size="22" text-anchor="middle">🌾</text>
+        <text x="175" y="135" font-size="22" text-anchor="middle">🌾</text>
+        <text x="215" y="135" font-size="22" text-anchor="middle">🌾</text>
+        <text x="195" y="153" text-anchor="middle" fill="#8a94b0" font-size="11">하위권만</text>
+
+        <!-- Cluster C: 특목고만 -->
+        <rect x="260" y="32" width="110" height="130" rx="10" fill="rgba(74,144,217,0.05)" stroke="#2a3050" stroke-width="1.5"/>
+        <text x="315" y="52" text-anchor="middle" fill="#8a94b0" font-size="12">집락 C</text>
+        <text x="315" y="67" text-anchor="middle" fill="#8a94b0" font-size="11">(특목고)</text>
+        <text x="280" y="105" font-size="22" text-anchor="middle">🔬</text>
+        <text x="315" y="105" font-size="22" text-anchor="middle">🔬</text>
+        <text x="350" y="105" font-size="22" text-anchor="middle">🔬</text>
+        <text x="295" y="135" font-size="22" text-anchor="middle">🔬</text>
+        <text x="335" y="135" font-size="22" text-anchor="middle">🔬</text>
+        <text x="315" y="153" text-anchor="middle" fill="#8a94b0" font-size="11">영재만</text>
+
+        <!-- Arrow: A selected -->
+        <line x1="75" y1="168" x2="75" y2="200" stroke="#e05c5c" stroke-width="2" marker-end="url(#ca1)"/>
+        <text x="75" y="192" text-anchor="middle" fill="#e05c5c" font-size="11">선택!</text>
+
+        <!-- Result bad -->
+        <rect x="20" y="205" width="350" height="50" rx="8" fill="rgba(224,92,92,0.1)" stroke="#e05c5c" stroke-width="1.5"/>
+        <text x="195" y="228" text-anchor="middle" fill="#e05c5c" font-size="13" font-weight="700">집락 A만 조사 → 상위권 학생만 데이터에 포함!</text>
+        <text x="195" y="246" text-anchor="middle" fill="#8a94b0" font-size="12">농촌·특목고 학생은 완전 누락 → 모집단 대표 실패 😥</text>
+
+        <!-- ===== RIGHT: GOOD DESIGN ===== -->
+        <text x="565" y="20" text-anchor="middle" fill="#50c8a0" font-size="15" font-weight="700">✅ 좋은 설계: 집락 내부 이질적</text>
+
+        <!-- Cluster X: 혼합 1 -->
+        <rect x="390" y="32" width="110" height="130" rx="10" fill="rgba(80,200,160,0.12)" stroke="#50c8a0" stroke-width="2.5"/>
+        <text x="445" y="52" text-anchor="middle" fill="#50c8a0" font-size="12" font-weight="700">집락 X ★</text>
+        <text x="445" y="67" text-anchor="middle" fill="#50c8a0" font-size="11">(혼합 구성)</text>
+        <text x="415" y="100" font-size="18" text-anchor="middle">⭐</text>
+        <text x="445" y="100" font-size="18" text-anchor="middle">🌾</text>
+        <text x="475" y="100" font-size="18" text-anchor="middle">🔬</text>
+        <text x="415" y="128" font-size="18" text-anchor="middle">📚</text>
+        <text x="445" y="128" font-size="18" text-anchor="middle">⭐</text>
+        <text x="475" y="128" font-size="18" text-anchor="middle">🌾</text>
+        <text x="445" y="153" text-anchor="middle" fill="#50c8a0" font-size="11">다양하게 혼합</text>
+
+        <!-- Cluster Y: 혼합 2 -->
+        <rect x="510" y="32" width="110" height="130" rx="10" fill="rgba(74,144,217,0.05)" stroke="#2a3050" stroke-width="1.5"/>
+        <text x="565" y="52" text-anchor="middle" fill="#8a94b0" font-size="12">집락 Y</text>
+        <text x="565" y="67" text-anchor="middle" fill="#8a94b0" font-size="11">(혼합 구성)</text>
+        <text x="535" y="100" font-size="18" text-anchor="middle">🔬</text>
+        <text x="565" y="100" font-size="18" text-anchor="middle">⭐</text>
+        <text x="595" y="100" font-size="18" text-anchor="middle">📚</text>
+        <text x="535" y="128" font-size="18" text-anchor="middle">🌾</text>
+        <text x="565" y="128" font-size="18" text-anchor="middle">🔬</text>
+        <text x="595" y="128" font-size="18" text-anchor="middle">⭐</text>
+        <text x="565" y="153" text-anchor="middle" fill="#8a94b0" font-size="11">다양하게 혼합</text>
+
+        <!-- Cluster Z: 혼합 3 -->
+        <rect x="630" y="32" width="100" height="130" rx="10" fill="rgba(74,144,217,0.05)" stroke="#2a3050" stroke-width="1.5"/>
+        <text x="680" y="52" text-anchor="middle" fill="#8a94b0" font-size="12">집락 Z</text>
+        <text x="680" y="67" text-anchor="middle" fill="#8a94b0" font-size="11">(혼합 구성)</text>
+        <text x="650" y="100" font-size="18" text-anchor="middle">📚</text>
+        <text x="680" y="100" font-size="18" text-anchor="middle">🌾</text>
+        <text x="710" y="100" font-size="18" text-anchor="middle">⭐</text>
+        <text x="650" y="128" font-size="18" text-anchor="middle">🔬</text>
+        <text x="680" y="128" font-size="18" text-anchor="middle">📚</text>
+        <text x="710" y="128" font-size="18" text-anchor="middle">🌾</text>
+        <text x="680" y="153" text-anchor="middle" fill="#8a94b0" font-size="11">다양하게 혼합</text>
+
+        <!-- Arrow: X selected -->
+        <line x1="445" y1="168" x2="445" y2="200" stroke="#50c8a0" stroke-width="2" marker-end="url(#ca2)"/>
+        <text x="445" y="192" text-anchor="middle" fill="#50c8a0" font-size="11">선택!</text>
+
+        <!-- Result good -->
+        <rect x="390" y="205" width="345" height="50" rx="8" fill="rgba(80,200,160,0.1)" stroke="#50c8a0" stroke-width="1.5"/>
+        <text x="562" y="228" text-anchor="middle" fill="#50c8a0" font-size="13" font-weight="700">집락 X만 조사해도 상위권·하위권·영재 포함!</text>
+        <text x="562" y="246" text-anchor="middle" fill="#8a94b0" font-size="12">집락 하나가 모집단을 잘 축소·대표함 😊</text>
+
+        <!-- 범례 -->
+        <text x="370" y="290" text-anchor="middle" fill="#8a94b0" font-size="13">범례:</text>
+        <text x="410" y="290" font-size="16" text-anchor="middle">⭐</text>
+        <text x="440" y="290" fill="#8a94b0" font-size="12">강남 상위권</text>
+        <text x="510" y="290" font-size="16" text-anchor="middle">🌾</text>
+        <text x="540" y="290" fill="#8a94b0" font-size="12">농촌 학생</text>
+        <text x="600" y="290" font-size="16" text-anchor="middle">🔬</text>
+        <text x="630" y="290" fill="#8a94b0" font-size="12">특목고 영재</text>
+        <text x="690" y="290" font-size="16" text-anchor="middle">📚</text>
+        <text x="720" y="290" fill="#8a94b0" font-size="12">일반고</text>
+
+        <!-- Divider vertical -->
+        <line x1="378" y1="15" x2="378" y2="270" stroke="#2a3050" stroke-width="1.5" stroke-dasharray="6 4"/>
+      </svg>
+    </div>
+
+    <!-- Comparison: 층화 vs 집락 -->
+    <div style="margin-top:20px; padding:20px 24px; background:#0a0e1a; border-radius:12px; border:1px solid #2a3050;">
+      <div style="font-size:17px; font-weight:700; color:#f0b840; margin-bottom:12px;">⚡ 층화임의추출법 vs 집락추출법 — 헷갈리기 쉬운 차이!</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:17px;">
+        <div style="background:rgba(80,200,160,0.07); padding:14px 18px; border-radius:10px; border:1px solid rgba(80,200,160,0.3);">
+          <div style="color:#50c8a0; font-weight:700; margin-bottom:8px;">층화임의추출법</div>
+          <div style="color:#8a94b0; line-height:1.7;">
+            · 모든 층에서 <strong style="color:#e8ecf5">일부만</strong> 추출<br>
+            · 층 내부: 동질적 (같은 특성)<br>
+            · 층 간: 이질적 (서로 다른 특성)<br>
+            · 정밀도 ↑, 비용 ↑
+          </div>
+        </div>
+        <div style="background:rgba(160,123,224,0.07); padding:14px 18px; border-radius:10px; border:1px solid rgba(160,123,224,0.3);">
+          <div style="color:#a07be0; font-weight:700; margin-bottom:8px;">집락추출법</div>
+          <div style="color:#8a94b0; line-height:1.7;">
+            · 선택된 집락 내부 <strong style="color:#e8ecf5">전부</strong> 조사<br>
+            · 집락 내부: 이질적 (다양한 특성)<br>
+            · 집락 간: 동질적 (서로 비슷)<br>
+            · 정밀도 ↓, 비용 ↓
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5) Multistage Sampling — 전체 확장 카드 -->
+  <div class="card green" style="margin-bottom:32px;">
+    <div class="card-title">⑤ <span class="term-green">다단추출법</span> (Multistage Sampling)</div>
+
+    <p>집락추출법에서 한 발 더 나아가, <strong>선택된 집락 내부에서도 전부를 조사하지 않고 다시 표본을 추출</strong>하는 방법이다. 이렇게 2단계 이상으로 추출을 반복하는 것을 다단추출법이라 한다.</p>
+    <p style="margin-top:10px;">집락의 크기가 매우 클 때 <strong>비용 절감</strong>은 물론이고, 잘 설계하면 <strong>정밀도 면에서도 유리</strong>한 경우가 많다.</p>
+
+    <ul class="keypoints" style="margin-top:18px;">
+      <li><strong style="color:#50c8a0">1단 추출</strong>: 모집단 전체 집락 중 일부 집락을 임의 선택</li>
+      <li><strong style="color:#50c8a0">2단 추출</strong>: 선택된 집락 내부에서 다시 개체를 임의 추출</li>
+      <li><strong style="color:#50c8a0">3단 이상</strong>: 2단에서 얻은 소집락에서 또 추출 (예: 시·도 → 시·군·구 → 개인)</li>
+      <li>각 단계에서 어떤 확률추출법도 사용 가능 (단순임의, 층화, 계통 등 조합 가능)</li>
+    </ul>
+
+    <!-- Multistage diagram: 시도 → 시군구 → 개인 -->
+    <div class="diagram" style="margin-top:20px;">
+      <div class="diagram-title">예시 — 전국 가구 소득 조사 (3단 추출)</div>
+      <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans KR', sans-serif">
+        <defs>
+          <marker id="ms1" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0,9 3.5,0 7" fill="#50c8a0"/>
+          </marker>
+        </defs>
+
+        <!-- Stage 1: 시·도 -->
+        <rect x="10" y="10" width="150" height="260" rx="12" fill="rgba(80,200,160,0.06)" stroke="#50c8a0" stroke-width="2"/>
+        <text x="85" y="33" text-anchor="middle" fill="#50c8a0" font-size="13" font-weight="700">1단: 시·도 선택</text>
+        <text x="85" y="50" text-anchor="middle" fill="#8a94b0" font-size="11">(전국 17개 시·도)</text>
+
+        <!-- 시도들 -->
+        <rect x="25" y="62" width="120" height="30" rx="6" fill="rgba(80,200,160,0.25)" stroke="#50c8a0" stroke-width="2"/>
+        <text x="85" y="82" text-anchor="middle" fill="#50c8a0" font-size="13" font-weight="700">🏙 서울</text>
+
+        <rect x="25" y="100" width="120" height="30" rx="6" fill="rgba(74,144,217,0.07)" stroke="#2a3050" stroke-width="1"/>
+        <text x="85" y="120" text-anchor="middle" fill="#4a4f60" font-size="12">부산</text>
+
+        <rect x="25" y="138" width="120" height="30" rx="6" fill="rgba(80,200,160,0.25)" stroke="#50c8a0" stroke-width="2"/>
+        <text x="85" y="158" text-anchor="middle" fill="#50c8a0" font-size="13" font-weight="700">🏙 경기</text>
+
+        <rect x="25" y="176" width="120" height="30" rx="6" fill="rgba(74,144,217,0.07)" stroke="#2a3050" stroke-width="1"/>
+        <text x="85" y="196" text-anchor="middle" fill="#4a4f60" font-size="12">대구</text>
+
+        <text x="85" y="230" text-anchor="middle" fill="#4a4f60" font-size="18">⋮</text>
+        <text x="85" y="260" text-anchor="middle" fill="#50c8a0" font-size="11">2개 선택</text>
+
+        <!-- Arrow 1→2 -->
+        <line x1="165" y1="150" x2="210" y2="150" stroke="#50c8a0" stroke-width="2.5" marker-end="url(#ms1)"/>
+        <text x="187" y="142" text-anchor="middle" fill="#50c8a0" font-size="11" font-weight="700">임의추출</text>
+
+        <!-- Stage 2: 시·군·구 -->
+        <rect x="215" y="10" width="190" height="260" rx="12" fill="rgba(80,200,160,0.06)" stroke="#50c8a0" stroke-width="2"/>
+        <text x="310" y="33" text-anchor="middle" fill="#50c8a0" font-size="13" font-weight="700">2단: 구(區) 선택</text>
+        <text x="310" y="50" text-anchor="middle" fill="#8a94b0" font-size="11">(선택된 시·도의 구)</text>
+
+        <!-- 서울 구들 -->
+        <text x="230" y="72" fill="#a07be0" font-size="11" font-weight="700">서울 내</text>
+        <rect x="228" y="80" width="165" height="26" rx="5" fill="rgba(160,123,224,0.2)" stroke="#a07be0" stroke-width="1.5"/>
+        <text x="310" y="98" text-anchor="middle" fill="#a07be0" font-size="12" font-weight="700">강남구 ★</text>
+        <rect x="228" y="112" width="165" height="26" rx="5" fill="rgba(74,144,217,0.07)" stroke="#2a3050" stroke-width="1"/>
+        <text x="310" y="130" text-anchor="middle" fill="#4a4f60" font-size="12">마포구</text>
+        <rect x="228" y="144" width="165" height="26" rx="5" fill="rgba(74,144,217,0.07)" stroke="#2a3050" stroke-width="1"/>
+        <text x="310" y="162" text-anchor="middle" fill="#4a4f60" font-size="12">송파구</text>
+
+        <!-- 경기 구들 -->
+        <text x="230" y="192" fill="#a07be0" font-size="11" font-weight="700">경기 내</text>
+        <rect x="228" y="200" width="165" height="26" rx="5" fill="rgba(160,123,224,0.2)" stroke="#a07be0" stroke-width="1.5"/>
+        <text x="310" y="218" text-anchor="middle" fill="#a07be0" font-size="12" font-weight="700">수원시 ★</text>
+        <text x="310" y="255" text-anchor="middle" fill="#50c8a0" font-size="11">각 1개씩 선택</text>
+
+        <!-- Arrow 2→3 -->
+        <line x1="410" y1="150" x2="455" y2="150" stroke="#50c8a0" stroke-width="2.5" marker-end="url(#ms1)"/>
+        <text x="432" y="142" text-anchor="middle" fill="#50c8a0" font-size="11" font-weight="700">임의추출</text>
+
+        <!-- Stage 3: 가구 -->
+        <rect x="460" y="10" width="250" height="260" rx="12" fill="rgba(80,200,160,0.06)" stroke="#50c8a0" stroke-width="2"/>
+        <text x="585" y="33" text-anchor="middle" fill="#50c8a0" font-size="13" font-weight="700">3단: 가구 추출</text>
+        <text x="585" y="50" text-anchor="middle" fill="#8a94b0" font-size="11">(선택된 구에서 개별 가구)</text>
+
+        <!-- Households grid -->
+        <text x="475" y="72" fill="#a07be0" font-size="11" font-weight="700">강남구</text>
+        <!-- row1 -->
+        <circle cx="490" cy="95"  r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="518" cy="95"  r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="546" cy="95"  r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="574" cy="95"  r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="602" cy="95"  r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="630" cy="95"  r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="658" cy="95"  r="11" fill="#2a3050" opacity="0.7"/>
+        <!-- row2 -->
+        <circle cx="490" cy="122" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="518" cy="122" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="546" cy="122" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="574" cy="122" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="602" cy="122" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="630" cy="122" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="658" cy="122" r="11" fill="#50c8a0" opacity="0.85"/>
+
+        <text x="475" y="160" fill="#a07be0" font-size="11" font-weight="700">수원시</text>
+        <!-- row3 -->
+        <circle cx="490" cy="180" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="518" cy="180" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="546" cy="180" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="574" cy="180" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="602" cy="180" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="630" cy="180" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="658" cy="180" r="11" fill="#50c8a0" opacity="0.85"/>
+        <!-- row4 -->
+        <circle cx="490" cy="207" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="518" cy="207" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="546" cy="207" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="574" cy="207" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="602" cy="207" r="11" fill="#2a3050" opacity="0.7"/>
+        <circle cx="630" cy="207" r="11" fill="#50c8a0" opacity="0.85"/>
+        <circle cx="658" cy="207" r="11" fill="#2a3050" opacity="0.7"/>
+
+        <text x="475" y="248" fill="#50c8a0" font-size="11" font-weight="700">🟢 = 최종 선택 가구</text>
+        <text x="475" y="264" fill="#4a4f60" font-size="11">⬤ = 미선택</text>
+      </svg>
+    </div>
+
+    <!-- 집락 vs 다단 비교 -->
+    <div style="margin-top:20px; padding:20px 24px; background:#0a0e1a; border-radius:12px; border:1px solid #2a3050;">
+      <div style="font-size:17px; font-weight:700; color:#f0b840; margin-bottom:14px;">⚡ 집락추출법 vs 다단추출법 — 핵심 차이</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:17px;">
+        <div style="background:rgba(160,123,224,0.07); padding:14px 18px; border-radius:10px; border:1px solid rgba(160,123,224,0.3);">
+          <div style="color:#a07be0; font-weight:700; margin-bottom:8px;">집락추출법</div>
+          <div style="color:#8a94b0; line-height:1.8;">
+            집락 선택 후 →<br>
+            내부 <strong style="color:#e8ecf5">전원 조사</strong><br>
+            비용↓ but 선택 안 된 집락은 완전 제외
+          </div>
+        </div>
+        <div style="background:rgba(80,200,160,0.07); padding:14px 18px; border-radius:10px; border:1px solid rgba(80,200,160,0.3);">
+          <div style="color:#50c8a0; font-weight:700; margin-bottom:8px;">다단추출법</div>
+          <div style="color:#8a94b0; line-height:1.8;">
+            집락 선택 후 →<br>
+            내부에서 <strong style="color:#e8ecf5">다시 추출</strong><br>
+            비용↓↓ + 정밀도 개선 가능
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px; font-size:16px; color:#8a94b0; line-height:1.8;">
+        💡 <strong style="color:#e8ecf5">실무 팁</strong>: 대규모 국가통계(인구총조사, 가계동향조사 등)는 대부분 <span style="color:#50c8a0; font-weight:700">다단추출법</span>을 사용하며,
+        각 단계에서 층화추출과 계통추출을 혼합해 정밀도를 높인다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════ SUMMARY TABLE ══════════════════════ -->
+<div class="section">
+  <div class="sec-title"><div class="num">5</div> 확률추출법 종류 정리</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>추출법</th>
+        <th>핵심 원리</th>
+        <th>적합한 상황</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="term">단순임의추출법</span></td>
+        <td>동등 확률, 무작위 선택</td>
+        <td>모집단이 균질하고 목록화 가능할 때</td>
+      </tr>
+      <tr>
+        <td><span class="term-green">층화임의추출법</span></td>
+        <td>층 분류 후 각 층에서 임의 추출</td>
+        <td>모집단이 이질적 하위집단으로 구성될 때</td>
+      </tr>
+      <tr>
+        <td><span class="term-yellow">계통임의추출법</span></td>
+        <td>간격 k마다 추출</td>
+        <td>모집단이 순서대로 나열되어 있을 때</td>
+      </tr>
+      <tr>
+        <td><span style="color:#a07be0;font-weight:700">집락추출법</span></td>
+        <td>집락(군집) 단위로 추출</td>
+        <td>모집단이 지리적으로 분산되어 있을 때</td>
+      </tr>
+      <tr>
+        <td><span class="term-green">다단추출법</span></td>
+        <td>집락 선택 후 내부 재추출</td>
+        <td>집락이 크고 비용 절감이 필요할 때</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="footer">
+  <p>Chapter 05 · 표본분포 &nbsp;|&nbsp; 5.1 모집단과 표본분포 &nbsp;|&nbsp; 강의자료</p>
+</div>
+
+</body>
+</html>
