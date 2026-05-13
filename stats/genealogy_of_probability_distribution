@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>확률분포의 계보</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: #f5f4f0;
+    color: #1a1a1a;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  /* ── 페이지 구분선 ── */
+  .page {
+    background: #ffffff;
+    max-width: 960px;
+    margin: 0 auto 60px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 48px;
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .page-number {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+  }
+
+  .page-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #ccc;
+  }
+
+  .page-body {
+    padding: 52px 48px 56px;
+  }
+
+  /* ── 슬라이드 제목 ── */
+  .slide-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .slide-subtitle {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+
+  .divider {
+    height: 1px;
+    background: #e8e6e0;
+    margin-bottom: 36px;
+  }
+
+  /* ── 카드 ── */
+  .card-row {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .cols2 { grid-template-columns: 1fr 1fr; }
+  .cols3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: #f8f7f3;
+    border: 1px solid #e0ddd5;
+    border-radius: 12px;
+    padding: 24px 26px;
+  }
+
+  .card-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 10px;
+  }
+
+  .card-body {
+    font-size: 18px;
+    color: #444;
+    line-height: 1.65;
+  }
+
+  /* ── 수식 박스 ── */
+  .formula-box {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+    text-align: center;
+    font-size: 20px;
+    overflow-x: auto;
+  }
+
+  /* ── 하이라이트 박스 ── */
+  .hl-blue {
+    background: #eaf2ff;
+    border: 1px solid #b0cfff;
+    border-radius: 10px;
+    padding: 18px 22px;
+    color: #1a4fa0;
+    font-size: 19px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .hl-green {
+    background: #eafaf0;
+    border: 1px solid #8fd4a8;
+    border-radius: 10px;
+    padding: 18px 22px;
+    color: #1a6b3a;
+    font-size: 19px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .hl-amber {
+    background: #fff8e6;
+    border: 1px solid #f0cc6e;
+    border-radius: 10px;
+    padding: 18px 22px;
+    color: #7a5200;
+    font-size: 19px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .hl-red {
+    background: #fff0f0;
+    border: 1px solid #f0aaaa;
+    border-radius: 10px;
+    padding: 18px 22px;
+    color: #8b1a1a;
+    font-size: 19px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  /* ── 흐름도 ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 16px;
+  }
+
+  .flow-node {
+    flex: 1;
+    text-align: center;
+    background: #f0eeea;
+    border: 1.5px solid #ccc;
+    border-radius: 12px;
+    padding: 16px 12px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #222;
+    line-height: 1.35;
+  }
+
+  .flow-node span {
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .flow-node.blue {
+    background: #dbeeff;
+    border-color: #7ab4f5;
+    color: #0d3d80;
+  }
+  .flow-node.blue span { color: #4a80c4; }
+
+  .flow-node.green {
+    background: #d6f5e3;
+    border-color: #6dc994;
+    color: #0d5c2e;
+  }
+  .flow-node.green span { color: #3a9960; }
+
+  .flow-node.orange {
+    background: #fff0d6;
+    border-color: #f0b84a;
+    color: #6b3e00;
+  }
+  .flow-node.orange span { color: #b06a00; }
+
+  .flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+    flex-shrink: 0;
+    gap: 2px;
+  }
+
+  .flow-arrow-label {
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  .flow-arrow-sym {
+    font-size: 28px;
+    color: #bbb;
+    line-height: 1;
+  }
+
+  .flow-down {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 80px;
+    margin: 4px 0 4px;
+  }
+
+  .flow-down-line {
+    width: 2px;
+    height: 40px;
+    background: #bbb;
+    margin-left: 0;
+  }
+
+  .flow-down-label {
+    font-size: 13px;
+    color: #999;
+    margin-left: 8px;
+    margin-top: -28px;
+  }
+
+  /* ── 두 열 ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .col-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  /* ── 리스트 ── */
+  .list-item {
+    display: flex;
+    gap: 14px;
+    font-size: 19px;
+    color: #333;
+    padding: 6px 0;
+    line-height: 1.6;
+  }
+
+  .list-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #bbb;
+    margin-top: 10px;
+    flex-shrink: 0;
+  }
+
+  strong { font-weight: 700; }
+
+  /* ── 페이지 구분 가로줄 (TOC 스타일) ── */
+  .toc-bar {
+    max-width: 960px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+  }
+
+  .toc-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 6px;
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+    border-right: 1px solid #eee;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+    line-height: 1.3;
+  }
+
+  .toc-item:last-child { border-right: none; }
+  .toc-item:hover { background: #f5f4f0; color: #333; }
+
+  .page-rule {
+    max-width: 960px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #aaa;
+    font-size: 13px;
+  }
+
+  .page-rule::before, .page-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+  }
+
+  /* ── 반응형 ── */
+  @media (max-width: 680px) {
+    .cols2, .cols3, .two-col { grid-template-columns: 1fr; }
+    .page-body { padding: 32px 24px 36px; }
+    .page-header { padding: 14px 24px; }
+    .slide-title { font-size: 28px; }
+    .toc-item { font-size: 11px; padding: 10px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div style="height:48px;"></div>
+
+<!-- TOC 가로 페이지 바 -->
+<div class="toc-bar">
+  <a class="toc-item" href="#p0">개요</a>
+  <a class="toc-item" href="#p1">이항분포</a>
+  <a class="toc-item" href="#p2">→ 포아송</a>
+  <a class="toc-item" href="#p3">→ 지수</a>
+  <a class="toc-item" href="#p4">→ 정규 (CLT)</a>
+  <a class="toc-item" href="#p5">정규분포 성질</a>
+  <a class="toc-item" href="#p6">전체 정리</a>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 0: 개요 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p0">개요</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Overview</span>
+    <span class="page-title">확률분포의 계보</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">확률분포의 계보</div>
+    <div class="slide-subtitle">이항분포에서 정규분포까지 — 두 가지 흐름으로 이해한다</div>
+    <div class="divider"></div>
+
+    <!-- 흐름 1 -->
+    <div class="col-label" style="margin-bottom:12px;">흐름 1 — 희귀 사건의 횟수 → 대기 시간</div>
+    <div class="flow-row">
+      <div class="flow-node blue">이항분포<span>Binomial B(n, p)</span></div>
+      <div class="flow-arrow">
+        <div class="flow-arrow-label">n→∞, p→0<br>np = λ 고정</div>
+        <div class="flow-arrow-sym">→</div>
+      </div>
+      <div class="flow-node">포아송분포<span>Poisson Pois(λ)</span></div>
+      <div class="flow-arrow">
+        <div class="flow-arrow-label">대기 시간</div>
+        <div class="flow-arrow-sym">→</div>
+      </div>
+      <div class="flow-node green">지수분포<span>Exponential Exp(λ)</span></div>
+    </div>
+
+    <!-- 흐름 2 -->
+    <div class="flow-down">
+      <div style="display:flex;align-items:center;gap:0;">
+        <div class="flow-down-line"></div>
+        <div class="flow-down-label">흐름 2 — n→∞, 중심극한정리 (CLT)</div>
+      </div>
+    </div>
+    <div class="flow-row" style="margin-top:4px;">
+      <div class="flow-node orange" style="max-width:260px;">정규분포<span>Normal N(μ, σ²)</span></div>
+    </div>
+
+    <div style="height:20px;"></div>
+    <div class="hl-blue">
+      <strong>핵심:</strong> 두 흐름은 <strong>별개의 이야기</strong>입니다.
+      이항분포는 양쪽 흐름의 공통 출발점이지만, 포아송·지수 계열과 정규분포는 서로 직접 연결되지 않습니다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 1: 이항분포 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p1">1 / 5</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 1</span>
+    <span class="page-title">이항분포 (Binomial Distribution)</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">이항분포</div>
+    <div class="slide-subtitle">성공/실패 두 가지 결과가 있는 실험을 n번 독립 반복</div>
+    <div class="divider"></div>
+
+    <div class="card-row cols2">
+      <div class="card">
+        <div class="card-label">정의</div>
+        <div class="card-body">
+          베르누이 시행을 n번 독립 반복할 때,<br>
+          성공 횟수 X의 분포
+        </div>
+        <div class="formula-box" id="f-binom-pmf"></div>
+        <div style="font-size:15px;color:#888;margin-top:10px;text-align:center;">k = 0, 1, 2, …, n</div>
+      </div>
+      <div class="card">
+        <div class="card-label">모수와 통계량</div>
+        <div class="card-body">모수: <strong>n</strong> (시행 횟수), <strong>p</strong> (성공 확률)</div>
+        <div class="formula-box" id="f-binom-mean"></div>
+        <div class="formula-box" id="f-binom-var"></div>
+      </div>
+    </div>
+
+    <div class="hl-blue">
+      <strong>예시:</strong> 동전을 10번 던질 때 앞면이 나오는 횟수<br>
+      → X ~ B(10, 0.5) &nbsp;|&nbsp; E[X] = 5, Var(X) = 2.5
+    </div>
+
+    <div class="hl-amber">
+      <strong>두 흐름의 출발점:</strong> n이 커지고 p가 작아지면 포아송 계열로, n이 충분히 크면 CLT에 의해 정규분포로 수렴합니다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 2: 이항 → 포아송 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p2">2 / 5</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 2</span>
+    <span class="page-title">이항분포 → 포아송분포</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">이항 → 포아송</div>
+    <div class="slide-subtitle">n이 매우 크고 p가 매우 작을 때, 이항분포는 포아송분포에 수렴한다</div>
+    <div class="divider"></div>
+
+    <div class="hl-amber">
+      <strong>수렴 조건:</strong> &nbsp; n → ∞, &nbsp; p → 0, &nbsp; <strong>np = λ (고정)</strong>
+    </div>
+
+    <div class="card-row cols2">
+      <div class="card">
+        <div class="card-label">포아송분포 정의</div>
+        <div class="card-body">단위 시간/공간에서 평균 λ번 발생하는<br>희귀 사건의 <strong>횟수</strong> 분포</div>
+        <div class="formula-box" id="f-pois-pmf"></div>
+        <div style="font-size:15px;color:#888;margin-top:10px;text-align:center;">k = 0, 1, 2, …</div>
+      </div>
+      <div class="card">
+        <div class="card-label">핵심 성질</div>
+        <div class="card-body">포아송분포의 독특한 특징</div>
+        <div class="formula-box" id="f-pois-mean"></div>
+        <div class="card-body" style="margin-top:12px;font-size:17px;color:#666;">
+          평균 = 분산 = λ<br>
+          (이항분포와 달리 모수가 하나)
+        </div>
+      </div>
+    </div>
+
+    <div class="hl-blue">
+      <strong>예시:</strong><br>
+      · 하루 동안 콜센터에 걸려오는 전화 수<br>
+      · 단위 면적 내 방사성 붕괴 횟수<br>
+      · 1시간 동안 교차로를 통과하는 차량 수
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 3: 포아송 → 지수 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p3">3 / 5</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 3</span>
+    <span class="page-title">포아송분포 → 지수분포</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">포아송 → 지수분포</div>
+    <div class="slide-subtitle">같은 현상을 바라보는 두 가지 시각 — 횟수 vs. 대기 시간</div>
+    <div class="divider"></div>
+
+    <div class="two-col">
+      <div>
+        <div class="col-label">포아송분포 (이산형)</div>
+        <div class="card">
+          <div class="card-body">단위 시간에 사건이 <strong>몇 번</strong> 발생하는가?</div>
+          <div class="formula-box" id="f-pois2"></div>
+          <div class="card-body" style="margin-top:12px;font-size:16px;color:#666;">E[X] = λ</div>
+        </div>
+      </div>
+      <div>
+        <div class="col-label">지수분포 (연속형)</div>
+        <div class="card">
+          <div class="card-body">다음 사건까지 <strong>얼마나</strong> 기다리는가?</div>
+          <div class="formula-box" id="f-exp-pdf"></div>
+          <div class="card-body" style="margin-top:12px;font-size:16px;color:#666;">E[T] = 1/λ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-row cols2" style="margin-top:8px;">
+      <div class="hl-green" style="margin:0;">
+        <strong>포아송 발생률 = λ</strong><br>
+        지수분포의 모수도 동일하게 λ
+      </div>
+      <div class="hl-blue" style="margin:0;">
+        <strong>무기억성 (Memoryless):</strong><br>
+        <span id="f-memoryless-inline" style="font-size:17px;"></span>
+        <br><span style="font-size:16px;">지수분포만의 독특한 성질</span>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="hl-amber">
+      <strong>예시:</strong> 콜센터에 평균 5분마다 전화가 온다면 (λ = 0.2/분)<br>
+      · 포아송: 1시간에 평균 12건 수신<br>
+      · 지수: 다음 전화까지 대기 시간 ~ Exp(0.2), 평균 5분
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 4: 이항 → 정규 (CLT) -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p4">4 / 5</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 4</span>
+    <span class="page-title">이항분포 → 정규분포 (CLT)</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">이항 → 정규분포</div>
+    <div class="slide-subtitle">n이 커질수록 이항분포의 모양은 종 모양(정규분포)에 가까워진다</div>
+    <div class="divider"></div>
+
+    <div class="col-label" style="margin-bottom:10px;">드무아브르-라플라스 정리 (De Moivre-Laplace)</div>
+    <div class="hl-amber">
+      n → ∞ 일 때, 이항분포를 표준화하면 표준정규분포에 수렴한다
+    </div>
+    <div class="formula-box" id="f-dml" style="font-size:22px;margin-bottom:28px;"></div>
+
+    <div class="card-row cols2">
+      <div class="card">
+        <div class="card-label">중심극한정리 (CLT) — 더 일반적</div>
+        <div class="card-body">어떤 분포든 독립적으로 많이 더하면 정규분포에 수렴한다</div>
+        <div class="formula-box" id="f-clt"></div>
+        <div class="card-body" style="margin-top:12px;font-size:16px;color:#666;">
+          X₁, X₂, …, Xₙ: 동일 분포, 독립, 유한 분산
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">정규분포 PDF</div>
+        <div class="formula-box" id="f-norm-pdf" style="font-size:18px;"></div>
+        <div class="card-body" style="margin-top:14px;">
+          모수: 평균 <strong>μ</strong>, 표준편차 <strong>σ</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="hl-blue">
+      <strong>드무아브르-라플라스 vs CLT:</strong><br>
+      드무아브르-라플라스는 이항분포에 특화된 정리이고,
+      CLT는 어떤 분포에도 적용되는 더 강력한 일반화입니다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 5: 정규분포 성질 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p5">5 / 5</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Page 5</span>
+    <span class="page-title">정규분포의 핵심 성질</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">정규분포의 핵심 성질</div>
+    <div class="slide-subtitle">N(μ, σ²) — 통계학의 중심</div>
+    <div class="divider"></div>
+
+    <div class="card-row cols3">
+      <div class="card">
+        <div class="card-label">68-95-99.7 규칙</div>
+        <div class="card-body">
+          μ ± 1σ: <strong>68%</strong><br>
+          μ ± 2σ: <strong>95%</strong><br>
+          μ ± 3σ: <strong>99.7%</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">표준화</div>
+        <div class="card-body">임의의 정규분포를 표준정규분포로 변환</div>
+        <div class="formula-box" id="f-std"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">재생성</div>
+        <div class="card-body">독립 정규분포의 합도 정규분포</div>
+        <div class="formula-box" id="f-repr" style="font-size:16px;"></div>
+      </div>
+    </div>
+
+    <div class="hl-green" style="margin-bottom:16px;">
+      <strong>왜 중요한가?</strong><br>
+      CLT에 의해, 현실의 거의 모든 측정값(키, 오차, 시험 점수 등)의 <strong>평균</strong>은 정규분포를 따른다.
+      → 통계적 추론(신뢰구간, 가설검정)의 기반
+    </div>
+
+    <div class="hl-blue">
+      <strong>표준정규분포 N(0, 1):</strong>&nbsp; 모든 정규분포 계산의 기준.<br>
+      Z-표를 이용해 임의의 정규분포의 확률을 구할 수 있다.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 페이지 6: 전체 정리 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p6">정리</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Summary</span>
+    <span class="page-title">전체 계보 요약</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">전체 계보 요약</div>
+    <div class="divider"></div>
+
+    <!-- 흐름 1 -->
+    <div class="col-label" style="margin-bottom:14px;">흐름 1 — 이항 → 포아송 → 지수</div>
+    <div class="flow-row">
+      <div class="flow-node blue">이항분포<span>B(n, p)</span></div>
+      <div class="flow-arrow">
+        <div class="flow-arrow-label">n→∞, p→0<br>np=λ 고정</div>
+        <div class="flow-arrow-sym">→</div>
+      </div>
+      <div class="flow-node">포아송분포<span>Pois(λ)</span></div>
+      <div class="flow-arrow">
+        <div class="flow-arrow-label">대기 시간</div>
+        <div class="flow-arrow-sym">→</div>
+      </div>
+      <div class="flow-node green">지수분포<span>Exp(λ)</span></div>
+    </div>
+
+    <!-- 흐름 2 -->
+    <div style="height:16px;"></div>
+    <div class="col-label" style="margin-bottom:14px;">흐름 2 — 이항 → 정규 (CLT)</div>
+    <div class="flow-row">
+      <div class="flow-node blue">이항분포<span>B(n, p)</span></div>
+      <div class="flow-arrow">
+        <div class="flow-arrow-label">n→∞<br>CLT / DML</div>
+        <div class="flow-arrow-sym">→</div>
+      </div>
+      <div class="flow-node orange">정규분포<span>N(μ, σ²)</span></div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="card-row cols2">
+      <div class="hl-blue" style="margin:0;">
+        <strong>흐름 1:</strong> 이항 → 포아송 → 지수<br>
+        희귀 사건의 횟수에서 대기 시간으로
+      </div>
+      <div class="hl-green" style="margin:0;">
+        <strong>흐름 2:</strong> 이항 → 정규 (CLT)<br>
+        어떤 분포든 합산하면 정규분포로
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<div style="height:60px;"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const formulas = {
+    'f-binom-pmf':      'P(X=k) = \\dbinom{n}{k} p^k (1-p)^{n-k}',
+    'f-binom-mean':     'E[X] = np',
+    'f-binom-var':      '\\text{Var}(X) = np(1-p)',
+    'f-pois-pmf':       'P(X=k) = \\dfrac{e^{-\\lambda}\\,\\lambda^k}{k!}',
+    'f-pois-mean':      'E[X] = \\text{Var}(X) = \\lambda',
+    'f-pois2':          'P(X=k) = \\dfrac{e^{-\\lambda}\\,\\lambda^k}{k!}',
+    'f-exp-pdf':        'f(t) = \\lambda\\, e^{-\\lambda t}, \\quad t \\geq 0',
+    'f-memoryless-inline': 'P(T>s+t\\mid T>s)=P(T>t)',
+    'f-dml':            '\\frac{X - np}{\\sqrt{np(1-p)}} \\xrightarrow{\\;d\\;} N(0,\\,1)',
+    'f-clt':            '\\bar{X}_n = \\frac{X_1+\\cdots+X_n}{n} \\xrightarrow{\\;d\\;} N\\!\\left(\\mu,\\,\\frac{\\sigma^2}{n}\\right)',
+    'f-norm-pdf':       'f(x) = \\dfrac{1}{\\sigma\\sqrt{2\\pi}}\\,e^{\\displaystyle-\\frac{(x-\\mu)^2}{2\\sigma^2}}',
+    'f-std':            'Z = \\dfrac{X - \\mu}{\\sigma} \\sim N(0,\\,1)',
+    'f-repr':           'X_1+X_2 \\sim N(\\mu_1{+}\\mu_2,\\;\\sigma_1^2{+}\\sigma_2^2)',
+  };
+
+  Object.entries(formulas).forEach(([id, tex]) => {
+    const el = document.getElementById(id);
+    if (el) {
+      katex.render(tex, el, { throwOnError: false, displayMode: false });
+    }
+  });
+});
+</script>
+</body>
+</html>
