@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -30,39 +31,69 @@
     background-clip: text; letter-spacing: -0.02em;
   }
   .subtitle { color: var(--text2); margin-top: 12px; font-size: 1rem; }
-  .subject { margin-bottom: 36px; }
-  .subject-header {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 16px; padding: 0 4px;
-  }
-  .subject-icon {
-    width: 36px; height: 36px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 0.95rem; color: #0d1117;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .subject h2 { font-size: 1.3rem; font-weight: 700; }
-  .subject-count { color: var(--text2); font-size: 0.85rem; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
-  .files { display: grid; gap: 10px; }
-  .file {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 20px; color: var(--text);
-    text-decoration: none; display: flex; align-items: center;
-    gap: 14px; transition: all 0.15s ease;
-  }
-  .file:hover, .file:active { border-color: var(--accent); transform: translateY(-1px); background: var(--bg2); }
-  .file-title { flex: 1; font-weight: 500; font-size: 1rem; }
-  .file-name { font-size: 0.78rem; color: var(--text2); margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
-  .file-arrow { color: var(--text2); font-size: 1.2rem; }
-  .empty { color: var(--text2); font-style: italic; padding: 12px 20px; font-size: 0.9rem; }
-  .loading { text-align: center; color: var(--text2); padding: 40px; }
-  footer { text-align: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border); color: var(--text2); font-size: 0.85rem; }
-  @media (max-width: 600px) {
-    body { padding: 24px 16px 60px; }
-    h1 { font-size: 1.8rem; }
-    .file { padding: 14px 16px; }
-  }
+
+/* 과목 블럭 */
+.subject { margin-bottom: 16px; border-radius: 16px; overflow: hidden; border: 1px solid var(–border); }
+
+.subject-header {
+display: flex; align-items: center; gap: 14px;
+padding: 20px 24px; cursor: pointer;
+background: var(–card);
+user-select: none;
+transition: background 0.15s;
+}
+.subject-header:hover { background: var(–bg2); }
+
+.subject-icon {
+width: 40px; height: 40px; border-radius: 12px;
+display: flex; align-items: center; justify-content: center;
+font-weight: 900; font-size: 0.95rem; color: #0d1117;
+font-family: ‘JetBrains Mono’, monospace; flex-shrink: 0;
+}
+.subject-name { font-size: 1.2rem; font-weight: 700; flex: 1; }
+.subject-meta { display: flex; align-items: center; gap: 12px; }
+.subject-count { color: var(–text2); font-size: 0.85rem; font-family: ‘JetBrains Mono’, monospace; }
+.subject-arrow {
+color: var(–text2); font-size: 1rem;
+transition: transform 0.25s ease;
+}
+.subject.open .subject-arrow { transform: rotate(90deg); }
+
+/* 파일 목록 */
+.files {
+display: none;
+flex-direction: column;
+border-top: 1px solid var(–border);
+background: var(–bg);
+}
+.subject.open .files { display: flex; }
+
+.file {
+padding: 16px 24px; color: var(–text);
+text-decoration: none; display: flex; align-items: center;
+gap: 14px; border-bottom: 1px solid var(–border);
+transition: background 0.12s;
+}
+.file:last-child { border-bottom: none; }
+.file:hover, .file:active { background: var(–card); }
+.file-title { flex: 1; font-weight: 500; font-size: 1rem; }
+.file-arrow { color: var(–text2); font-size: 1rem; }
+
+.empty { color: var(–text2); font-style: italic; padding: 16px 24px; font-size: 0.9rem; }
+.loading { text-align: center; color: var(–text2); padding: 40px; }
+
+footer {
+text-align: center; margin-top: 48px; padding-top: 28px;
+border-top: 1px solid var(–border); color: var(–text2); font-size: 0.85rem;
+}
+@media (max-width: 600px) {
+body { padding: 24px 16px 60px; }
+h1 { font-size: 1.8rem; }
+.subject-header { padding: 16px 18px; }
+.file { padding: 14px 18px; }
+}
 </style>
+
 </head>
 <body>
 <div class="wrap">
@@ -71,7 +102,7 @@
     <p class="subtitle">학습 자료 모음</p>
   </header>
   <div id="content"><div class="loading">불러오는 중...</div></div>
-  <footer>파일 추가하면 manifest.json에 등록하세요</footer>
+  <footer>과목을 눌러 파일 목록을 확인하세요</footer>
 </div>
 
 <script>
@@ -102,17 +133,25 @@
 
     for (const subject of SUBJECTS) {
       const files = manifest[subject.key] || [];
+
       const section = document.createElement("div");
       section.className = "subject";
-      section.innerHTML = `
-        <div class="subject-header">
-          <div class="subject-icon" style="background:${subject.color}">${subject.label}</div>
-          <h2>${subject.name}</h2>
+
+      const header = document.createElement("div");
+      header.className = "subject-header";
+      header.innerHTML = `
+        <div class="subject-icon" style="background:${subject.color}">${subject.label}</div>
+        <span class="subject-name">${subject.name}</span>
+        <div class="subject-meta">
           <span class="subject-count">${files.length} files</span>
+          <span class="subject-arrow">▶</span>
         </div>
-        <div class="files"></div>
       `;
-      const filesDiv = section.querySelector(".files");
+      header.addEventListener("click", () => section.classList.toggle("open"));
+
+      const filesDiv = document.createElement("div");
+      filesDiv.className = "files";
+
       if (files.length === 0) {
         filesDiv.innerHTML = `<div class="empty">아직 파일이 없습니다</div>`;
       } else {
@@ -121,20 +160,21 @@
           a.className = "file";
           a.href = `${subject.key}/${file}`;
           a.innerHTML = `
-            <div style="flex:1">
-              <div class="file-title">${title || fallbackName(file)}</div>
-              
-            </div>
+            <span class="file-title">${title || fallbackName(file)}</span>
             <span class="file-arrow">→</span>
           `;
           filesDiv.appendChild(a);
         });
       }
+
+      section.appendChild(header);
+      section.appendChild(filesDiv);
       container.appendChild(section);
     }
   }
 
   render();
 </script>
+
 </body>
 </html>
