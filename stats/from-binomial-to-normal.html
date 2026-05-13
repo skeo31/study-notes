@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B(n,p) → N(0,1) 유도</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: #f0eff5;
+    color: #1a1a1a;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  .page {
+    background: #ffffff;
+    max-width: 980px;
+    margin: 0 auto 60px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 52px;
+    background: #1e1b4b;
+    color: #fff;
+  }
+
+  .page-number {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7c7ab8;
+  }
+
+  .page-title-header {
+    font-size: 15px;
+    font-weight: 400;
+    color: #a8a6d8;
+  }
+
+  .page-body {
+    padding: 52px 52px 60px;
+  }
+
+  .slide-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1e1b4b;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .slide-subtitle {
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+
+  .divider {
+    height: 1px;
+    background: #ebe9f4;
+    margin-bottom: 36px;
+  }
+
+  /* ── 단계 블록 ── */
+  .step-block {
+    margin-bottom: 36px;
+  }
+
+  .step-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .step-badge {
+    background: #1e1b4b;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 14px;
+    border-radius: 999px;
+  }
+
+  .step-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e1b4b;
+  }
+
+  /* ── 수식 박스 ── */
+  .formula-box {
+    background: #f7f6fb;
+    border: 1px solid #e0ddf0;
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 20px;
+    overflow-x: auto;
+  }
+
+  .formula-box.dark {
+    background: #1e1b4b;
+    border-color: #1e1b4b;
+    padding: 24px 32px;
+    border-radius: 14px;
+    color: #ffffff;
+  }
+
+  .formula-box.dark .katex,
+  .formula-box.dark .katex * {
+    color: #ffffff !important;
+  }
+
+  /* ── 하이라이트 ── */
+  .hl-purple {
+    background: #eeecff;
+    border: 1px solid #b8b4f0;
+    border-left: 4px solid #4338ca;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #3730a3;
+    font-size: 18px;
+    line-height: 1.65;
+    margin: 14px 0;
+  }
+
+  .hl-blue {
+    background: #eaf2ff;
+    border: 1px solid #b0cfff;
+    border-left: 4px solid #2563eb;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #1a4fa0;
+    font-size: 18px;
+    line-height: 1.65;
+    margin: 14px 0;
+  }
+
+  .hl-green {
+    background: #eafaf0;
+    border: 1px solid #8fd4a8;
+    border-left: 4px solid #059669;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #1a6b3a;
+    font-size: 18px;
+    line-height: 1.65;
+    margin: 14px 0;
+  }
+
+  .hl-amber {
+    background: #fff8e6;
+    border: 1px solid #f0cc6e;
+    border-left: 4px solid #d97706;
+    border-radius: 10px;
+    padding: 18px 24px;
+    color: #7a5200;
+    font-size: 18px;
+    line-height: 1.65;
+    margin: 14px 0;
+  }
+
+  /* ── 카드 ── */
+  .card-row {
+    display: grid;
+    gap: 20px;
+    margin: 16px 0;
+  }
+  .cols2 { grid-template-columns: 1fr 1fr; }
+  .cols3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: #f7f6fb;
+    border: 1px solid #e0ddf0;
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+
+  .card-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9b97c8;
+    margin-bottom: 10px;
+  }
+
+  .card-body {
+    font-size: 17px;
+    color: #444;
+    line-height: 1.65;
+  }
+
+  /* ── 유도 흐름 화살표 ── */
+  .derive-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .derive-node {
+    background: #f0eefb;
+    border: 1.5px solid #c4bfec;
+    border-radius: 12px;
+    padding: 14px 32px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d2880;
+    text-align: center;
+    min-width: 320px;
+  }
+
+  .derive-node.result {
+    background: #1e1b4b;
+    border-color: #1e1b4b;
+    color: #fff;
+  }
+
+  .derive-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 0;
+    gap: 0;
+  }
+
+  .derive-arrow-line {
+    width: 2px;
+    height: 24px;
+    background: #c4bfec;
+  }
+
+  .derive-arrow-head {
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid #c4bfec;
+  }
+
+  .derive-arrow-label {
+    font-size: 13px;
+    color: #9b97c8;
+    margin: 2px 0;
+    font-style: italic;
+  }
+
+  /* ── 구분선 텍스트 ── */
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 28px 0 20px;
+    color: #9b97c8;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .section-rule::before, .section-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e0ddf0;
+  }
+
+  /* ── 테이블 ── */
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 17px;
+    margin: 16px 0;
+  }
+
+  .styled-table th {
+    background: #1e1b4b;
+    color: #d4d2f5;
+    font-weight: 600;
+    padding: 12px 18px;
+    text-align: left;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .styled-table th:first-child { border-radius: 8px 0 0 0; }
+  .styled-table th:last-child  { border-radius: 0 8px 0 0; }
+
+  .styled-table td {
+    padding: 12px 18px;
+    border-bottom: 1px solid #ebe9f4;
+    color: #333;
+    vertical-align: middle;
+  }
+
+  .styled-table tr:last-child td { border-bottom: none; }
+  .styled-table tr:nth-child(even) td { background: #f7f6fb; }
+
+  /* ── TOC 바 ── */
+  .toc-bar {
+    max-width: 980px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #d8d5ef;
+    background: #fff;
+  }
+
+  .toc-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 6px;
+    font-size: 13px;
+    color: #8884c0;
+    font-weight: 500;
+    border-right: 1px solid #eee;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+    line-height: 1.4;
+  }
+
+  .toc-item:last-child { border-right: none; }
+  .toc-item:hover { background: #f0eefb; color: #3730a3; }
+
+  .page-rule {
+    max-width: 980px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #9b97c8;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .page-rule::before, .page-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #d8d5ef;
+  }
+
+  strong { font-weight: 700; }
+  em { font-style: italic; color: #6b67b0; }
+
+  @media (max-width: 680px) {
+    .cols2, .cols3 { grid-template-columns: 1fr; }
+    .page-body { padding: 32px 24px 40px; }
+    .page-header { padding: 14px 24px; }
+    .slide-title { font-size: 26px; }
+    .toc-item { font-size: 11px; padding: 10px 3px; }
+    .derive-node { min-width: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div style="height:48px;"></div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <a class="toc-item" href="#p0">개요</a>
+  <a class="toc-item" href="#p1">Step 1<br>베르누이 합</a>
+  <a class="toc-item" href="#p2">Step 2-1<br>기댓값</a>
+  <a class="toc-item" href="#p3">Step 2-2<br>분산</a>
+  <a class="toc-item" href="#p4">Step 2-3<br>왜 정규분포?</a>
+  <a class="toc-item" href="#p5">Step 3<br>표준화</a>
+  <a class="toc-item" href="#p6">Step 4<br>MGF 증명</a>
+  <a class="toc-item" href="#p7">결론</a>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 개요 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p0">개요</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Overview</span>
+    <span class="page-title-header">B(n, p) → N(0, 1) 유도 전체 흐름</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">B(n, p) → N(0, 1) 유도</div>
+    <div class="slide-subtitle">이항분포가 표준정규분포로 수렴하는 과정을 단계별로 증명한다</div>
+    <div class="divider"></div>
+
+    <div class="derive-flow">
+      <div class="derive-node">X ~ B(n, p)</div>
+      <div class="derive-arrow">
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-label">Step 1 — 베르누이 합으로 분해</div>
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-head"></div>
+      </div>
+      <div class="derive-node">X = X₁ + X₂ + ⋯ + Xₙ &nbsp;(Xᵢ ~ Bernoulli(p))</div>
+      <div class="derive-arrow">
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-label">Step 2 — 표본합의 기댓값·분산 계산 + 정규 수렴 이유</div>
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-head"></div>
+      </div>
+      <div class="derive-node" id="ov-xbar" style="font-size:16px;padding:14px 24px;"></div>
+      <div class="derive-arrow">
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-label">Step 3 — 표준화</div>
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-head"></div>
+      </div>
+      <div class="derive-node" id="ov-z" style="font-size:16px;padding:14px 24px;"></div>
+      <div class="derive-arrow">
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-label">Step 4 — MGF 수렴 증명 (n → ∞)</div>
+        <div class="derive-arrow-line"></div>
+        <div class="derive-arrow-head"></div>
+      </div>
+      <div class="derive-node result" id="ov-result" style="font-size:16px;padding:14px 24px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- Step 1 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p1">Step 1</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Step 1</span>
+    <span class="page-title-header">이항분포를 베르누이 합으로 표현</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">이항분포 → 베르누이 합</div>
+    <div class="slide-subtitle">이항분포의 구조를 분해해서 CLT를 적용할 수 있는 형태로 만든다</div>
+    <div class="divider"></div>
+
+    <div class="step-block">
+      <div class="hl-amber">
+        <strong>핵심 아이디어:</strong> X ~ B(n, p) 는 "n번의 독립 시행에서 성공 횟수"이다.
+        각 시행의 결과를 Xᵢ로 나타내면, X는 그 합이다.
+      </div>
+
+      <div class="section-rule">정의</div>
+
+      <div class="card-row cols2">
+        <div class="card">
+          <div class="card-label">베르누이 확률변수 Xᵢ</div>
+          <div class="card-body">
+            i번째 시행의 결과:
+          </div>
+          <div class="formula-box" id="f-bernoulli-def"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">이항분포의 분해</div>
+          <div class="card-body">X₁, X₂, …, Xₙ 은 독립이고 동일 분포 (i.i.d.)</div>
+          <div class="formula-box" id="f-binom-decomp"></div>
+        </div>
+      </div>
+
+      <div class="section-rule">각 Xᵢ의 평균과 분산</div>
+
+      <div class="card-row cols2">
+        <div class="card">
+          <div class="card-label">기댓값</div>
+          <div class="formula-box" id="f-bern-mean"></div>
+          <div class="card-body" style="margin-top:12px;font-size:16px;color:#666;">
+            E[Xᵢ] = 1·p + 0·(1−p) = p
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">분산</div>
+          <div class="formula-box" id="f-bern-var"></div>
+          <div class="card-body" style="margin-top:12px;font-size:16px;color:#666;">
+            Var(Xᵢ) = E[Xᵢ²] − (E[Xᵢ])² = p − p² = p(1−p)
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-green">
+        <strong>이 분해가 중요한 이유:</strong><br>
+        X를 i.i.d. 확률변수들의 합으로 표현했으므로, 이제 <strong>CLT를 직접 적용</strong>할 수 있는 구조가 되었다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- Step 2-1: 기댓값 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p2">Step 2-1</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Step 2-1</span>
+    <span class="page-title-header">표본합의 기댓값</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">표본합의 기댓값</div>
+    <div class="slide-subtitle">기댓값의 선형성을 이용한다</div>
+    <div class="divider"></div>
+
+    <div class="step-block">
+      <div class="section-rule">표본합 정의</div>
+      <div class="formula-box" id="f-xbar-def" style="font-size:22px;"></div>
+
+      <div class="section-rule">기댓값 유도</div>
+
+      <div class="hl-purple">
+        <strong>사용 성질: 기댓값의 선형성</strong><br>
+        E[aX + bY] = a·E[X] + b·E[Y] &nbsp;— 독립 여부와 무관하게 항상 성립
+      </div>
+
+      <div class="formula-box" id="f-ev-step1" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 기댓값의 선형성 적용</div>
+      <div class="formula-box" id="f-ev-step2" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 각 E[Xᵢ] = p 대입</div>
+      <div class="formula-box" id="f-ev-step3" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 정리</div>
+      <div class="formula-box dark" id="f-ev-result" style="font-size:22px;"></div>
+
+      <div class="hl-blue" style="margin-top:16px;">
+        <strong>해석:</strong> 표본합의 기댓값은 np이다.
+        n번 시행에서 기대되는 성공 횟수가 np임을 직접 확인할 수 있다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- Step 2-2: 분산 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p3">Step 2-2</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Step 2-2</span>
+    <span class="page-title-header">표본합의 분산</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">표본합의 분산</div>
+    <div class="slide-subtitle">독립성을 이용해 분산을 분해한다</div>
+    <div class="divider"></div>
+
+    <div class="step-block">
+      <div class="hl-purple">
+        <strong>사용 성질 1: 상수 배의 분산</strong><br>
+        Var(aX) = a²·Var(X) &nbsp;— 상수는 분산 앞에서 <strong>제곱</strong>으로 나온다
+      </div>
+      <div class="hl-blue">
+        <strong>사용 성질 2: 독립 확률변수 합의 분산</strong><br>
+        X₁, …, Xₙ이 독립이면 &nbsp; Var(X₁ + ⋯ + Xₙ) = Var(X₁) + ⋯ + Var(Xₙ)
+      </div>
+
+      <div class="section-rule">분산 유도</div>
+
+      <div class="formula-box" id="f-var-step1" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; Var(aX) = a²Var(X) 적용 → 1/n이 1/n²으로</div>
+      <div class="formula-box" id="f-var-step2" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 독립이므로 분산 분해</div>
+      <div class="formula-box" id="f-var-step3" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 각 Var(Xᵢ) = p(1−p) 대입</div>
+      <div class="formula-box" id="f-var-step4" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 정리</div>
+      <div class="formula-box dark" id="f-var-result" style="font-size:22px;"></div>
+
+      <div class="hl-green" style="margin-top:16px;">
+        <strong>핵심 관찰:</strong> 표본합의 분산은 n에 비례하여 <strong>n배 증가</strong>한다.
+        이는 독립 확률변수 합의 분산이 각 분산의 합과 같다는 성질에서 직접 나온다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- Step 2-3: 왜 정규분포? -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p4">Step 2-3</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Step 2-3</span>
+    <span class="page-title-header">왜 정규분포에 수렴하는가?</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">왜 정규분포에 수렴하는가?</div>
+    <div class="slide-subtitle">평균·분산을 구한 것만으로는 부족하다 — 분포의 모양이 정규분포가 되는 이유</div>
+    <div class="divider"></div>
+
+    <div class="step-block">
+      <div class="hl-amber">
+        <strong>주의:</strong> 지금까지 E[Sₙ] = np, Var(Sₙ) = np(1−p) 을 구했지만,
+        이것만으로는 <em>분포의 모양</em>이 정규분포라는 뜻이 아니다.
+        평균과 분산이 같아도 분포의 모양은 다를 수 있다.
+      </div>
+
+      <div class="section-rule">표준화된 합으로 재표현</div>
+
+      <div class="card-body" style="margin-bottom:12px;">표준화된 표본평균 Zₙ을 개별 항으로 분해하면:</div>
+      <div class="formula-box" id="f-zn-decomp1" style="font-size:19px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 각 항을 표준화된 단위 Yᵢ로 묶으면</div>
+      <div class="formula-box" id="f-zn-decomp2" style="font-size:19px;"></div>
+
+      <div class="hl-purple" style="margin-top:16px;">
+        <strong>Yᵢ의 성질:</strong> &nbsp;
+        <span id="f-yi-props-inline"></span>
+        <br>
+        Yᵢ는 평균 0, 분산 1인 <strong>표준화된 베르누이</strong> 확률변수
+      </div>
+
+      <div class="section-rule">n이 커지면 무슨 일이 벌어지나</div>
+
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>n 증가 시 변화</th>
+            <th>이유</th>
+            <th>관련 정리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>분포의 <strong>중심</strong>은 np로 고정</td>
+            <td>E[Sₙ] = np 는 n에 비례</td>
+            <td>기댓값 선형성</td>
+          </tr>
+          <tr>
+            <td>분포의 <strong>퍼짐</strong>은 √n 비율로 증가</td>
+            <td>Var(Sₙ) = np(1−p) → 표준편차 √(np(1−p))</td>
+            <td>대수의 법칙 (LLN)</td>
+          </tr>
+          <tr>
+            <td>분포의 <strong>모양</strong>은 정규분포로</td>
+            <td>MGF 수렴 (Step 4에서 증명)</td>
+            <td>중심극한정리 (CLT)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="hl-green">
+        <strong>결론:</strong> Zₙ = ΣYᵢ / √n 형태는 n → ∞ 일 때
+        MGF를 통해 N(0,1)로 수렴함을 증명할 수 있다. → Step 4
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- Step 3: 표준화 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p5">Step 3</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Step 3</span>
+    <span class="page-title-header">표준화</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">표준화</div>
+    <div class="slide-subtitle">표본합을 평균 0, 분산 1인 형태로 변환한다</div>
+    <div class="divider"></div>
+
+    <div class="step-block">
+      <div class="section-rule">표준화 공식 적용</div>
+
+      <div class="card-body" style="margin-bottom:12px;">
+        Step 2에서 구한 E[Sₙ] = np, Var(Sₙ) = np(1−p) 을 대입한다.
+      </div>
+
+      <div class="formula-box" id="f-std-step1" style="font-size:20px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; Sₙ = X₁ + ⋯ + Xₙ 대입, 분모 정리</div>
+      <div class="formula-box" id="f-std-step2" style="font-size:20px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 드무아브르-라플라스 표준화 형태</div>
+      <div class="formula-box dark" id="f-std-result" style="font-size:24px;"></div>
+
+      <div class="hl-purple" style="margin-top:20px;">
+        이것이 <strong>드무아브르-라플라스 정리</strong>의 형태다.<br>
+        X ~ B(n, p) 를 직접 표준화한 것과 동일한 결과가 나온다.
+      </div>
+
+      <div class="section-rule">드무아브르-라플라스와의 연결</div>
+
+      <div class="card-row cols2">
+        <div class="card">
+          <div class="card-label">CLT 경로 (이번 유도)</div>
+          <div class="card-body">
+            X를 베르누이 합으로 분해<br>
+            → 표본합 Sₙ 구성<br>
+            → 표준화
+          </div>
+          <div class="formula-box" id="f-clt-path" style="font-size:16px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">드무아브르-라플라스 (직접)</div>
+          <div class="card-body">
+            X ~ B(n, p) 에서<br>
+            평균 np, 분산 np(1−p)<br>
+            → 직접 표준화
+          </div>
+          <div class="formula-box" id="f-dml-path" style="font-size:16px;"></div>
+        </div>
+      </div>
+
+      <div class="hl-green">
+        <strong>두 식은 동일하다.</strong> CLT 프레임(표본합)으로 유도해도
+        드무아브르-라플라스 정리와 정확히 같은 표준화 식이 나온다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- Step 4: MGF -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p6">Step 4</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Step 4</span>
+    <span class="page-title-header">MGF 수렴 증명</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">MGF 수렴 증명</div>
+    <div class="slide-subtitle">적률생성함수(MGF)가 N(0,1)의 MGF로 수렴함을 보인다</div>
+    <div class="divider"></div>
+
+    <div class="step-block">
+
+      <div class="hl-purple">
+        <strong>핵심 도구: MGF 수렴 정리 (Continuity Theorem)</strong><br>
+        Zₙ의 MGF가 모든 t에서 Z의 MGF로 수렴하면, Zₙ →<sup>d</sup> Z
+      </div>
+
+      <div class="section-rule">4-1. 표준화된 베르누이 Yᵢ의 MGF</div>
+
+      <div class="formula-box" id="f-mgf-yi" style="font-size:17px;"></div>
+
+      <div class="section-rule">4-2. Zₙ의 MGF</div>
+
+      <div class="hl-purple">
+        <strong>전제:</strong> &nbsp; Z_n = (Y₁ + Y₂ + ⋯ + Yₙ) / √n &nbsp;이고,
+        Yᵢ는 서로 독립이며 동일한 분포를 따른다 (i.i.d.)
+      </div>
+
+      <div class="card-body" style="margin:14px 0 8px;"><strong>① MGF 정의 적용 — 지수의 합을 곱으로 분리</strong></div>
+      <div class="formula-box" id="f-mgf-zn-s1" style="font-size:17px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; e<sup>a+b</sup> = e<sup>a</sup>·e<sup>b</sup> 적용</div>
+      <div class="formula-box" id="f-mgf-zn-s2" style="font-size:17px;"></div>
+
+      <div class="card-body" style="margin:14px 0 8px;"><strong>② 독립성 → 기댓값의 곱으로 분해</strong></div>
+      <div class="card-body" style="margin-bottom:8px;font-size:16px;color:#555;">
+        Yᵢ들이 독립이면 &nbsp; E[f(Y₁)·f(Y₂)⋯] = E[f(Y₁)]·E[f(Y₂)]⋯ &nbsp;가 성립한다.
+      </div>
+      <div class="formula-box" id="f-mgf-zn-s3" style="font-size:17px;"></div>
+
+      <div class="card-body" style="margin:14px 0 8px;"><strong>③ 동일 분포(i.i.d.) → n제곱으로 정리</strong></div>
+      <div class="card-body" style="margin-bottom:8px;font-size:16px;color:#555;">
+        모든 Yᵢ가 동일한 분포이므로 각 기댓값은 모두 같다. &nbsp; M<sub>Y</sub>(s) = E[e<sup>sYᵢ</sup>] 정의에서 s = t/√n 으로 치환하면:
+      </div>
+      <div class="formula-box" id="f-mgf-zn" style="font-size:18px;"></div>
+
+      <div class="card-row cols2" style="margin-top:16px;">
+        <div class="card">
+          <div class="card-label">핵심 논리 구조</div>
+          <div class="card-body" style="font-size:16px;line-height:1.8;">
+            지수의 합 → 지수의 곱 &nbsp; <em>e<sup>a+b</sup>=e<sup>a</sup>e<sup>b</sup></em><br>
+            기댓값의 곱 분해 &nbsp;→&nbsp; <em>독립성</em><br>
+            n제곱으로 묶음 &nbsp;→&nbsp; <em>동일 분포</em><br>
+            MGF 기호로 치환 &nbsp;→&nbsp; <em>M<sub>Y</sub>(s) 정의</em>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">s = t/√n 치환의 의미</div>
+          <div class="card-body" style="font-size:16px;line-height:1.8;">
+            Zₙ에 t를 곱하면 각 Yᵢ에는<br>
+            t/√n 이 곱해지는 구조.<br>
+            n → ∞ 이면 s → 0 이므로<br>
+            다음 단계 테일러 전개가 가능해진다.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-rule">4-3. 로그를 취한 뒤 테일러 전개</div>
+
+      <div class="formula-box" id="f-log-mgf" style="font-size:18px;"></div>
+
+      <div class="card-body" style="margin:12px 0;">
+        s = t/√n 으로 놓으면 n → ∞ 일 때 s → 0 이므로, M<sub>Y</sub>(s)를 s = 0 근방에서 테일러 전개:
+      </div>
+      <div class="formula-box" id="f-taylor-general" style="font-size:17px;"></div>
+      <div class="card-body" style="margin:10px 0 6px;">
+        여기서 MGF의 도함수와 기댓값 사이의 관계를 사용합니다:
+      </div>
+      <div class="card-row cols3" style="margin:8px 0 12px;">
+        <div class="card" style="text-align:center;">
+          <div class="card-label">0차 도함수</div>
+          <div class="formula-box" id="f-mgf-d0" style="font-size:16px;margin:0;border:none;background:transparent;padding:8px 0;"></div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-label">1차 도함수</div>
+          <div class="formula-box" id="f-mgf-d1" style="font-size:16px;margin:0;border:none;background:transparent;padding:8px 0;"></div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-label">2차 도함수</div>
+          <div class="formula-box" id="f-mgf-d2" style="font-size:16px;margin:0;border:none;background:transparent;padding:8px 0;"></div>
+        </div>
+      </div>
+      <div class="formula-box" id="f-taylor" style="font-size:17px;"></div>
+      <div class="card-body" style="margin:8px 0;font-size:16px;color:#666;">
+        (E[Yᵢ] = 0, E[Yᵢ²] = Var(Yᵢ) = 1 이므로)
+      </div>
+
+      <div class="section-rule">4-4. 극한 계산</div>
+
+      <div class="formula-box" id="f-limit1" style="font-size:18px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; ln(1 + u) ≈ u (u → 0)</div>
+      <div class="formula-box" id="f-limit2" style="font-size:18px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; n → ∞</div>
+      <div class="formula-box dark" id="f-limit-result" style="font-size:22px;"></div>
+
+      <div class="hl-green" style="margin-top:16px;">
+        <strong>e^(t²/2) 는 N(0,1)의 MGF다.</strong><br>
+        MGF 수렴 정리에 의해 Zₙ →<sup>d</sup> N(0, 1) 이 성립한다. &nbsp; □
+      </div>
+
+      <!-- ── 부록: N(0,1)의 MGF 유도 ── -->
+      <div class="section-rule" style="margin-top:32px;">부록 — N(0,1)의 MGF = e^(t²/2) 유도</div>
+
+      <div class="hl-amber">
+        <strong>목표:</strong> &nbsp; Z ~ N(0,1) 일 때 &nbsp; M(t) = E[e<sup>tZ</sup>] = e<sup>t²/2</sup> &nbsp; 임을 직접 계산으로 확인한다.
+      </div>
+
+      <div class="card-body" style="margin:14px 0 8px;"><strong>① 적분 형태로 전개</strong></div>
+      <div class="formula-box" id="f-app-s1" style="font-size:18px;"></div>
+      <div class="formula-box" id="f-app-s2" style="font-size:18px;"></div>
+
+      <div class="card-body" style="margin:14px 0 8px;"><strong>② 완전제곱식 (completing the square)</strong></div>
+      <div class="card-body" style="margin-bottom:8px;font-size:16px;color:#555;">
+        지수 안의 식을 z에 대해 정리한다.
+      </div>
+      <div class="formula-box" id="f-app-s3" style="font-size:18px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; t²을 더하고 빼서 완전제곱 완성</div>
+      <div class="formula-box" id="f-app-s4" style="font-size:18px;"></div>
+
+      <div class="card-body" style="margin:14px 0 8px;"><strong>③ e^(t²/2) 를 적분 밖으로 분리</strong></div>
+      <div class="card-body" style="margin-bottom:8px;font-size:16px;color:#555;">
+        e<sup>t²/2</sup>는 z와 무관한 상수이므로 적분 밖으로 꺼낼 수 있다.
+      </div>
+      <div class="formula-box" id="f-app-s5" style="font-size:18px;"></div>
+
+      <div class="card-body" style="margin:14px 0 8px;"><strong>④ 치환 u = z − t &nbsp;→&nbsp; 가우스 적분 적용</strong></div>
+      <div class="card-body" style="margin-bottom:8px;font-size:16px;color:#555;">
+        u = z − t 로 놓으면 du = dz, 적분 범위는 그대로 (−∞, ∞).
+      </div>
+      <div class="formula-box" id="f-app-s6" style="font-size:18px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; 가우스 적분 &nbsp; ∫e^(−u²/2)du = √(2π) &nbsp; 적용</div>
+      <div class="formula-box" id="f-app-s7" style="font-size:18px;"></div>
+      <div style="text-align:center;font-size:17px;color:#888;margin:6px 0;">↓ &nbsp; √(2π) 상쇄</div>
+      <div class="formula-box dark" id="f-app-result" style="font-size:22px;"></div>
+
+      <div class="card-row cols2" style="margin-top:16px;">
+        <div class="card">
+          <div class="card-label">전체 흐름 요약</div>
+          <div class="card-body" style="font-size:15px;line-height:1.9;">
+            ① 정의: E[e<sup>tZ</sup>] = ∫ e<sup>tz</sup> · (1/√2π)e<sup>−z²/2</sup> dz<br>
+            ② <strong>완전제곱식</strong>으로 지수 정리<br>
+            ③ e<sup>t²/2</sup> 를 밖으로 분리<br>
+            ④ u = z−t 치환<br>
+            ⑤ <strong>가우스 적분</strong> ∫e<sup>−u²/2</sup>du = √2π 로 상쇄
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">가우스 적분이 성립하는 이유</div>
+          <div class="card-body" style="font-size:15px;line-height:1.9;">
+            N(0,1) 확률밀도함수의 전체 면적은 1.<br><br>
+            즉 &nbsp; ∫ (1/√2π) e<sup>−u²/2</sup> du = 1<br><br>
+            양변에 √2π를 곱하면<br>
+            ∫ e<sup>−u²/2</sup> du = √2π
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 결론 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-rule" id="p7">결론</div>
+<div class="page">
+  <div class="page-header">
+    <span class="page-number">Summary</span>
+    <span class="page-title-header">전체 유도 요약</span>
+  </div>
+  <div class="page-body">
+    <div class="slide-title">전체 유도 요약</div>
+    <div class="divider"></div>
+
+    <table class="styled-table" style="margin-bottom:32px;">
+      <thead>
+        <tr>
+          <th style="width:14%;">단계</th>
+          <th style="width:32%;">핵심 작업</th>
+          <th style="width:30%;">사용 도구</th>
+          <th>결과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Step 1</strong></td>
+          <td>X를 베르누이 합으로 분해</td>
+          <td>i.i.d. 구조 확인</td>
+          <td>X = ΣXᵢ, E[Xᵢ]=p, Var(Xᵢ)=p(1−p)</td>
+        </tr>
+        <tr>
+          <td><strong>Step 2-1</strong></td>
+          <td>표본합의 기댓값</td>
+          <td>기댓값 선형성</td>
+          <td>E[Sₙ] = np</td>
+        </tr>
+        <tr>
+          <td><strong>Step 2-2</strong></td>
+          <td>표본합의 분산</td>
+          <td>독립성 + Var(X+Y)=Var(X)+Var(Y)</td>
+          <td>Var(Sₙ) = np(1−p)</td>
+        </tr>
+        <tr>
+          <td><strong>Step 2-3</strong></td>
+          <td>왜 정규분포 모양?</td>
+          <td>Zₙ = ΣYᵢ/√n 재표현</td>
+          <td>MGF 증명으로 연결</td>
+        </tr>
+        <tr>
+          <td><strong>Step 3</strong></td>
+          <td>표준화</td>
+          <td>Z = (Sₙ−np) / √(np(1−p))</td>
+          <td>드무아브르-라플라스 형태</td>
+        </tr>
+        <tr>
+          <td><strong>Step 4</strong></td>
+          <td>MGF 수렴 증명</td>
+          <td>테일러 전개 + MGF 수렴 정리</td>
+          <td>MGF → e^(t²/2) = N(0,1)의 MGF</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="formula-box dark" id="f-final" style="font-size:24px;margin-bottom:28px;"></div>
+
+    <div class="card-row cols2">
+      <div class="hl-blue" style="margin:0;">
+        <strong>드무아브르-라플라스와의 관계:</strong><br>
+        이 유도는 이항분포에 CLT를 적용한 것이며,
+        드무아브르-라플라스 정리를 CLT 프레임에서 재증명한 것이다.
+      </div>
+      <div class="hl-green" style="margin:0;">
+        <strong>일반화:</strong><br>
+        Step 1에서 베르누이 대신 임의의 i.i.d. 분포(유한 분산)를 넣어도
+        Step 4의 MGF 수렴 논증은 동일하게 성립한다 → 일반 CLT.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="height:60px;"></div>
+
+<script>
+const R = (id, tex, display) => {
+  const el = document.getElementById(id);
+  if (el) katex.render(tex, el, { throwOnError: false, displayMode: !!display });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* 개요 흐름도 */
+  R('ov-xbar',   'S_n = X_1+\\cdots+X_n \\xrightarrow{d} N\\!\\left(np,\\;np(1-p)\\right)');
+  R('ov-z',      'Z_n = \\dfrac{S_n - np}{\\sqrt{np(1-p)}}');
+  R('ov-result', 'Z_n \\xrightarrow{\\;d\\;} N(0,\\,1)');
+
+  /* Step 1 */
+  R('f-bernoulli-def',  'X_i = \\begin{cases} 1 & \\text{(성공, 확률 } p\\text{)} \\\\ 0 & \\text{(실패, 확률 } 1-p\\text{)} \\end{cases}');
+  R('f-binom-decomp',   'X = S_n = X_1 + X_2 + \\cdots + X_n, \\quad X_i \\overset{\\text{i.i.d.}}{\\sim} \\text{Bernoulli}(p)');
+  R('f-bern-mean',      'E[X_i] = 1 \\cdot p + 0 \\cdot (1-p) = p');
+  R('f-bern-var',       '\\text{Var}(X_i) = p(1-p)');
+
+  /* Step 2-1 */
+  R('f-xbar-def',   'S_n = X_1 + X_2 + \\cdots + X_n');
+  R('f-ev-step1',   'E[S_n] = E\\!\\left[\\sum_{i=1}^{n} X_i\\right]');
+  R('f-ev-step2',   '= \\sum_{i=1}^{n} E[X_i]');
+  R('f-ev-step3',   '= n \\cdot p');
+  R('f-ev-result',  'E[S_n] = np');
+
+  /* Step 2-2 */
+  R('f-var-step1',  '\\text{Var}(S_n) = \\text{Var}\\!\\left(\\sum_{i=1}^{n}X_i\\right)');
+  R('f-var-step2',  '\\stackrel{\\text{독립}}{=} \\sum_{i=1}^{n}\\text{Var}(X_i)');
+  R('f-var-step3',  '= \\sum_{i=1}^{n} p(1-p)');
+  R('f-var-step4',  '= n \\cdot p(1-p)');
+  R('f-var-result', '\\text{Var}(S_n) = np(1-p)');
+
+  /* Step 2-3 */
+  R('f-zn-decomp1', 'Z_n = \\dfrac{S_n - np}{\\sqrt{np(1-p)}} = \\dfrac{\\sum_{i=1}^n (X_i - p)}{\\sqrt{n}\\,\\sqrt{p(1-p)}}');
+  R('f-zn-decomp2', 'Z_n = \\dfrac{1}{\\sqrt{n}}\\sum_{i=1}^{n} \\underbrace{\\dfrac{X_i - p}{\\sqrt{p(1-p)}}}_{Y_i}');
+  R('f-yi-props-inline', 'E[Y_i] = 0, \\quad \\text{Var}(Y_i) = 1');
+
+  /* Step 3 */
+  R('f-std-step1',  'Z_n = \\dfrac{S_n - np}{\\sqrt{np(1-p)}}');
+  R('f-std-step2',  'Z_n = \\dfrac{(X_1+\\cdots+X_n) - np}{\\sqrt{np(1-p)}}');
+  R('f-std-result', 'Z_n = \\dfrac{S_n - np}{\\sqrt{np(1-p)}} \\xrightarrow{\\;d\\;} N(0,\\,1)');
+  R('f-clt-path',   '\\dfrac{S_n - np}{\\sqrt{np(1-p)}} \\xrightarrow{d} N(0,1)');
+  R('f-dml-path',   '\\dfrac{X - np}{\\sqrt{np(1-p)}} \\xrightarrow{d} N(0,1)');
+
+  /* Step 4 */
+  R('f-mgf-yi',
+    'M_Y(t) = E[e^{tY_i}] = (1-p)\\,e^{\\textstyle t\\cdot\\frac{-p}{\\sqrt{p(1-p)}}} + p\\,e^{\\textstyle t\\cdot\\frac{1-p}{\\sqrt{p(1-p)}}}');
+
+  /* 4-2 단계별 유도 */
+  R('f-mgf-zn-s1',
+    'M_{Z_n}(t) = E\\!\\left[e^{\\,t Z_n}\\right] = E\\!\\left[\\exp\\!\\left(\\dfrac{t}{\\sqrt{n}}(Y_1 + Y_2 + \\cdots + Y_n)\\right)\\right]');
+  R('f-mgf-zn-s2',
+    '= E\\!\\left[e^{\\frac{t}{\\sqrt{n}}Y_1} \\cdot e^{\\frac{t}{\\sqrt{n}}Y_2} \\cdots e^{\\frac{t}{\\sqrt{n}}Y_n}\\right]');
+  R('f-mgf-zn-s3',
+    '= E\\!\\left[e^{\\frac{t}{\\sqrt{n}}Y_1}\\right] \\cdot E\\!\\left[e^{\\frac{t}{\\sqrt{n}}Y_2}\\right] \\cdots E\\!\\left[e^{\\frac{t}{\\sqrt{n}}Y_n}\\right]');
+  R('f-mgf-zn',
+    'M_{Z_n}(t) = \\left[M_Y\\!\\left(\\dfrac{t}{\\sqrt{n}}\\right)\\right]^{\\!n}');
+  R('f-log-mgf',
+    '\\ln M_{Z_n}(t) = n\\ln M_Y\\!\\left(\\dfrac{t}{\\sqrt{n}}\\right)');
+  R('f-taylor-general',
+    'M_Y(s) = M_Y(0) + M_Y\'(0)\\cdot s + \\dfrac{M_Y\'\'(0)}{2}\\cdot s^2 + O(s^3)');
+  R('f-mgf-d0',
+    'M_Y(0) = E[e^0] = 1');
+  R('f-mgf-d1',
+    'M_Y\'(0) = E[Y_i]');
+  R('f-mgf-d2',
+    'M_Y\'\'(0) = E[Y_i^2]');
+  R('f-taylor',
+    'M_Y(s) = 1 + E[Y_i]\\cdot s + \\dfrac{E[Y_i^2]}{2}s^2 + O(s^3) = 1 + \\dfrac{s^2}{2} + O(s^3)');
+  R('f-limit1',
+    '\\ln M_{Z_n}(t) = n\\ln\\!\\left(1 + \\dfrac{t^2}{2n} + O(n^{-3/2})\\right)');
+  R('f-limit2',
+    '\\approx n \\cdot \\dfrac{t^2}{2n} = \\dfrac{t^2}{2}');
+  R('f-limit-result',
+    'M_{Z_n}(t) \\;\\ \\xrightarrow{\\;n\\to\\infty\\;} \\;\\ e^{\\,t^2/2}');
+
+  /* 부록: N(0,1)의 MGF 유도 */
+  R('f-app-s1',
+    'M(t) = E[e^{tZ}] = \\int_{-\\infty}^{\\infty} e^{tz} \\cdot \\dfrac{1}{\\sqrt{2\\pi}}\\,e^{-z^2/2}\\,dz');
+  R('f-app-s2',
+    '= \\dfrac{1}{\\sqrt{2\\pi}} \\int_{-\\infty}^{\\infty} \\exp\\!\\left(tz - \\dfrac{z^2}{2}\\right) dz');
+  R('f-app-s3',
+    'tz - \\dfrac{z^2}{2} = -\\dfrac{1}{2}(z^2 - 2tz)');
+  R('f-app-s4',
+    '= -\\dfrac{1}{2}(z^2 - 2tz + t^2 - t^2) = -\\dfrac{1}{2}(z-t)^2 + \\dfrac{t^2}{2}');
+  R('f-app-s5',
+    'M(t) = \\dfrac{e^{t^2/2}}{\\sqrt{2\\pi}} \\int_{-\\infty}^{\\infty} \\exp\\!\\left(-\\dfrac{(z-t)^2}{2}\\right) dz');
+  R('f-app-s6',
+    '= \\dfrac{e^{t^2/2}}{\\sqrt{2\\pi}} \\int_{-\\infty}^{\\infty} e^{-u^2/2}\\,du');
+  R('f-app-s7',
+    '= \\dfrac{e^{t^2/2}}{\\sqrt{2\\pi}} \\cdot \\sqrt{2\\pi}');
+  R('f-app-result',
+    '\\boxed{M(t) = e^{\\,t^2/2}}');
+
+  /* 결론 */
+  R('f-final',
+    '\\boxed{\\dfrac{X - np}{\\sqrt{np(1-p)}} \\xrightarrow{\\;d\\;} N(0,\\,1)}');
+});
+</script>
+</body>
+</html>
