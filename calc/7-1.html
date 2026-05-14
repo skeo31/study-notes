@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>두 마이크로폰과 지향성 빔 — 극좌표계</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2330;
+  --border: rgba(255,255,255,0.08);
+  --accent: #2f81f7;
+  --accent2: #f78166;
+  --accent3: #3fb950;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --radius: 12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 20px;
+}
+
+/* ── 슬라이드 레이아웃 ── */
+.slide {
+  min-height: 100vh;
+  padding: 60px 80px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 80% 20%, rgba(47,129,247,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* 슬라이드 번호 */
+.slide-num {
+  position: absolute;
+  top: 24px;
+  right: 36px;
+  font-size: 14px;
+  color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* ── 타이포그래피 ── */
+.slide-title {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.slide-subtitle {
+  font-size: 22px;
+  color: var(--text2);
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+h3 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+p, li {
+  font-size: 20px;
+  color: var(--text2);
+  line-height: 1.8;
+}
+
+li { margin-bottom: 10px; }
+ul { padding-left: 24px; }
+
+strong { color: var(--text); font-weight: 700; }
+
+/* ── 카드 ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+}
+
+.card-grid {
+  display: grid;
+  gap: 20px;
+}
+.card-grid-2 { grid-template-columns: 1fr 1fr; }
+.card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ── 수식 박스 ── */
+.eq-box {
+  background: var(--surface2);
+  border: 1px solid rgba(47,129,247,0.25);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 24px 32px;
+  margin: 20px 0;
+  text-align: center;
+  font-size: 22px;
+}
+
+.eq-label {
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+/* ── 배지 ── */
+.badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  margin-right: 8px;
+}
+.badge-blue { background: rgba(47,129,247,0.15); color: #79c0ff; border: 1px solid rgba(47,129,247,0.3); }
+.badge-red  { background: rgba(247,129,102,0.15); color: #ffa198; border: 1px solid rgba(247,129,102,0.3); }
+.badge-green{ background: rgba(63,185,80,0.15); color: #7ee787; border: 1px solid rgba(63,185,80,0.3); }
+
+/* ── 강조 수평선 ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 32px 0;
+}
+
+/* ── 인터랙티브 섹션 ── */
+.interactive-wrap {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 32px;
+  align-items: start;
+}
+
+.controls-panel { display: flex; flex-direction: column; gap: 20px; }
+
+.ctrl-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.ctrl-row label {
+  display: block;
+  font-size: 16px;
+  color: var(--text2);
+  margin-bottom: 10px;
+}
+.ctrl-row .ctrl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.ctrl-row .ctrl-name { font-size: 18px; color: var(--text); font-weight: 500; }
+.ctrl-row .ctrl-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface2);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+.metric {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.metric .m-label { font-size: 13px; color: var(--text3); margin-bottom: 4px; }
+.metric .m-val { font-size: 22px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+
+canvas#polar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ── 표 ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 19px;
+}
+th {
+  background: var(--surface2);
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+}
+tr:last-child td { border-bottom: none; }
+td strong { color: var(--text); }
+td.accent { color: var(--accent); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+td.warn { color: var(--accent2); font-weight: 700; }
+
+/* ── 커버 슬라이드 ── */
+#cover {
+  background: var(--bg);
+  min-height: 100vh;
+  justify-content: flex-end;
+  padding-bottom: 80px;
+}
+#cover::after {
+  content: '';
+  position: absolute;
+  top: -120px; left: -80px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(47,129,247,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cover-tag {
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+.cover-title {
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin-bottom: 16px;
+}
+.cover-title span { color: var(--accent); }
+.cover-desc {
+  font-size: 22px;
+  color: var(--text2);
+  max-width: 640px;
+  margin-bottom: 40px;
+}
+.cover-meta {
+  display: flex;
+  gap: 24px;
+  font-size: 16px;
+  color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── 개념 연결 화살표 ── */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.flow-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: center;
+  flex: 1;
+  min-width: 140px;
+}
+.flow-arrow {
+  color: var(--accent);
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* ── 하이라이트 텍스트 ── */
+.highlight { color: var(--accent); }
+.highlight2 { color: var(--accent2); }
+.highlight3 { color: var(--accent3); }
+
+/* ── 각주 ── */
+.footnote {
+  font-size: 15px;
+  color: var(--text3);
+  margin-top: 20px;
+  font-style: italic;
+}
+
+/* 네비 힌트 */
+.nav-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 32px;
+  font-size: 13px;
+  color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     슬라이드 1: 커버
+══════════════════════════════════ -->
+<section class="slide" id="cover">
+  <span class="slide-num">01 / 07</span>
+  <div class="cover-tag">미적분학 — 극좌표계 응용</div>
+  <h1 class="cover-title">두 마이크로폰과<br><span>지향성 빔</span></h1>
+  <p class="cover-desc">극좌표계가 왜 필요한가? 두 마이크 배열이 만드는 빔 패턴을 통해 확인한다.</p>
+  <div class="cover-meta">
+    <span>Dual-Microphone Array</span>
+    <span>·</span>
+    <span>Beamforming</span>
+    <span>·</span>
+    <span>Polar Coordinates</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     슬라이드 2: 동기 — 왜 극좌표인가
+══════════════════════════════════ -->
+<section class="slide">
+  <span class="slide-num">02 / 07</span>
+  <div class="section-label">Motivation</div>
+  <h2 class="slide-title">왜 극좌표계인가?</h2>
+  <p class="slide-subtitle">빔 패턴은 본질적으로 각도의 함수</p>
+
+  <div class="flow">
+    <div class="flow-item">음원 방향 θ</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">마이크 응답<br>\(B(\theta)\)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">극좌표 그래프<br>\(r = B(\theta)\)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">빔 모양<br>시각화</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card-grid card-grid-2">
+    <div class="card">
+      <h3>직교좌표 표현</h3>
+      <p>빔 패턴 \(B\)를 \(x, y\)로 표현하면 곡선이 복잡해지고 방향 정보가 직관적이지 않다.</p>
+      <p style="margin-top:12px; color:var(--accent2);">→ 지향성을 한눈에 파악하기 어렵다</p>
+    </div>
+    <div class="card">
+      <h3>극좌표 표현</h3>
+      <p>\(r = B(\theta)\) 로 표현하면 곡선의 모양 자체가 <strong>빔의 방향과 폭</strong>을 나타낸다.</p>
+      <p style="margin-top:12px; color:var(--accent3);">→ 지향성이 즉각적으로 보인다</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     슬라이드 3: 물리 모델
+══════════════════════════════════ -->
+<section class="slide">
+  <span class="slide-num">03 / 07</span>
+  <div class="section-label">Physical Model</div>
+  <h2 class="slide-title">두 마이크 배열 모델</h2>
+  <p class="slide-subtitle">간격 \(d\), 음속 \(c = 343\) m/s, 파장 \(\lambda = c / f\)</p>
+
+  <div class="card-grid card-grid-2" style="margin-top:12px;">
+    <div>
+      <div class="eq-box">
+        <div class="eq-label">// 경로차 (Path Difference)</div>
+        \[ \Delta = d \cos\theta \]
+      </div>
+      <div class="eq-box">
+        <div class="eq-label">// 위상차 (Phase Difference)</div>
+        \[ \psi = \frac{2\pi d}{\lambda} \cos\theta \]
+      </div>
+    </div>
+    <div>
+      <div class="eq-box">
+        <div class="eq-label">// 두 신호의 합 (Sum Beam)</div>
+        \[ y(\theta) = e^{j\psi/2} + e^{-j\psi/2} = 2\cos\!\left(\frac{\psi}{2}\right) \]
+      </div>
+      <div class="eq-box">
+        <div class="eq-label">// 정규화 빔 패턴</div>
+        \[ B(\theta) = \left|\cos\!\left(\frac{\pi d}{\lambda}\cos\theta\right)\right| \]
+      </div>
+    </div>
+  </div>
+
+  <p class="footnote">* 조향(steering)을 적용하면 \(\cos\theta\) → \((\cos\theta - \cos\theta_0)\) 로 일반화된다.</p>
+</section>
+
+<!-- ══════════════════════════════════
+     슬라이드 4: 핵심 수식
+══════════════════════════════════ -->
+<section class="slide">
+  <span class="slide-num">04 / 07</span>
+  <div class="section-label">Key Formula</div>
+  <h2 class="slide-title">지향성 빔 패턴 — 일반식</h2>
+  <p class="slide-subtitle">조향각 \(\theta_0\)으로 빔 방향을 제어할 때</p>
+
+  <div class="eq-box" style="font-size:26px; padding:36px 40px; margin: 28px 0;">
+    <div class="eq-label">// General Beam Pattern (Delay-and-Sum)</div>
+    \[
+      B(\theta) \;=\; \left|\, \frac{\sin\!\left(\dfrac{\pi d}{\lambda}(\cos\theta - \cos\theta_0)\right)}{\dfrac{\pi d}{\lambda}(\cos\theta - \cos\theta_0)} \,\right|
+      \;=\; \left|\,\operatorname{sinc}\!\left(\frac{d}{\lambda}(\cos\theta - \cos\theta_0)\right)\right|
+    \]
+  </div>
+
+  <div class="card-grid card-grid-3">
+    <div class="card">
+      <div class="section-label" style="color:var(--accent);">d / λ</div>
+      <p><strong>파장 대비 간격</strong><br>클수록 빔이 날카로워진다</p>
+    </div>
+    <div class="card">
+      <div class="section-label" style="color:var(--accent2);">θ₀</div>
+      <p><strong>조향각</strong><br>빔의 지향 방향을 결정</p>
+    </div>
+    <div class="card">
+      <div class="section-label" style="color:var(--accent3);">sinc</div>
+      <p><strong>sinc 함수</strong><br>극좌표에서 꽃잎 모양을 만듦</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     슬라이드 5: 인터랙티브 데모
+══════════════════════════════════ -->
+<section class="slide">
+  <span class="slide-num">05 / 07</span>
+  <div class="section-label">Interactive Demo</div>
+  <h2 class="slide-title">빔 패턴 시뮬레이터</h2>
+
+  <div class="interactive-wrap">
+    <div class="controls-panel">
+      <div class="ctrl-row">
+        <div class="ctrl-header">
+          <span class="ctrl-name">마이크 간격 \(d/\lambda\)</span>
+          <span class="ctrl-val" id="d-val">0.50 λ</span>
+        </div>
+        <input type="range" id="dist" min="0.05" max="2.0" step="0.05" value="0.5">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-header">
+          <span class="ctrl-name">주파수 \(f\)</span>
+          <span class="ctrl-val" id="f-val">1000 Hz</span>
+        </div>
+        <input type="range" id="freq" min="200" max="4000" step="100" value="1000">
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-header">
+          <span class="ctrl-name">조향각 \(\theta_0\)</span>
+          <span class="ctrl-val" id="s-val">0°</span>
+        </div>
+        <input type="range" id="steer" min="-90" max="90" step="5" value="0">
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="m-label">주빔 폭 (−3 dB)</div>
+          <div class="m-val" id="bw-val">—</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">파장 대비 간격</div>
+          <div class="m-val" id="dl-val">—</div>
+        </div>
+        <div class="metric" style="grid-column: 1/-1;">
+          <div class="m-label">그레이팅 로브</div>
+          <div class="m-val" id="grat-val">없음</div>
+        </div>
+      </div>
+
+      <p style="font-size:15px; color:var(--text3); margin-top:4px;">
+        파선: <em>d = λ/2</em> 기준 패턴 &nbsp;|&nbsp; 실선: 현재 설정
+      </p>
+    </div>
+
+    <canvas id="polar" width="420" height="420"></canvas>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     슬라이드 6: d에 따른 변화 요약표
+══════════════════════════════════ -->
+<section class="slide">
+  <span class="slide-num">06 / 07</span>
+  <div class="section-label">Summary Table</div>
+  <h2 class="slide-title">간격 \(d\)에 따른 빔 특성 변화</h2>
+  <p class="slide-subtitle">파장 \(\lambda\) 를 기준으로 간격을 비교</p>
+
+  <div class="card" style="margin-top: 24px; padding: 0; overflow: hidden;">
+    <table>
+      <thead>
+        <tr>
+          <th>간격 \(d/\lambda\)</th>
+          <th>빔 폭</th>
+          <th>지향성</th>
+          <th>그레이팅 로브</th>
+          <th>특징</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="accent">≪ λ/2</td>
+          <td><strong>매우 넓음</strong></td>
+          <td>거의 무지향성</td>
+          <td>없음</td>
+          <td>단일 마이크와 유사</td>
+        </tr>
+        <tr>
+          <td class="accent">λ/4</td>
+          <td><strong>넓음</strong></td>
+          <td>낮음</td>
+          <td>없음</td>
+          <td>카디오이드(cardioid)에 근접</td>
+        </tr>
+        <tr>
+          <td class="accent">λ/2</td>
+          <td><strong>중간</strong></td>
+          <td>양호</td>
+          <td>없음</td>
+          <td>⭐ 최적 기준점</td>
+        </tr>
+        <tr>
+          <td class="accent">λ</td>
+          <td><strong>좁음</strong></td>
+          <td>높음</td>
+          <td>경계 발생</td>
+          <td>θ = 90° 에서 로브 시작</td>
+        </tr>
+        <tr>
+          <td class="accent warn">> λ</td>
+          <td><strong>매우 좁음</strong></td>
+          <td>매우 높음</td>
+          <td class="warn">발생!</td>
+          <td>가짜 방향 생겨 실용성 저하</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="eq-box" style="margin-top: 28px;">
+    <div class="eq-label">// 그레이팅 로브 발생 조건</div>
+    \[
+      \frac{d}{\lambda} > 1 \quad \Longrightarrow \quad \exists\,\theta \neq \theta_0 \;\text{ s.t. }\; B(\theta) = 1
+    \]
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     슬라이드 7: 미적분학 연결
+══════════════════════════════════ -->
+<section class="slide">
+  <span class="slide-num">07 / 07</span>
+  <div class="section-label">Calculus Connection</div>
+  <h2 class="slide-title">극좌표 적분과의 연결</h2>
+  <p class="slide-subtitle">빔 패턴의 넓이 = 총 수음 에너지</p>
+
+  <div class="card-grid card-grid-2" style="margin-top: 16px;">
+    <div>
+      <div class="eq-box">
+        <div class="eq-label">// 극좌표 면적 적분</div>
+        \[
+          A \;=\; \frac{1}{2}\int_0^{2\pi} \bigl[B(\theta)\bigr]^2\, d\theta
+        \]
+      </div>
+      <ul style="margin-top:16px;">
+        <li>면적이 <strong>작을수록</strong> 지향성이 높다</li>
+        <li>케플러 제2법칙과 <strong>동일한 적분 형태</strong></li>
+        <li>배열의 "지향성 지수(DI)" 계산의 기초</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eq-box">
+        <div class="eq-label">// 지향성 지수 (Directivity Index)</div>
+        \[
+          \mathrm{DI} \;=\; 10\log_{10}\!\left(\frac{4\pi}{\displaystyle\int_0^{2\pi}\!\!\int_0^{\pi} [B(\theta,\phi)]^2 \sin\theta\, d\theta\, d\phi}\right)
+        \]
+      </div>
+      <p style="margin-top:12px; font-size:17px; color:var(--text2);">
+        빔이 좁아질수록 DI가 높아진다.<br>
+        이중 적분 → <strong>이중극좌표계</strong>로 확장.
+      </p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="flow">
+    <div class="flow-item" style="background:var(--surface2);">극좌표 곡선<br><small style="color:var(--text3);">\(r=B(\theta)\)</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item" style="background:var(--surface2);">극좌표 면적<br><small style="color:var(--text3);">\(\tfrac{1}{2}\int r^2 d\theta\)</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item" style="background:var(--surface2);">지향성 지수<br><small style="color:var(--text3);">DI (dB)</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item" style="background:rgba(47,129,247,0.1); border-color:rgba(47,129,247,0.3);">마이크 설계<br><small style="color:var(--accent);">공학 응용</small></div>
+  </div>
+</section>
+
+<!-- 네비 힌트 -->
+<div class="nav-hint">↑↓ scroll to navigate</div>
+
+<!-- ══════════════════════════════════
+     인터랙티브 Canvas JS
+══════════════════════════════════ -->
+<script>
+(function() {
+  const canvas = document.getElementById('polar');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 420, H = 420, cx = W/2, cy = H/2, R = W * 0.40;
+
+  function sinc(x) {
+    return Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x;
+  }
+
+  function getPattern(d_lam, steer_rad, N=720) {
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const theta = (i / N) * 2 * Math.PI - Math.PI;
+      const arg = Math.PI * d_lam * (Math.cos(theta) - Math.cos(steer_rad));
+      pts.push({ theta, val: Math.abs(sinc(arg)) });
+    }
+    return pts;
+  }
+
+  function draw() {
+    const d_lam  = parseFloat(document.getElementById('dist').value);
+    const freq   = parseFloat(document.getElementById('freq').value);
+    const steer  = parseFloat(document.getElementById('steer').value);
+    const s_rad  = steer * Math.PI / 180;
+
+    document.getElementById('d-val').textContent  = d_lam.toFixed(2) + ' λ';
+    document.getElementById('f-val').textContent  = freq + ' Hz';
+    document.getElementById('s-val').textContent  = steer + '°';
+    document.getElementById('dl-val').textContent = d_lam.toFixed(2) + ' λ';
+
+    const pts = getPattern(d_lam, s_rad);
+    const ref = getPattern(0.5, 0);
+
+    ctx.clearRect(0, 0, W, H);
+
+    const gridCol  = 'rgba(255,255,255,0.07)';
+    const textCol  = 'rgba(255,255,255,0.35)';
+
+    // 동심원
+    [0.25,0.5,0.75,1.0].forEach(r => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, R*r, 0, 2*Math.PI);
+      ctx.strokeStyle = gridCol;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      if (r < 1) {
+        ctx.fillStyle = textCol;
+        ctx.font = '11px JetBrains Mono, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(r.toFixed(2), cx+3, cy - R*r + 12);
+      }
+    });
+
+    // 각도 선 & 레이블
+    for (let a = 0; a < 360; a += 30) {
+      const rad = a * Math.PI / 180;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + R * Math.cos(rad - Math.PI/2), cy + R * Math.sin(rad - Math.PI/2));
+      ctx.strokeStyle = gridCol;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      const lx = cx + (R+20) * Math.cos(rad - Math.PI/2);
+      const ly = cy + (R+20) * Math.sin(rad - Math.PI/2);
+      ctx.fillStyle = textCol;
+      ctx.font = '12px Noto Sans KR, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(a + '°', lx, ly);
+    }
+
+    // 기준 패턴 파선 (d=λ/2)
+    ctx.beginPath();
+    ctx.setLineDash([5,5]);
+    ctx.strokeStyle = 'rgba(180,180,180,0.3)';
+    ctx.lineWidth = 1.5;
+    ref.forEach((p,i) => {
+      const x = cx + R*p.val*Math.sin(p.theta);
+      const y = cy - R*p.val*Math.cos(p.theta);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 현재 패턴 채우기
+    ctx.beginPath();
+    pts.forEach((p,i) => {
+      const x = cx + R*p.val*Math.sin(p.theta);
+      const y = cy - R*p.val*Math.cos(p.theta);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.fillStyle = 'rgba(47,129,247,0.10)';
+    ctx.fill();
+
+    // 현재 패턴 선
+    ctx.beginPath();
+    ctx.strokeStyle = '#2f81f7';
+    ctx.lineWidth = 2.5;
+    pts.forEach((p,i) => {
+      const x = cx + R*p.val*Math.sin(p.theta);
+      const y = cy - R*p.val*Math.cos(p.theta);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    // 마이크 표시
+    [[-1],[1]].forEach(([s]) => {
+      ctx.beginPath();
+      ctx.arc(cx + s*16, cy + R*0.82, 6, 0, 2*Math.PI);
+      ctx.fillStyle = '#f78166';
+      ctx.fill();
+    });
+    ctx.fillStyle = textCol;
+    ctx.font = '12px Noto Sans KR';
+    ctx.textAlign = 'center';
+    ctx.fillText('M₁  M₂', cx, cy + R*0.82 + 18);
+
+    // 빔폭 계산
+    let crossings = [];
+    for (let i = 0; i < pts.length-1; i++) {
+      if ((pts[i].val >= 0.707) !== (pts[i+1].val >= 0.707)) {
+        crossings.push((pts[i].theta + pts[i+1].theta)/2 * 180/Math.PI);
+      }
+    }
+    const bwEl = document.getElementById('bw-val');
+    if (crossings.length >= 2) {
+      const bw = Math.abs(crossings[1] - crossings[0]);
+      bwEl.textContent = bw.toFixed(1) + '°';
+    } else { bwEl.textContent = '—'; }
+
+    // 그레이팅 로브
+    const gEl = document.getElementById('grat-val');
+    if (d_lam > 1.0) {
+      gEl.textContent = '발생!';
+      gEl.style.color = '#f78166';
+    } else {
+      gEl.textContent = '없음';
+      gEl.style.color = '#3fb950';
+    }
+  }
+
+  ['dist','freq','steer'].forEach(id => {
+    document.getElementById(id).addEventListener('input', draw);
+  });
+  draw();
+})();
+</script>
+
+</body>
+</html>

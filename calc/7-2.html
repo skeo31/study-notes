@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미적분학 강의: 극좌표계와 빔포밍</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']], // $...$ 를 인라인 수식으로 인식
+                displayMath: [['$$', '$$'], ['\\[', '\\]']], // $$...$$ 를 디스플레이 수식으로 인식
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            line-height: 1.8;
+            padding: 50px;
+            background-color: #f4f6f9;
+            font-size: 1.5rem; /* 전체 폰트 크기 상향 */
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* 제목 스타일 */
+        h1 { color: #1a73e8; font-size: 3.5rem; text-align: center; margin-bottom: 60px; border-bottom: 4px solid #1a73e8; padding-bottom: 20px;}
+        h2 { color: #202124; font-size: 2.5rem; border-left: 10px solid #1a73e8; padding-left: 20px; margin-top: 60px;}
+        h3 { color: #444; font-size: 1.8rem; margin-top: 40px; }
+
+        /* 카드형 스타일 */
+        .card {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+        }
+        
+        /* 수학 식 스타일 */
+        .math-display {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            text-align: center;
+            font-size: 2rem; /* 디스플레이 수식 크기 강조 */
+            color: #d93025;
+            overflow-x: auto; /* 수식이 길 경우 스크롤 */
+        }
+
+        /* 컨트롤러 스타일 */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            background: #e8eaed;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+        
+        input[type="range"] { flex-grow: 1; height: 15px; cursor: pointer; }
+        label { font-weight: bold; min-width: 350px; font-size: 1.6rem; color: #1a73e8; }
+        
+        /* 차트 캔버스 스타일 */
+        .canvas-wrapper {
+            position: relative;
+            height: 700px;
+            width: 100%;
+            margin-top: 40px;
+        }
+        
+        /* 하이라이트 */
+        .highlight { font-weight: bold; color: #d93025; }
+        
+        p { margin-bottom: 25px; }
+    </style>
+</head>
+<body class="tex2jax_process"> <div class="container">
+    <h1>극좌표계의 공학적 응용: 스마트 안테나 및 빔포밍</h1>
+
+    <div class="card">
+        <p>전기전자공학에서는 안테나나 스피커가 모든 방향으로 에너지를 균일하게 보내는 것이 아니라, 특정 방향으로 집중시키는 특성을 설계합니다. 이를 <strong>지향성(Directivity)</strong> 또는 <strong>빔 패턴(Beam Pattern)</strong>이라고 합니다.</p>
+        <p>이 패턴은 극좌표계 $(r, \theta)$에서 가장 직관적으로 표현되며, 수학적 모델은 미적분학의 중요한 응용 사례입니다.</p>
+    </div>
+
+    <div class="card">
+        <h2>1. 단일 점음원의 지향성 (Aperture Effect)</h2>
+        <h3>수학적 모델</h3>
+        <p>하나의 스피커(또는 안테나)에서 나오는 에너지 분포는 스피커의 유효 크기(Aperture) $D$와 파장 $\lambda$의 비율에 의해 결정됩니다. 각도 $\theta$에 따른 소리(또는 전파)의 상대적 세기 $r(\theta)$는 다음과 같습니다.</p>
+        
+        <div class="math-display">
+            $$r(\theta) = \left| \frac{\sin(\frac{\pi D}{\lambda} \sin \theta)}{\frac{\pi D}{\lambda} \sin \theta} \right|$$
+        </div>
+
+        <p>이 식에서 $\frac{D}{\lambda}$는 스피커의 상대적 크기를 나타내는 계수입니다.</p>
+
+        <div class="controls">
+            <label>어퍼처 계수 $\frac{D}{\lambda}$ : <span id="val1" class="highlight">1.0</span></label>
+            <input type="range" id="slide1" min="0.5" max="6.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="chart1"></canvas>
+        </div>
+        
+        <h3>공학적 해석</h3>
+        <p>슬라이더를 움직여 $\frac{D}{\lambda}$를 키워보세요. 스피커가 파장에 비해 커질수록($D \gg \lambda$) 소리가 정면($\theta=0^\circ$)으로 집중되는 뾰족한 빔 패턴을 형성함을 볼 수 있습니다. 반대로 스피커가 작아지면($D \approx \lambda$) 소리가 모든 방향으로 퍼지는 무지향성에 가까워집니다.</p>
+    </div>
+
+    <div class="card">
+        <h2>2. 두 음원의 간섭 (Array Factor)</h2>
+        <h3>수학적 모델</h3>
+        <p>두 개의 스피커를 일정한 거리 $d$만큼 떨어뜨려 배치하면, 두 스피커에서 나온 소리가 공간의 각 지점에서 서로 간섭(보강/상쇄)을 일으킵니다. 이 간섭 패턴 $r(\theta)$는 다음과 같이 모델링됩니다.</p>
+
+        <div class="math-display">
+            $$r(\theta) = \left| \cos\left( \frac{\pi d}{\lambda} \sin \theta \right) \right|$$
+        </div>
+
+        <p>여기서 $\frac{d}{\lambda}$는 두 스피커 사이의 상대적 거리 계수입니다.</p>
+
+        <div class="controls">
+            <label>거리 계수 $\frac{d}{\lambda}$ : <span id="val2" class="highlight">1.0</span></label>
+            <input type="range" id="slide2" min="0.2" max="5.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="chart2"></canvas>
+        </div>
+        
+        <h3>공학적 해석</h3>
+        <p>슬라이더를 이용해 거리 계수 $\frac{d}{\lambda}$를 조절해 보세요. 두 스피커 사이의 거리가 멀어질수록 패턴에 여러 개의 '꽃잎' 모양이 나타납니다. 이를 <strong>사이드 로브(Side Lobe)</strong>라고 합니다. 이 거리 $d$를 정밀하게 조절함으로써 특정 방향으로만 에너지를 보내는 **빔포밍(Beamforming)**을 구현할 수 있습니다.</p>
+    </div>
+</div>
+
+<script>
+    // Sinc 함수 정의 (x=0일 때 1, 그렇지 않으면 sin(x)/x)
+    function sinc(x) {
+        if (Math.abs(x) < 0.001) return 1;
+        return Math.sin(x) / x;
+    }
+
+    // 데이터를 극좌표 형식으로 생성하는 함수 (Chart.js용)
+    function getData(mode, factor) {
+        const points = [];
+        for (let deg = 0; deg <= 360; deg += 1) {
+            const rad = (deg - 180) * Math.PI / 180; // 각도를 라디안으로 변환
+            let r;
+            if (mode === 'aperture') {
+                // 단일 스피커 모델: sinc(pi * factor * sin(theta))
+                r = Math.abs(sinc(Math.PI * factor * Math.sin(rad)));
+            } else {
+                // 두 스피커 간섭 모델: cos(pi * factor * sin(theta))
+                r = Math.abs(Math.cos(Math.PI * factor * Math.sin(rad)));
+            }
+            points.push(r);
+        }
+        return points;
+    }
+
+    // Chart.js 공통 옵션 설정
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            r: {
+                min: 0, 
+                max: 1, 
+                ticks: { display: false },
+                grid: { color: '#e0e0e0' },
+                angleLines: { color: '#e0e0e0' }
+            }
+        },
+        plugins: { 
+            legend: { display: false } 
+        },
+        animation: { duration: 150 } // 슬라이더 반응 속도를 위해 애니메이션 시간 단축
+    };
+
+    // --- 차트 1: Aperture Effect ---
+    const ctx1 = document.getElementById('chart1').getContext('2d');
+    const chart1 = new Chart(ctx1, {
+        type: 'polarArea',
+        data: {
+            labels: Array.from({length: 361}, (_, i) => i - 180), // 각도 레이블
+            datasets: [{
+                data: getData('aperture', 1.0),
+                backgroundColor: 'rgba(26, 115, 232, 0.4)', // 옅은 파란색
+                borderColor: '#1a73e8', // 진한 파란색
+                borderWidth: 2
+            }]
+        },
+        options: commonOptions
+    });
+
+    // --- 차트 2: Array Factor ---
+    const ctx2 = document.getElementById('chart2').getContext('2d');
+    const chart2 = new Chart(ctx2, {
+        type: 'polarArea',
+        data: {
+            labels: Array.from({length: 361}, (_, i) => i - 180),
+            datasets: [{
+                data: getData('array', 1.0),
+                backgroundColor: 'rgba(217, 48, 37, 0.4)', // 옅은 빨간색
+                borderColor: '#d93025', // 진한 빨간색
+                borderWidth: 2
+            }]
+        },
+        options: commonOptions
+    });
+
+    // --- 컨트롤러 이벤트 처리 ---
+    document.getElementById('slide1').oninput = function() {
+        const v = this.value;
+        document.getElementById('val1').innerText = v;
+        chart1.data.datasets[0].data = getData('aperture', v);
+        chart1.update(); // 차트 실시간 업데이트
+    };
+
+    document.getElementById('slide2').oninput = function() {
+        const v = this.value;
+        document.getElementById('val2').innerText = v;
+        chart2.data.datasets[0].data = getData('array', v);
+        chart2.update();
+    };
+</script>
+
+</body>
+</html>
