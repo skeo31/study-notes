@@ -1,0 +1,282 @@
+
+<style>
+  #as-wrap { font-size:15px; color:var(--color-text-primary); }
+  .as-steps { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+  .as-step-btn { padding:7px 16px; border-radius:var(--border-radius-md); border:0.5px solid var(--color-border-secondary); background:transparent; color:var(--color-text-secondary); font-size:14px; cursor:pointer; transition:all .15s; }
+  .as-step-btn.active { background:var(--color-background-info); color:var(--color-text-info); border-color:var(--color-border-info); font-weight:500; }
+  .as-desc { min-height:52px; padding:11px 15px; background:var(--color-background-secondary); font-size:14px; color:var(--color-text-secondary); line-height:1.65; margin-bottom:12px; border-left:2px solid var(--color-border-secondary); }
+  .as-desc b { color:var(--color-text-primary); font-weight:500; }
+  .as-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:var(--color-text-secondary); margin-top:10px; align-items:center; }
+  .as-legend-item { display:flex; align-items:center; gap:5px; }
+  .dot-r{width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;}
+  .dot-b{width:10px;height:10px;border-radius:50%;background:#185FA5;flex-shrink:0;}
+  .dot-k{width:10px;height:10px;border-radius:50%;background:var(--color-text-primary);flex-shrink:0;}
+  .sq-a{width:13px;height:11px;background:rgba(186,117,23,0.2);border:0.8px solid #BA7517;flex-shrink:0;border-radius:2px;}
+</style>
+
+<div id="as-wrap" style="padding:1rem 0;">
+  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:12px;">
+    <span style="font-size:17px;font-weight:500;">교대급수 합 추정 정리 — 지그재그 증명</span>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">단계를 클릭하세요</span>
+  </div>
+  <div class="as-steps" id="as-btns"></div>
+  <div class="as-desc" id="as-desc"></div>
+  <canvas id="as-canvas" style="width:100%;display:block;border-radius:var(--border-radius-md);"></canvas>
+  <div class="as-legend">
+    <div class="as-legend-item"><span class="dot-r"></span>홀수 부분합 (S 위, 단조감소)</div>
+    <div class="as-legend-item"><span class="dot-b"></span>짝수 부분합 (S 아래, 단조증가)</div>
+    <div class="as-legend-item"><span class="dot-k"></span>참값 S</div>
+    <div class="as-legend-item"><span class="sq-a"></span>끼임 구간</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('as-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const DPR = window.devicePixelRatio || 1;
+  const CW = 640, CH = 420;
+  canvas.width = CW * DPR;
+  canvas.height = CH * DPR;
+  canvas.style.width = '100%';
+  canvas.style.height = 'auto';
+  ctx.scale(DPR, DPR);
+
+  const PL=80, PR=40, PT=54, PB=58;
+  const PW=CW-PL-PR, PH=CH-PT-PB;
+  const SMIN=-1.1, SMAX=1.5;
+  const NX=7;
+
+  const pts=[
+    {n:1,s:1.20},{n:2,s:-0.78},{n:3,s:0.65},
+    {n:4,s:-0.42},{n:5,s:0.28},{n:6,s:-0.16},{n:7,s:0.09}
+  ];
+  const SUB='₁₂₃₄₅₆₇';
+
+  function cx(n){return PL+(n-1)/(NX-1)*PW;}
+  function cy(s){return PT+(1-(s-SMIN)/(SMAX-SMIN))*PH;}
+
+  function isDark(){return matchMedia('(prefers-color-scheme:dark)').matches;}
+  function th(){return isDark()
+    ?{ax:'#555',s:'rgba(255,255,255,0.45)',txt:'rgba(255,255,255,0.9)',bg:'rgba(255,255,255,0.04)'}
+    :{ax:'#bbb',s:'rgba(0,0,0,0.35)',txt:'rgba(0,0,0,0.88)',bg:'rgba(0,0,0,0.03)'};}
+
+  const STEPS=[
+    {label:'① 지그재그',
+     desc:'<b>부분합 Sₙ은 참값 S를 중심으로 위·아래를 번갈아 지나며 S에 가까워집니다.</b> 홀수 항을 더하면 S 위로, 짝수 항을 빼면 S 아래로 이동합니다.',
+     show:{zigzag:true,dots:true,sline:true}},
+    {label:'② 구간 축소',
+     desc:'단조감소 조건 b<sub>n+1</sub> ≤ b<sub>n</sub> 때문에 <b>점프 폭이 매 단계 줄어듭니다.</b> 두 수열이 S를 향해 점점 좁게 조여듭니다.',
+     show:{zigzag:true,dots:true,sline:true,shrink:true}},
+    {label:'③ 끼임 관계',
+     desc:'임의의 n에서 <b>S는 항상 Sₙ과 S<sub>n+1</sub> 사이에 끼여 있습니다.</b> 주황 구간 안에 S가 반드시 놓입니다.',
+     show:{zigzag:true,dots:true,sline:true,bracket:true}},
+    {label:'④ 오차 부등식',
+     desc:'이동 거리 |S<sub>n+1</sub>−Sₙ| = b<sub>n+1</sub>이고, S는 그 구간 안에 있으므로 <b>|S−Sₙ| ≤ b<sub>n+1</sub></b>. 버린 첫 항이 오차의 상한입니다.',
+     show:{zigzag:true,dots:true,sline:true,bracket:true,error:true}},
+  ];
+
+  let cur=0;
+
+  function sub(big, small){return {big, small};}
+
+  function drawTextSub(text, subtext, x, y, color, bigPx, subPx, align='left'){
+    ctx.save();
+    ctx.textBaseline='alphabetic';
+    ctx.textAlign=align;
+    ctx.fillStyle=color;
+    ctx.font=`500 ${bigPx}px var(--font-sans,sans-serif)`;
+    const w=ctx.measureText(text).width;
+    let ox=x;
+    if(align==='center') ox=x-w/2;
+    if(align==='right') ox=x-w;
+    ctx.font=`500 ${bigPx}px var(--font-sans,sans-serif)`;
+    ctx.textAlign='left';
+    ctx.fillText(text, ox, y);
+    ctx.font=`400 ${subPx}px var(--font-sans,sans-serif)`;
+    ctx.fillText(subtext, ox+w, y+3);
+    ctx.restore();
+    return w+ctx.measureText(subtext).width;
+  }
+
+  function draw(step){
+    const show=step.show, t=th();
+    ctx.clearRect(0,0,CW,CH);
+    const yS=cy(0);
+
+    if(show.sline){
+      ctx.save();
+      ctx.setLineDash([8,5]);
+      ctx.strokeStyle=t.s; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(PL,yS); ctx.lineTo(CW-PR+14,yS); ctx.stroke();
+      ctx.restore();
+      ctx.font=`500 18px var(--font-sans,sans-serif)`;
+      ctx.fillStyle=t.txt; ctx.textBaseline='middle'; ctx.textAlign='right';
+      ctx.fillText('S', PL-12, yS);
+    }
+
+    if(show.shrink){
+      for(let i=0;i<pts.length-1;i+=2){
+        const p=pts[i],q=pts[i+1];
+        const top=Math.min(cy(p.s),cy(q.s));
+        const bot=Math.max(cy(p.s),cy(q.s));
+        ctx.fillStyle='rgba(186,117,23,0.07)';
+        ctx.fillRect(cx(p.n)-18,top,cx(q.n)+18-cx(p.n)+18,bot-top);
+      }
+    }
+
+    if(show.bracket){
+      const p=pts[3],q=pts[4];
+      const x0=cx(p.n),x1=cx(q.n);
+      const yP=cy(p.s),yQ=cy(q.s);
+      const topY=Math.min(yP,yQ),botY=Math.max(yP,yQ);
+      ctx.save();
+      ctx.fillStyle='rgba(186,117,23,0.15)';
+      ctx.strokeStyle='#BA7517'; ctx.lineWidth=1;
+      ctx.setLineDash([5,3]);
+      ctx.beginPath();
+      ctx.rect(x0-26,topY,(x1+26)-(x0-26),botY-topY);
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+    }
+
+    if(show.error){
+      const p=pts[3],q=pts[4];
+      const x0=cx(p.n),x1=cx(q.n);
+      const yP=cy(p.s),yQ=cy(q.s),ySt=cy(0);
+      const bx=x1+38, lx=x0-42;
+      const midY=(yP+yQ)/2;
+
+      ctx.save();
+      ctx.strokeStyle='#BA7517'; ctx.lineWidth=1.5;
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(bx,yP); ctx.lineTo(bx,yQ); ctx.stroke();
+      [[bx-6,yP],[bx+6,yP],[bx-6,yQ],[bx+6,yQ]].forEach(([a,b],i)=>{
+        if(i%2===0){ctx.beginPath();ctx.moveTo(a,b);}else{ctx.lineTo(a,b);ctx.stroke();}
+      });
+      ctx.fillStyle='#854F0B';
+      ctx.font=`500 17px var(--font-sans,sans-serif)`;
+      ctx.textBaseline='middle'; ctx.textAlign='left';
+      ctx.fillText('b', bx+10, midY-10);
+      ctx.font=`400 13px var(--font-sans,sans-serif)`;
+      ctx.fillText('n+1', bx+10+ctx.measureText('b').width+1, midY-5);
+      ctx.font=`400 15px var(--font-sans,sans-serif)`;
+      ctx.fillText('= |S', bx+10, midY+14);
+      ctx.font=`400 12px var(--font-sans,sans-serif)`;
+      const sw=ctx.measureText('= |S').width;
+      ctx.fillText('n+1', bx+10+sw+1, midY+19);
+      ctx.font=`400 15px var(--font-sans,sans-serif)`;
+      const sw2=sw+ctx.measureText('n+1').width+1;
+      ctx.fillText(' − Sₙ|', bx+10+sw2, midY+14);
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle='#E24B4A'; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(lx,yP); ctx.lineTo(lx,ySt); ctx.stroke();
+      [[lx-6,yP],[lx+6,yP],[lx-6,ySt],[lx+6,ySt]].forEach(([a,b],i)=>{
+        if(i%2===0){ctx.beginPath();ctx.moveTo(a,b);}else{ctx.lineTo(a,b);ctx.stroke();}
+      });
+      ctx.fillStyle='#A32D2D';
+      ctx.font=`500 17px var(--font-sans,sans-serif)`;
+      ctx.textBaseline='middle'; ctx.textAlign='right';
+      ctx.fillText('|S−Sₙ|', lx-10, (yP+ySt)/2);
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle='rgba(162,45,45,0.3)'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(x0,yP); ctx.lineTo(lx,yP); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(PL,ySt); ctx.lineTo(lx,ySt); ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle='#791F1F';
+      ctx.font=`500 18px var(--font-sans,sans-serif)`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      const tx=(x0+x1)/2;
+      ctx.fillText('|S − Sₙ| ≤ b', tx-14, PT-26);
+      ctx.font=`400 14px var(--font-sans,sans-serif)`;
+      const hw=ctx.measureText('|S − Sₙ| ≤ b').width;
+      ctx.fillText('n+1', tx-14+hw/2+2, PT-20);
+      ctx.restore();
+    }
+
+    if(show.zigzag){
+      ctx.save();
+      ctx.strokeStyle=t.ax; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+      ctx.beginPath();
+      pts.forEach((p,i)=>{i===0?ctx.moveTo(cx(p.n),cy(p.s)):ctx.lineTo(cx(p.n),cy(p.s));});
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    if(show.dots){
+      pts.forEach((p,i)=>{
+        const x=cx(p.n),y=cy(p.s),odd=p.n%2===1;
+        ctx.beginPath(); ctx.arc(x,y,6.5,0,Math.PI*2);
+        ctx.fillStyle=odd?'#E24B4A':'#185FA5'; ctx.fill();
+
+        ctx.fillStyle=odd?'#791F1F':'#0C447C';
+        ctx.font=`400 16px var(--font-sans,sans-serif)`;
+        ctx.textAlign='center';
+        ctx.textBaseline=odd?'bottom':'top';
+        ctx.fillText('S'+SUB[i], x, odd?y-10:y+10);
+
+        if(cur>=2 && p.n===4){
+          ctx.font=`500 15px var(--font-sans,sans-serif)`;
+          ctx.fillStyle='#185FA5';
+          ctx.textBaseline='top'; ctx.textAlign='left';
+          ctx.fillText('← Sₙ', x+10, y+10);
+        }
+        if(cur>=2 && p.n===5){
+          ctx.font=`500 15px var(--font-sans,sans-serif)`;
+          ctx.fillStyle='#E24B4A';
+          ctx.textBaseline='bottom'; ctx.textAlign='right';
+          ctx.fillText('Sₙ₊₁ →', x-10, y-10);
+        }
+      });
+    }
+
+    ctx.save();
+    ctx.strokeStyle=t.ax; ctx.lineWidth=1.2; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(PL,PT-16); ctx.lineTo(PL,CH-PB); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PL,CH-PB); ctx.lineTo(CW-PR+18,CH-PB); ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle=t.txt;
+    ctx.font=`500 17px var(--font-sans,sans-serif)`;
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText('n', CW-PR+22, CH-PB-8);
+    ctx.textAlign='left'; ctx.textBaseline='bottom';
+    ctx.fillText('Sₙ', PL+4, PT-18);
+
+    pts.forEach(p=>{
+      ctx.fillStyle=t.ax;
+      ctx.font=`400 15px var(--font-sans,sans-serif)`;
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText(p.n, cx(p.n), CH-PB+8);
+    });
+
+    const yS2=cy(0);
+    ctx.fillStyle=t.txt;
+    ctx.beginPath(); ctx.arc(CW-PR+5,yS2,7,0,Math.PI*2); ctx.fill();
+  }
+
+  function setStep(i){
+    cur=i;
+    document.querySelectorAll('.as-step-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+    document.getElementById('as-desc').innerHTML=STEPS[i].desc;
+    draw(STEPS[i]);
+  }
+
+  const btnRow=document.getElementById('as-btns');
+  STEPS.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='as-step-btn'; b.textContent=s.label;
+    b.onclick=()=>setStep(i);
+    btnRow.appendChild(b);
+  });
+
+  setStep(0);
+})();
+</script>

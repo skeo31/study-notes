@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>극좌표와 음수 반지름 — 강의자료</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --bg2: #edeae2;
+    --ink: #1a1814;
+    --ink2: #4a4640;
+    --ink3: #8a857e;
+    --blue: #1a4fa8;
+    --blue-light: #dce8ff;
+    --amber: #b85c00;
+    --amber-light: #fef0db;
+    --green: #1a6b44;
+    --green-light: #ddf2e8;
+    --red: #b81c2e;
+    --red-light: #fde0e3;
+    --rule: #d4cfc7;
+    --serif: 'Noto Serif KR', serif;
+    --sans: 'DM Sans', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* 헤더 */
+  header {
+    background: var(--ink);
+    color: #f7f5f0;
+    padding: 48px 64px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    right: 40px; top: 40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  header p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    max-width: 480px;
+    position: relative;
+  }
+
+  /* 진행 표시 */
+  .progress-bar {
+    display: flex;
+    gap: 0;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .progress-step {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--ink3);
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .progress-step:last-child { border-right: none; }
+  .progress-step:hover { background: var(--rule); }
+  .progress-step.active {
+    background: var(--ink);
+    color: #f7f5f0;
+  }
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .progress-step:not(.active) .step-num {
+    background: var(--rule);
+    color: var(--ink2);
+  }
+
+  /* 메인 콘텐츠 */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 40px 80px;
+  }
+
+  /* 섹션 */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--ink3);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 24px;
+    line-height: 1.35;
+  }
+  .section-body {
+    font-size: 15.5px;
+    color: var(--ink2);
+    line-height: 1.85;
+    margin-bottom: 28px;
+  }
+
+  /* 강조 박스 */
+  .callout {
+    border-left: 3px solid var(--ink);
+    background: white;
+    padding: 20px 24px;
+    margin: 28px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .callout.blue {
+    border-color: var(--blue);
+    background: var(--blue-light);
+  }
+  .callout.amber {
+    border-color: var(--amber);
+    background: var(--amber-light);
+  }
+  .callout.green {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+  .callout.red {
+    border-color: var(--red);
+    background: var(--red-light);
+  }
+  .callout-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+  .callout p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* 수식 */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 24px 0;
+    text-align: center;
+  }
+  .formula {
+    font-family: var(--mono);
+    font-size: 17px;
+    color: var(--ink);
+    line-height: 2;
+  }
+  .formula .highlight-blue { color: var(--blue); font-weight: 600; }
+  .formula .highlight-amber { color: var(--amber); font-weight: 600; }
+  .formula .highlight-green { color: var(--green); font-weight: 600; }
+  .formula .highlight-red { color: var(--red); font-weight: 600; }
+  .formula-caption {
+    font-size: 13px;
+    color: var(--ink3);
+    margin-top: 10px;
+    font-family: var(--sans);
+  }
+
+  /* SVG 다이어그램 */
+  .diagram-wrap {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+    overflow: hidden;
+  }
+  .diagram-wrap svg { display: block; width: 100%; }
+
+  /* 단계별 설명 카드 */
+  .step-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 600px) {
+    .step-cards { grid-template-columns: 1fr; }
+  }
+  .step-card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .step-card-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink3);
+    margin-bottom: 8px;
+  }
+  .step-card-title {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .step-card-body {
+    font-size: 13.5px;
+    color: var(--ink2);
+    line-height: 1.65;
+  }
+
+  /* 비교 표 */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+  .compare-table th {
+    background: var(--ink);
+    color: #f7f5f0;
+    padding: 12px 20px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+  }
+  .compare-table td {
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    background: white;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  /* 인터랙티브 시각화 */
+  .interactive-wrap {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+  .interactive-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .interactive-header span {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink2);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink3); }
+  .interactive-body {
+    padding: 24px;
+  }
+
+  /* 슬라이더 */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .slider-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink2);
+    min-width: 28px;
+  }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--rule);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: pointer;
+  }
+  .slider-val {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* 네비게이션 버튼 */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover {
+    background: var(--ink);
+    color: #f7f5f0;
+    border-color: var(--ink);
+  }
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .nav-btn:disabled:hover {
+    background: transparent;
+    color: var(--ink2);
+    border-color: var(--rule);
+  }
+  .nav-btn.primary {
+    background: var(--ink);
+    color: #f7f5f0;
+    border-color: var(--ink);
+  }
+  .nav-btn.primary:hover {
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+  .page-info {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink3);
+  }
+
+  /* 수식 내 색상 텍스트 */
+  .c-blue { color: var(--blue); font-weight: 600; }
+  .c-amber { color: var(--amber); font-weight: 600; }
+  .c-green { color: var(--green); font-weight: 600; }
+  .c-red { color: var(--red); font-weight: 600; }
+
+  /* 체크 아이템 */
+  .check-list { list-style: none; margin: 16px 0; }
+  .check-list li {
+    padding: 6px 0 6px 28px;
+    position: relative;
+    font-size: 15px;
+    color: var(--ink2);
+    border-bottom: 1px solid var(--bg2);
+  }
+  .check-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--ink3);
+    font-family: var(--mono);
+  }
+
+  /* 최종 결론 박스 */
+  .conclusion-box {
+    background: var(--ink);
+    color: #f7f5f0;
+    border-radius: 12px;
+    padding: 32px 36px;
+    margin: 32px 0;
+  }
+  .conclusion-box .formula {
+    color: #f7f5f0;
+    font-size: 18px;
+  }
+  .conclusion-box .highlight-blue { color: #7eb8ff; }
+  .conclusion-box .highlight-amber { color: #ffc977; }
+  .conclusion-box .highlight-green { color: #7de8b4; }
+  .conclusion-box p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 16px;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">미적분학 — 극좌표계</div>
+  <h1>음수 반지름의 기하학적 의미</h1>
+  <p>극좌표 곱셈 규칙으로부터 출발하는 새로운 설명</p>
+</header>
+
+<nav class="progress-bar">
+  <div class="progress-step active" onclick="goSection(0)" id="nav0">
+    <span class="step-num">1</span> 극좌표 복습
+  </div>
+  <div class="progress-step" onclick="goSection(1)" id="nav1">
+    <span class="step-num">2</span> 곱셈 규칙
+  </div>
+  <div class="progress-step" onclick="goSection(2)" id="nav2">
+    <span class="step-num">3</span> −1의 의미
+  </div>
+  <div class="progress-step" onclick="goSection(3)" id="nav3">
+    <span class="step-num">4</span> 음수 반지름
+  </div>
+  <div class="progress-step" onclick="goSection(4)" id="nav4">
+    <span class="step-num">5</span> 시각화
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════════════ SECTION 0: 극좌표 복습 ══════════════════ -->
+<section class="section active" id="sec0">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title">극좌표계 기본 복습</h2>
+
+  <p class="section-body">
+    극좌표계에서 평면 위의 점은 <strong>(r, θ)</strong>로 나타냅니다.
+    r은 원점으로부터의 거리, θ는 양의 x축으로부터의 각도입니다.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr0" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <line x1="80" y1="150" x2="340" y2="150" stroke="#d4cfc7" stroke-width="0.8" marker-end="url(#arr0)"/>
+      <line x1="200" y1="40" x2="200" y2="270" stroke="#d4cfc7" stroke-width="0.8" marker-end="url(#arr0)"/>
+      <circle cx="200" cy="150" r="110" fill="none" stroke="#d4cfc7" stroke-width="0.8"/>
+      <circle cx="200" cy="150" r="2.5" fill="#8a857e"/>
+      <text x="208" y="167" font-size="12" fill="#8a857e" font-family="'DM Sans', sans-serif">O</text>
+      <!-- 점 P -->
+      <line x1="200" y1="150" x2="298" y2="74" stroke="#1a4fa8" stroke-width="2" marker-end="url(#arr0)"/>
+      <circle cx="298" cy="74" r="5" fill="#1a4fa8"/>
+      <text x="308" y="70" font-size="13" fill="#1a4fa8" font-family="'DM Sans', sans-serif" font-weight="500">P = (r, θ)</text>
+      <!-- r 레이블 -->
+      <text x="240" y="104" font-size="12" fill="#1a4fa8" font-family="'JetBrains Mono', monospace">r</text>
+      <!-- θ 호 -->
+      <path d="M 236 150 A 36 36 0 0 0 226.8 121.4" fill="none" stroke="#b85c00" stroke-width="1.2"/>
+      <text x="246" y="140" font-size="12" fill="#b85c00" font-family="'JetBrains Mono', monospace">θ</text>
+      <!-- 직교좌표 변환 -->
+      <text x="380" y="110" font-size="13" fill="#4a4640" font-family="'DM Sans', sans-serif">직교좌표 변환:</text>
+      <text x="380" y="138" font-size="13" fill="#1a4fa8" font-family="'JetBrains Mono', monospace">x = r cos θ</text>
+      <text x="380" y="162" font-size="13" fill="#1a4fa8" font-family="'JetBrains Mono', monospace">y = r sin θ</text>
+      <line x1="370" y1="90" x2="660" y2="90" stroke="#d4cfc7" stroke-width="0.5"/>
+      <line x1="370" y1="185" x2="660" y2="185" stroke="#d4cfc7" stroke-width="0.5"/>
+      <text x="380" y="210" font-size="12" fill="#8a857e" font-family="'DM Sans', sans-serif">* 통상적으로 r ≥ 0으로 정의하지만,</text>
+      <text x="380" y="230" font-size="12" fill="#8a857e" font-family="'DM Sans', sans-serif">  r < 0도 의미를 부여할 수 있습니다.</text>
+    </svg>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-title">핵심 질문</div>
+    <p>만약 r이 <strong>음수</strong>라면 어떻게 될까요?<br>
+    단순히 "정의되지 않는다"고 넘어가는 대신, 이 강의에서는 <strong>곱셈의 관점</strong>에서 자연스럽게 설명합니다.</p>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" disabled>← 이전</button>
+    <span class="page-info">1 / 5</span>
+    <button class="nav-btn primary" onclick="goSection(1)">다음 →</button>
+  </div>
+</section>
+
+<!-- ══════════════════ SECTION 1: 곱셈 규칙 ══════════════════ -->
+<section class="section" id="sec1">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title">극좌표 곱셈 규칙</h2>
+
+  <p class="section-body">
+    직교좌표에서 두 점을 "곱한다"는 것은 다소 어색하지만,
+    극좌표에서는 매우 자연스러운 연산이 정의됩니다.
+  </p>
+
+  <div class="callout amber">
+    <div class="callout-title">극좌표 곱셈의 정의</div>
+    <p>두 점 (r₁, θ₁)과 (r₂, θ₂)의 곱은 다음과 같이 정의합니다:</p>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula">
+      <span class="highlight-blue">(r₁, θ₁)</span> × <span class="highlight-amber">(r₂, θ₂)</span>
+      = <span class="highlight-green">(r₁·r₂,  θ₁+θ₂)</span>
+    </div>
+    <div class="formula-caption">크기는 서로 곱하고, 각도는 서로 더한다</div>
+  </div>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">RULE 01</div>
+      <div class="step-card-title">크기(r)의 변환</div>
+      <div class="step-card-body">두 반지름의 곱이 새로운 반지름이 됩니다.<br>
+      r₁ × r₂ → 새 거리</div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">RULE 02</div>
+      <div class="step-card-title">각도(θ)의 변환</div>
+      <div class="step-card-body">두 각도의 합이 새로운 각도가 됩니다.<br>
+      θ₁ + θ₂ → 새 방향</div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">RULE 03</div>
+      <div class="step-card-title">기하학적 의미</div>
+      <div class="step-card-body">곱셈 = 크기 조절(scaling) + 회전(rotation)의 결합</div>
+    </div>
+  </div>
+
+  <p class="section-body">예를 들어 확인해봅시다:</p>
+
+  <div class="formula-block">
+    <div class="formula" style="text-align:left; display:inline-block;">
+      <div style="margin-bottom:8px;">
+        <span class="highlight-blue">(2, π/6)</span> × <span class="highlight-amber">(3, π/3)</span>
+        = <span class="highlight-green">(6, π/2)</span>
+      </div>
+      <div style="font-size:13px; color:#8a857e; font-family:'DM Sans',sans-serif;">
+        크기: 2 × 3 = 6 &nbsp;&nbsp;|&nbsp;&nbsp; 각도: π/6 + π/3 = π/6 + 2π/6 = 3π/6 = π/2
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">왜 이 규칙이 성립하는가?</div>
+    <p>이 규칙은 삼각함수의 덧셈공식으로부터 엄밀히 증명됩니다.
+    cos(α+β) = cosα cosβ − sinα sinβ 를 활용하면,
+    직교좌표 곱셈 (x₁x₂ − y₁y₂, x₁y₂ + x₂y₁)과 정확히 일치함을 보일 수 있습니다.
+    나중에 복소수를 배울 때 다시 만나게 될 규칙입니다.</p>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" onclick="goSection(0)">← 이전</button>
+    <span class="page-info">2 / 5</span>
+    <button class="nav-btn primary" onclick="goSection(2)">다음 →</button>
+  </div>
+</section>
+
+<!-- ══════════════════ SECTION 2: -1의 의미 ══════════════════ -->
+<section class="section" id="sec2">
+  <div class="section-label">Section 03</div>
+  <h2 class="section-title">−1을 극좌표로 바라보기</h2>
+
+  <p class="section-body">
+    이제 곱셈 규칙을 이용해 숫자 <strong>−1</strong>의 극좌표 표현을 생각해봅시다.
+  </p>
+
+  <div class="callout amber">
+    <div class="callout-title">−1의 극좌표 표현</div>
+    <p>−1은 수직선 위에서 원점으로부터 거리 1, 음의 방향(각도 π)에 있는 점입니다.</p>
+  </div>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- 수직선 -->
+      <line x1="60" y1="110" x2="620" y2="110" stroke="#d4cfc7" stroke-width="1" marker-end="url(#arr1)"/>
+      <!-- 원점 -->
+      <circle cx="340" cy="110" r="3" fill="#8a857e"/>
+      <text x="338" y="128" font-size="12" fill="#8a857e" font-family="'DM Sans',sans-serif" text-anchor="middle">0</text>
+      <!-- +1 -->
+      <circle cx="460" cy="110" r="5" fill="#d4cfc7"/>
+      <text x="460" y="128" font-size="12" fill="#8a857e" font-family="'DM Sans',sans-serif" text-anchor="middle">+1</text>
+      <!-- -1 점 -->
+      <circle cx="220" cy="110" r="7" fill="#b81c2e"/>
+      <text x="220" y="98" font-size="13" fill="#b81c2e" font-family="'DM Sans',sans-serif" text-anchor="middle" font-weight="500">−1</text>
+      <!-- 거리 r=1 표시 -->
+      <line x1="220" y1="145" x2="340" y2="145" stroke="#b85c00" stroke-width="1.5" marker-end="url(#arr1)"/>
+      <line x1="340" y1="145" x2="220" y2="145" stroke="#b85c00" stroke-width="1.5" marker-end="url(#arr1)"/>
+      <text x="280" y="162" font-size="12" fill="#b85c00" font-family="'JetBrains Mono',monospace" text-anchor="middle">r = 1</text>
+      <!-- 각도 π 표시 -->
+      <path d="M 380 110 A 40 40 0 0 1 300 110" fill="none" stroke="#1a6b44" stroke-width="1.5" marker-end="url(#arr1)"/>
+      <text x="340" y="90" font-size="12" fill="#1a6b44" font-family="'JetBrains Mono',monospace" text-anchor="middle">θ = π</text>
+    </svg>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula">
+      <span class="highlight-red">−1</span>
+      &nbsp;=&nbsp;
+      <span class="highlight-blue">(</span><span class="highlight-amber">1</span>,&nbsp;<span class="highlight-green">π</span><span class="highlight-blue">)</span>
+    </div>
+    <div class="formula-caption">
+      크기(반지름) = 1 &nbsp;&nbsp;|&nbsp;&nbsp; 위상(각도) = π
+    </div>
+  </div>
+
+  <p class="section-body">
+    이것을 곱셈 규칙과 연결하면 강력한 해석이 생깁니다.<br>
+    어떤 점에 <strong>−1 = (1, π)</strong>를 곱한다는 것은:
+  </p>
+
+  <ul class="check-list">
+    <li>크기 1을 곱한다 → <strong>거리는 변하지 않는다</strong></li>
+    <li>각도 π를 더한다 → <strong>방향이 π(180°)만큼 회전한다</strong></li>
+  </ul>
+
+  <div class="callout green">
+    <div class="callout-title">기하학적 직관</div>
+    <p>−1을 곱하는 것 = <strong>원점을 기준으로 정반대 방향으로 뒤집기</strong><br>
+    크기(거리)는 그대로, 방향만 180° 회전합니다.</p>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" onclick="goSection(1)">← 이전</button>
+    <span class="page-info">3 / 5</span>
+    <button class="nav-btn primary" onclick="goSection(3)">다음 →</button>
+  </div>
+</section>
+
+<!-- ══════════════════ SECTION 3: 음수 반지름 ══════════════════ -->
+<section class="section" id="sec3">
+  <div class="section-label">Section 04</div>
+  <h2 class="section-title">음수 반지름의 정체</h2>
+
+  <p class="section-body">
+    이제 핵심입니다. 극좌표에서 <strong>−|r|</strong>이 등장하면,
+    이것을 <strong>−1이 곱해진 것</strong>으로 읽을 수 있습니다.
+  </p>
+
+  <div class="formula-block">
+    <div class="formula" style="text-align:left; display:inline-block; line-height: 2.2;">
+      <div>
+        <span class="highlight-red">(−|r|</span>, θ<span class="highlight-red">)</span>
+      </div>
+      <div>
+        = <span class="highlight-red">(−1)</span> × <span class="highlight-blue">(|r|, θ)</span>
+      </div>
+      <div>
+        = <span class="highlight-amber">(1, π)</span> × <span class="highlight-blue">(|r|, θ)</span>
+        &nbsp;&nbsp;<span style="font-size:13px; color:#8a857e; font-family:'DM Sans',sans-serif;">← −1 = (1, π) 대입</span>
+      </div>
+      <div>
+        = <span class="highlight-green">(1·|r|,  π+θ)</span>
+        &nbsp;&nbsp;<span style="font-size:13px; color:#8a857e; font-family:'DM Sans',sans-serif;">← 곱셈 규칙 적용</span>
+      </div>
+      <div>
+        = <span class="highlight-green">(|r|, θ+π)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="conclusion-box">
+    <div style="font-family:'DM Sans',sans-serif; font-size:11px; letter-spacing:0.1em; opacity:0.45; text-transform:uppercase; margin-bottom:12px;">결론</div>
+    <div class="formula">
+      <span class="highlight-blue">(−|r|, θ)</span>
+      &nbsp;=&nbsp;
+      <span class="highlight-green">(|r|, θ+π)</span>
+    </div>
+    <p>음수 반지름은 "그 방향으로 뒤로 가라"가 아니라,<br>
+    <strong>거리는 같고 방향만 π만큼 돌아간 점</strong>과 동일합니다.<br>
+    이것은 −1 = (1, π)라는 사실의 자연스러운 귀결입니다.</p>
+  </div>
+
+  <p class="section-body">각 단계를 정리하면:</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>단계</th>
+        <th>표현</th>
+        <th>적용한 아이디어</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span style="font-family:var(--mono); font-size:12px; color:#8a857e;">STEP 1</span></td>
+        <td><code style="font-family:var(--mono); font-size:13px;">(−|r|, θ)</code></td>
+        <td>음수 반지름을 가진 점</td>
+      </tr>
+      <tr>
+        <td><span style="font-family:var(--mono); font-size:12px; color:#8a857e;">STEP 2</span></td>
+        <td><code style="font-family:var(--mono); font-size:13px;">(−1) × (|r|, θ)</code></td>
+        <td>−|r| = (−1) × |r|로 분리</td>
+      </tr>
+      <tr>
+        <td><span style="font-family:var(--mono); font-size:12px; color:#8a857e;">STEP 3</span></td>
+        <td><code style="font-family:var(--mono); font-size:13px;">(1, π) × (|r|, θ)</code></td>
+        <td>−1 = (1, π) 로 대입</td>
+      </tr>
+      <tr>
+        <td><span style="font-family:var(--mono); font-size:12px; color:#8a857e;">STEP 4</span></td>
+        <td><code style="font-family:var(--mono); font-size:13px;">(1·|r|, π+θ)</code></td>
+        <td>극좌표 곱셈 규칙 적용</td>
+      </tr>
+      <tr>
+        <td><span style="font-family:var(--mono); font-size:12px; color:#8a857e;">결론</span></td>
+        <td><code style="font-family:var(--mono); font-size:13px; color:#1a6b44; font-weight:600;">(|r|, θ+π)</code></td>
+        <td>크기 동일, 각도만 π 증가</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="nav-row">
+    <button class="nav-btn" onclick="goSection(2)">← 이전</button>
+    <span class="page-info">4 / 5</span>
+    <button class="nav-btn primary" onclick="goSection(4)">다음 →</button>
+  </div>
+</section>
+
+<!-- ══════════════════ SECTION 4: 시각화 ══════════════════ -->
+<section class="section" id="sec4">
+  <div class="section-label">Section 05</div>
+  <h2 class="section-title">인터랙티브 시각화</h2>
+
+  <p class="section-body">
+    θ와 |r|을 직접 조절하면서, (−|r|, θ)와 (|r|, θ+π)가 항상 같은 점임을 확인해봅시다.
+  </p>
+
+  <div class="interactive-wrap">
+    <div class="interactive-header">
+      <div class="dot"></div>
+      <span>슬라이더를 움직여 θ와 r을 바꿔보세요</span>
+    </div>
+    <div class="interactive-body">
+      <div class="slider-row">
+        <span class="slider-label">θ</span>
+        <input type="range" id="sl-theta" min="0" max="314" value="60" step="1">
+        <span class="slider-val" id="val-theta">60°</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">|r|</span>
+        <input type="range" id="sl-r" min="20" max="110" value="80" step="1">
+        <span class="slider-val" id="val-r">80</span>
+      </div>
+      <svg id="viz-svg" viewBox="0 0 680 360" style="display:block; width:100%; margin-top:8px;">
+        <defs>
+          <marker id="arrV" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <line x1="80" y1="180" x2="600" y2="180" stroke="#d4cfc7" stroke-width="0.8" marker-end="url(#arrV)"/>
+        <line x1="340" y1="30" x2="340" y2="340" stroke="#d4cfc7" stroke-width="0.8" marker-end="url(#arrV)"/>
+        <circle cx="340" cy="180" r="2.5" fill="#8a857e"/>
+        <circle id="viz-circle" cx="340" cy="180" r="110" fill="none" stroke="#edeae2" stroke-width="1"/>
+
+        <!-- (|r|, θ) 벡터 — 파란색 -->
+        <line id="vec-pos" x1="340" y1="180" x2="420" y2="110" stroke="#1a4fa8" stroke-width="2" marker-end="url(#arrV)"/>
+        <circle id="pt-pos" cx="420" cy="110" r="6" fill="#1a4fa8"/>
+        <text id="lbl-pos" x="430" y="106" font-size="12" fill="#1a4fa8" font-family="'DM Sans',sans-serif" font-weight="500">(|r|, θ)</text>
+
+        <!-- (|r|, θ+π) 벡터 — 초록색 (결과) -->
+        <line id="vec-res" x1="340" y1="180" x2="260" y2="250" stroke="#1a6b44" stroke-width="2.5" marker-end="url(#arrV)"/>
+        <circle id="pt-res" cx="260" cy="250" r="7" fill="#1a6b44"/>
+        <text id="lbl-res" x="200" y="270" font-size="12" fill="#1a6b44" font-family="'DM Sans',sans-serif" font-weight="500">(|r|, θ+π)</text>
+        <text id="lbl-eq"  x="200" y="286" font-size="11" fill="#8a857e" font-family="'DM Sans',sans-serif">= (−|r|, θ)</text>
+
+        <!-- θ 호 -->
+        <path id="arc-theta" d="M 376 180 A 36 36 0 0 0 365 151" fill="none" stroke="#b85c00" stroke-width="1.2"/>
+        <text id="lbl-theta-arc" x="390" y="168" font-size="11" fill="#b85c00" font-family="'JetBrains Mono',monospace">θ</text>
+
+        <!-- 수식 표시 -->
+        <rect x="440" y="220" width="220" height="110" rx="8" fill="white" stroke="#d4cfc7" stroke-width="0.8"/>
+        <text id="eq1" x="550" y="246" font-size="12" fill="#4a4640" font-family="'JetBrains Mono',monospace" text-anchor="middle">(−|r|, θ)</text>
+        <text x="550" y="266" font-size="12" fill="#8a857e" font-family="'JetBrains Mono',monospace" text-anchor="middle">= (1,π)×(|r|,θ)</text>
+        <text id="eq2" x="550" y="290" font-size="12" fill="#1a6b44" font-family="'JetBrains Mono',monospace" text-anchor="middle" font-weight="500">= (|r|, θ+π)</text>
+        <text id="eq3" x="550" y="314" font-size="11" fill="#8a857e" font-family="'DM Sans',sans-serif" text-anchor="middle">두 점은 항상 일치</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-title">핵심 관찰</div>
+    <p>슬라이더를 어떻게 움직여도 <span class="c-blue">(|r|, θ)</span>의 정반대 방향에
+    <span class="c-green">(−|r|, θ) = (|r|, θ+π)</span>가 항상 위치합니다.
+    −1 = (1, π)를 곱하면 <strong>거리는 보존되고 방향만 π 회전</strong>하기 때문입니다.</p>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">앞으로의 연결</div>
+    <p>오늘 배운 곱셈 규칙과 −1 = (1, π)의 아이디어는 나중에 <strong>복소수의 극형식</strong>
+    r·e<sup>iθ</sup>를 배울 때 다시 등장합니다.
+    그때 오일러 공식 e<sup>iπ</sup> = −1이 낯설지 않게 느껴질 것입니다.</p>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" onclick="goSection(3)">← 이전</button>
+    <span class="page-info">5 / 5</span>
+    <button class="nav-btn" disabled>끝 ✓</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+var current = 0;
+
+function goSection(n) {
+  document.getElementById('sec' + current).classList.remove('active');
+  document.getElementById('nav' + current).classList.remove('active');
+  current = n;
+  document.getElementById('sec' + current).classList.add('active');
+  document.getElementById('nav' + current).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function updateViz() {
+  var tDeg = parseInt(document.getElementById('sl-theta').value);
+  var r    = parseInt(document.getElementById('sl-r').value);
+  var t    = tDeg * Math.PI / 180;
+
+  document.getElementById('val-theta').textContent = tDeg + '°';
+  document.getElementById('val-r').textContent     = r;
+
+  var cx = 340, cy = 180;
+  var px = cx + r * Math.cos(t);
+  var py = cy - r * Math.sin(t);
+  var rx2 = cx - r * Math.cos(t);
+  var ry2 = cy + r * Math.sin(t);
+
+  function setLine(id, x2, y2) {
+    var el = document.getElementById(id);
+    el.setAttribute('x2', x2.toFixed(1));
+    el.setAttribute('y2', y2.toFixed(1));
+  }
+  function setPt(id, x, y) {
+    var el = document.getElementById(id);
+    el.setAttribute('cx', x.toFixed(1));
+    el.setAttribute('cy', y.toFixed(1));
+  }
+  function setTextXY(id, x, y) {
+    var el = document.getElementById(id);
+    el.setAttribute('x', x.toFixed(1));
+    el.setAttribute('y', y.toFixed(1));
+  }
+
+  setLine('vec-pos', px, py);
+  setPt('pt-pos', px, py);
+  setLine('vec-res', rx2, ry2);
+  setPt('pt-res', rx2, ry2);
+
+  // 레이블 위치
+  var lbOff = 14;
+  var dx = px - cx, dy = py - cy;
+  var len = Math.sqrt(dx*dx + dy*dy) || 1;
+  setTextXY('lbl-pos', px + dx/len*lbOff, py + dy/len*lbOff + 4);
+
+  var dx2 = rx2 - cx, dy2 = ry2 - cy;
+  var len2 = Math.sqrt(dx2*dx2 + dy2*dy2) || 1;
+  setTextXY('lbl-res', rx2 + dx2/len2*lbOff, ry2 + dy2/len2*lbOff - 6);
+  setTextXY('lbl-eq',  rx2 + dx2/len2*lbOff, ry2 + dy2/len2*lbOff + 10);
+
+  // θ 호
+  var arcR = 36;
+  var ax = cx + arcR;
+  var ay = cy;
+  var ax2 = cx + arcR * Math.cos(t);
+  var ay2 = cy - arcR * Math.sin(t);
+  var largeArc = t > Math.PI ? 1 : 0;
+  var sweep = 0;
+  document.getElementById('arc-theta').setAttribute('d',
+    'M ' + ax.toFixed(1) + ' ' + ay.toFixed(1) +
+    ' A ' + arcR + ' ' + arcR + ' 0 ' + largeArc + ' ' + sweep +
+    ' ' + ax2.toFixed(1) + ' ' + ay2.toFixed(1)
+  );
+
+  // 수식 업데이트
+  document.getElementById('eq2').textContent =
+    '= (|r|, θ+π)';
+}
+
+document.getElementById('sl-theta').addEventListener('input', updateViz);
+document.getElementById('sl-r').addEventListener('input', updateViz);
+updateViz();
+</script>
+</body>
+</html>

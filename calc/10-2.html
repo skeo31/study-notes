@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>비교판정법 증명</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f1a;
+    --surface: #13162a;
+    --surface2: #1a1e35;
+    --accent:  #f0c040;
+    --accent2: #5bc8f5;
+    --accent3: #f07090;
+    --green:   #34d399;
+    --purple:  #a78bfa;
+    --text:    #e8e8f0;
+    --muted:   #8888aa;
+    --border:  #2a2e50;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 20px;
+    line-height: 2.0;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(240,192,64,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(240,192,64,.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 64px 36px 120px;
+  }
+
+  /* ── 헤더 ── */
+  header { text-align: center; margin-bottom: 72px; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; letter-spacing: .18em;
+    color: var(--accent); border: 1px solid var(--accent);
+    padding: 4px 16px; border-radius: 2px;
+    margin-bottom: 22px; text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900; color: #fff; line-height: 1.25;
+    margin-bottom: 16px;
+  }
+  h1 em { color: var(--accent); font-style: normal; }
+
+  .subtitle { font-size: 1rem; color: var(--muted); }
+
+  /* ── 정리 박스 ── */
+  .theorem-box {
+    background: linear-gradient(135deg, #141830 0%, #0f1222 100%);
+    border: 2px solid var(--accent2);
+    border-radius: 12px;
+    padding: 36px 40px;
+    margin-bottom: 56px;
+    position: relative;
+  }
+  .theorem-box::before {
+    content: 'THEOREM';
+    position: absolute; top: -13px; left: 28px;
+    background: var(--accent2); color: #000;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .2em; padding: 2px 12px;
+    border-radius: 3px;
+  }
+  .theorem-box .thm-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.3rem; font-weight: 900;
+    color: var(--accent2); margin-bottom: 18px;
+  }
+  .theorem-box p { font-size: 1.1rem; margin-bottom: 14px; }
+  .theorem-box p:last-child { margin-bottom: 0; }
+
+  /* ── 섹션 제목 ── */
+  .sec {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--accent2);
+    margin-bottom: 10px;
+  }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 36px 40px;
+    margin-bottom: 36px;
+    position: relative; overflow: hidden;
+  }
+  .card-bar {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 5px; border-radius: 10px 0 0 10px;
+  }
+  .card h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.45rem; font-weight: 900;
+    color: #fff; margin-bottom: 6px;
+  }
+  .card .card-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .85rem; color: var(--muted);
+    margin-bottom: 26px; letter-spacing: .04em;
+  }
+  .card p { font-size: 1.08rem; margin-bottom: 16px; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* ── 수식 블록 ── */
+  .mbox {
+    background: #080a15;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .mbox.gold   { border-color: rgba(240,192,64,.45);  box-shadow: inset 0 0 28px rgba(240,192,64,.05); }
+  .mbox.blue   { border-color: rgba(91,200,245,.4);   box-shadow: inset 0 0 28px rgba(91,200,245,.05); }
+  .mbox.green  { border-color: rgba(52,211,153,.4);   box-shadow: inset 0 0 28px rgba(52,211,153,.05); }
+  .mbox.red    { border-color: rgba(240,112,144,.4);  box-shadow: inset 0 0 28px rgba(240,112,144,.05); }
+  .mbox.purple { border-color: rgba(167,139,250,.4);  box-shadow: inset 0 0 28px rgba(167,139,250,.05); }
+
+  /* ── 콜아웃 ── */
+  .callout {
+    border-radius: 8px; padding: 18px 22px;
+    margin: 18px 0; display: flex;
+    gap: 14px; align-items: flex-start; font-size: 1.02rem;
+  }
+  .callout .ic { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+  .callout p   { margin: 0; color: var(--text); line-height: 1.8; }
+  .callout.blue   { background: rgba(91,200,245,.07);  border: 1px solid rgba(91,200,245,.22); }
+  .callout.blue   strong { color: var(--accent2); }
+  .callout.gold   { background: rgba(240,192,64,.07);  border: 1px solid rgba(240,192,64,.25); }
+  .callout.gold   strong { color: var(--accent); }
+  .callout.green  { background: rgba(52,211,153,.07);  border: 1px solid rgba(52,211,153,.25); }
+  .callout.green  strong { color: var(--green); }
+  .callout.red    { background: rgba(240,112,144,.07); border: 1px solid rgba(240,112,144,.25); }
+  .callout.red    strong { color: var(--accent3); }
+  .callout.purple { background: rgba(167,139,250,.07); border: 1px solid rgba(167,139,250,.25); }
+  .callout.purple strong { color: var(--purple); }
+
+  /* ── 증명 스텝 ── */
+  .proof-steps {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 18px;
+    margin: 20px 0;
+  }
+  .proof-steps li {
+    display: flex; gap: 18px; align-items: flex-start;
+    font-size: 1.06rem;
+  }
+  .step-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .82rem; font-weight: 700;
+    padding: 3px 11px; border-radius: 4px;
+    flex-shrink: 0; margin-top: 4px;
+    letter-spacing: .05em;
+  }
+  .step-badge.gold   { background: rgba(240,192,64,.2);  color: var(--accent);  border: 1px solid rgba(240,192,64,.4); }
+  .step-badge.blue   { background: rgba(91,200,245,.15); color: var(--accent2); border: 1px solid rgba(91,200,245,.35); }
+  .step-badge.green  { background: rgba(52,211,153,.15); color: var(--green);   border: 1px solid rgba(52,211,153,.35); }
+  .step-badge.red    { background: rgba(240,112,144,.15);color: var(--accent3); border: 1px solid rgba(240,112,144,.35);}
+
+  /* ── 강조 ── */
+  .hl  { color: var(--accent);  font-weight: 700; }
+  .hl2 { color: var(--accent2); font-weight: 700; }
+  .hl3 { color: var(--accent3); font-weight: 700; }
+  .hl4 { color: var(--purple);  font-weight: 700; }
+  .hl5 { color: var(--green);   font-weight: 700; }
+
+  /* ── 구분선 ── */
+  hr.div { border: none; border-top: 1px solid var(--border); margin: 52px 0; }
+
+  /* ── QED 배지 ── */
+  .qed {
+    display: flex; justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .qed span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .9rem; color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 14px; border-radius: 4px;
+    letter-spacing: .08em;
+  }
+
+  /* ── 요약 표 ── */
+  .sum-table { width:100%; border-collapse:collapse; margin: 24px 0; font-size: 1rem; }
+  .sum-table th {
+    background: var(--surface2);
+    color: var(--accent2);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .82rem; letter-spacing: .1em;
+    padding: 14px 18px; text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  .sum-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle; line-height: 1.8;
+  }
+  .sum-table tr:last-child td { border-bottom: none; }
+  .sum-table tr:hover td { background: rgba(255,255,255,.015); }
+
+  /* ── 마무리 배너 ── */
+  .summary {
+    background: linear-gradient(135deg, #141030 0%, #0d1528 100%);
+    border: 1px solid rgba(91,200,245,.2);
+    border-radius: 12px;
+    padding: 44px 40px; margin-top: 56px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .summary::before {
+    content: '□';
+    position: absolute; font-size: 18rem;
+    font-family: serif; color: rgba(255,255,255,.015);
+    right: -10px; bottom: -60px;
+    line-height: 1; pointer-events: none;
+  }
+  .summary h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.55rem; font-weight: 900;
+    color: #fff; margin-bottom: 16px;
+  }
+  .summary p { color: var(--muted); font-size: 1rem; max-width:580px; margin:0 auto 8px; line-height:1.9; }
+  .summary strong { color: var(--accent2); }
+
+  /* MathJax */
+  mjx-container { font-size: 1.18em !important; }
+
+  @media (max-width: 600px) {
+    .wrapper { padding: 40px 18px 80px; }
+    .card { padding: 26px 22px; }
+    .theorem-box { padding: 28px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- ══════════ 헤더 ══════════ -->
+<header>
+  <div class="tag">제10장 · 무한급수</div>
+  <h1>비교판정법<br><em>증명</em></h1>
+  <p class="subtitle">Comparison Test — Proof</p>
+</header>
+
+<!-- ══════════ 정리 ══════════ -->
+<div class="sec">정리</div>
+<div class="theorem-box">
+  <div class="thm-title">비교판정법 (Comparison Test)</div>
+  <p>\(\sum a_n\)과 \(\sum b_n\)의 각 항이 모두 양수인 급수일 때,</p>
+  <p>
+    <strong style="color:#fff;">(i)</strong>&nbsp;
+    \(\sum b_n\)이 수렴하고, 모든 \(n\)에 대해 \(a_n \le b_n\)이면
+    &nbsp;\(\sum a_n\)도 <span class="hl5">수렴</span>한다.
+  </p>
+  <p>
+    <strong style="color:#fff;">(ii)</strong>&nbsp;
+    \(\sum b_n\)이 발산하고, 모든 \(n\)에 대해 \(a_n \ge b_n\)이면
+    &nbsp;\(\sum a_n\)도 <span class="hl3">발산</span>한다.
+  </p>
+</div>
+
+<!-- ══════════ 사전 준비 ══════════ -->
+<div class="sec" style="margin-top:8px;">사전 준비</div>
+<div class="card">
+  <div class="card-bar" style="background:var(--purple);"></div>
+  <h2>핵심 도구 — 단조수열정리</h2>
+  <div class="card-sub">Monotone Convergence Theorem</div>
+
+  <div class="callout purple">
+    <span class="ic">📐</span>
+    <p>
+      <strong>단조수열정리:</strong><br>
+      단조증가이고 <strong>위로 유계</strong>인 수열은 수렴한다.<br>
+      단조증가이고 위로 유계가 <strong>아닌</strong> 수열은 \(\infty\)로 발산한다.
+    </p>
+  </div>
+
+  <p style="margin-top:20px;">부분합을 다음과 같이 정의한다.</p>
+
+  <div class="mbox blue">
+    \[
+      S_n = \sum_{k=1}^{n} a_k, \qquad T_n = \sum_{k=1}^{n} b_k
+    \]
+  </div>
+
+  <p>
+    모든 항이 <span class="hl2">양수</span>이므로 \(S_n\)과 \(T_n\)은 모두
+    <span class="hl2">단조증가</span>한다.
+  </p>
+
+  <div class="callout gold">
+    <span class="ic">💡</span>
+    <p>
+      이제 증명의 전략은 단순하다.<br>
+      <strong>(i)</strong> \(S_n\)이 위로 유계임을 보인다 → 수렴.<br>
+      <strong>(ii)</strong> \(S_n\)이 \(\infty\)로 감을 보인다 → 발산.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════ 증명 (i) ══════════ -->
+<hr class="div">
+<div class="sec">증명 (i) — 수렴</div>
+<div class="card">
+  <div class="card-bar" style="background:var(--green);"></div>
+  <h2>(i) \(\sum b_n\) 수렴, \(a_n \le b_n\) \(\;\Rightarrow\;\) \(\sum a_n\) 수렴</h2>
+  <div class="card-sub">Convergence Case</div>
+
+  <ul class="proof-steps">
+
+    <li>
+      <span class="step-badge gold">가정</span>
+      <span>
+        \(\sum b_n\)이 수렴하므로 그 합을 \(T\)라 하면,
+        모든 \(n\)에 대해
+        \[T_n = \sum_{k=1}^{n} b_k \;\le\; T\]
+      </span>
+    </li>
+
+    <li>
+      <span class="step-badge blue">대소</span>
+      <span>
+        \(a_k \le b_k\)가 모든 \(k\)에 대해 성립하므로, \(k=1\)부터 \(n\)까지 더하면
+      </span>
+    </li>
+
+  </ul>
+
+  <div class="mbox green">
+    \[
+      S_n = \sum_{k=1}^{n} a_k \;\le\; \sum_{k=1}^{n} b_k = T_n \;\le\; T
+    \]
+  </div>
+
+  <ul class="proof-steps">
+    <li>
+      <span class="step-badge green">결론</span>
+      <span>
+        \(S_n \le T\) 이므로 \(S_n\)은 <span class="hl5">위로 유계</span>이다.<br>
+        \(S_n\)은 단조증가이고 위로 유계 → <span class="hl5">단조수열정리</span>에 의해
+        \(S_n\)은 수렴한다. 즉 \(\sum a_n\) 수렴. 
+      </span>
+    </li>
+  </ul>
+
+  <div class="qed"><span>Q.E.D. &nbsp;□</span></div>
+</div>
+
+<!-- ══════════ 증명 (ii) ══════════ -->
+<div class="sec">증명 (ii) — 발산</div>
+<div class="card">
+  <div class="card-bar" style="background:var(--accent3);"></div>
+  <h2>(ii) \(\sum b_n\) 발산, \(a_n \ge b_n\) \(\;\Rightarrow\;\) \(\sum a_n\) 발산</h2>
+  <div class="card-sub">Divergence Case</div>
+
+  <ul class="proof-steps">
+
+    <li>
+      <span class="step-badge gold">가정</span>
+      <span>
+        \(\sum b_n\)이 발산하고 \(T_n\)은 단조증가이므로,
+        단조수열정리에 의해
+        \[T_n \;\to\; \infty \qquad (n \to \infty)\]
+      </span>
+    </li>
+
+    <li>
+      <span class="step-badge red">대소</span>
+      <span>
+        \(a_k \ge b_k\)가 모든 \(k\)에 대해 성립하므로, \(k=1\)부터 \(n\)까지 더하면
+      </span>
+    </li>
+
+  </ul>
+
+  <div class="mbox red">
+    \[
+      S_n = \sum_{k=1}^{n} a_k \;\ge\; \sum_{k=1}^{n} b_k = T_n
+    \]
+  </div>
+
+  <ul class="proof-steps">
+    <li>
+      <span class="step-badge red">결론</span>
+      <span>
+        \(T_n \to \infty\)이고 \(S_n \ge T_n\)이므로
+        \[S_n \;\ge\; T_n \;\to\; \infty\]
+        따라서 \(S_n \to \infty\), 즉 \(\sum a_n\) <span class="hl3">발산</span>.
+      </span>
+    </li>
+  </ul>
+
+  <div class="qed"><span>Q.E.D. &nbsp;□</span></div>
+</div>
+
+<!-- ══════════ 증명 구조 요약 ══════════ -->
+<hr class="div">
+<div class="sec" style="text-align:center; margin-bottom:18px;">증명 구조 요약</div>
+
+<table class="sum-table">
+  <thead>
+    <tr>
+      <th>경우</th>
+      <th>가정</th>
+      <th>부분합 대소</th>
+      <th>단조수열정리 적용</th>
+      <th>결론</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong style="color:var(--green);">(i) 수렴</strong></td>
+      <td>\(a_n \le b_n\)<br>\(\sum b_n\) 수렴 → \(T_n \le T\)</td>
+      <td>\(S_n \le T_n \le T\)</td>
+      <td>\(S_n\) 단조증가 + 유계</td>
+      <td><span class="hl5">\(\sum a_n\) 수렴</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--accent3);">(ii) 발산</strong></td>
+      <td>\(a_n \ge b_n\)<br>\(\sum b_n\) 발산 → \(T_n \to \infty\)</td>
+      <td>\(S_n \ge T_n \to \infty\)</td>
+      <td>\(S_n\) 단조증가 + 비유계</td>
+      <td><span class="hl3">\(\sum a_n\) 발산</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════ 마무리 배너 ══════════ -->
+<div class="summary">
+  <h2>증명의 핵심 아이디어</h2>
+  <p>
+    두 경우 모두 <strong>부분합의 대소관계</strong>를 이용해<br>
+    유계 / 발산의 성질을 \(T_n\)에서 \(S_n\)으로 <strong>이전</strong>시킨다.
+  </p>
+  <p style="margin-top:12px;">
+    그 판단 기준으로 <strong>단조수열정리</strong>를 사용한다.
+  </p>
+  <p style="margin-top:20px; font-size:.9rem; color:#5566aa;">
+    비교판정법은 이 단순한 부등식 전달만으로 완성된다.
+  </p>
+</div>
+
+</div>
+</body>
+</html>
