@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.7 표본의 크기 결정 — 전자공학과 확률과 통계</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2230;
+    --border: #2a3548;
+    --accent: #58a6ff;
+    --accent2: #f0883e;
+    --accent3: #56d364;
+    --accent4: #bc8cff;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --example-bg: #0f1f38;
+    --example-border: #1f4068;
+    --elec-bg: #101a1a;
+    --elec-border: #1a4040;
+    --elec-accent: #00d4aa;
+    --theorem-bg: #1a1a2e;
+    --theorem-border: #6a3fa0;
+    --formula-bg: #141e2a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 19px;
+    line-height: 1.85;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #0d1b2e 0%, #142030 60%, #0d2020 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 56px 0 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(88,166,255,.15), transparent);
+  }
+  .header-chip {
+    display: inline-block;
+    background: rgba(88,166,255,.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 18px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+    position: relative;
+  }
+  header h1 span { color: var(--accent); }
+  header p {
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
+
+  /* ── Layout ── */
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 52px 28px 80px;
+  }
+
+  /* ── Section heading ── */
+  .section-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    border-left: 4px solid var(--accent);
+    padding-left: 18px;
+    margin: 60px 0 24px;
+  }
+
+  /* ── Prose ── */
+  p { margin-bottom: 18px; font-size: 1.05rem; }
+
+  /* ── Formula block ── */
+  .formula-box {
+    background: var(--formula-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    text-align: center;
+    font-size: 1.1rem;
+    overflow-x: auto;
+  }
+
+  /* ── Theorem / 정리 ── */
+  .theorem {
+    background: var(--theorem-bg);
+    border: 1px solid var(--theorem-border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 32px 0;
+  }
+  .theorem-label {
+    display: inline-block;
+    background: var(--theorem-border);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .theorem-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent4);
+    margin-bottom: 14px;
+  }
+
+  /* ── Example box (교과서 예제) ── */
+  .example {
+    background: var(--example-bg);
+    border: 1px solid var(--example-border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 36px 0 12px;
+  }
+  .example-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--example-border);
+    color: #90c8ff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .example-label::before { content: '📘'; font-size: 1rem; }
+
+  /* ── 전자공학 예제 ── */
+  .elec-example {
+    background: var(--elec-bg);
+    border: 1px solid var(--elec-border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 12px 0 36px;
+  }
+  .elec-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--elec-border);
+    color: var(--elec-accent);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .elec-label::before { content: '⚡'; font-size: 1rem; }
+  .elec-context {
+    background: rgba(0,212,170,.07);
+    border-left: 3px solid var(--elec-accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 18px;
+    margin: 12px 0 18px;
+    font-size: 0.97rem;
+    color: #b0f0e0;
+    line-height: 1.7;
+  }
+
+  /* ── Solution ── */
+  .solution { margin-top: 18px; }
+  .solution-title {
+    font-weight: 700;
+    color: var(--accent2);
+    font-size: 1rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .solution-title::before { content: '▶'; font-size: .75rem; }
+
+  /* ── Callout ── */
+  .callout {
+    background: rgba(86,211,100,.07);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 20px;
+    margin: 14px 0;
+    font-size: 0.97rem;
+  }
+  .callout strong { color: var(--accent3); }
+
+  .callout-orange {
+    background: rgba(240,136,62,.08);
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 20px;
+    margin: 14px 0;
+    font-size: 0.97rem;
+  }
+  .callout-orange strong { color: var(--accent2); }
+
+  /* ── Divider ── */
+  hr.section-hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 60px 0;
+  }
+
+  /* ── Highlight inline ── */
+  .hl  { color: var(--accent2); font-weight: 600; }
+  .hl-g{ color: var(--accent3); font-weight: 600; }
+  .hl-p{ color: var(--accent4); font-weight: 600; }
+  .hl-t{ color: var(--elec-accent); font-weight: 600; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 30px;
+    margin-bottom: 50px;
+  }
+  .toc h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 7px 0; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 1rem; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Key concept / 핵심 정리 ── */
+  .key-box {
+    background: linear-gradient(135deg, #1a1830 0%, #1a2030 100%);
+    border: 1px solid var(--accent4);
+    border-radius: 12px;
+    padding: 26px 30px;
+    margin: 28px 0;
+  }
+  .key-box h4 { color: var(--accent4); font-size: 1rem; margin-bottom: 12px; font-weight: 700; }
+
+  /* ── Derive steps ── */
+  .derive {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 26px;
+    margin: 18px 0;
+    font-size: 0.97rem;
+  }
+  .derive-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .derive ol { padding-left: 22px; }
+  .derive ol li { margin: 8px 0; }
+
+  /* ── σ 모르는 경우 섹션 ── */
+  .sigma-section {
+    background: #0e1520;
+    border: 1px solid #2a3a5a;
+    border-radius: 14px;
+    padding: 32px 34px;
+    margin: 36px 0;
+  }
+  .sigma-section-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #f0c060;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sigma-section-title::before {
+    content: '?';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    background: #f0c060;
+    color: #0d1117;
+    font-size: 1rem;
+    font-weight: 800;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .method-card {
+    background: #131c2e;
+    border: 1px solid #2a3548;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    position: relative;
+  }
+  .method-card-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    background: var(--accent);
+    color: #000;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .method-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .method-card.m2 .method-card-title { color: var(--elec-accent); }
+  .method-card.m2 .method-card-num { background: var(--elec-accent); }
+  .method-card.m3 .method-card-title { color: var(--accent4); }
+  .method-card.m3 .method-card-num { background: var(--accent4); }
+  .method-steps {
+    padding-left: 0;
+    list-style: none;
+    counter-reset: mstep;
+    margin: 10px 0 6px;
+  }
+  .method-steps li {
+    counter-increment: mstep;
+    padding: 5px 0 5px 32px;
+    position: relative;
+    font-size: 0.97rem;
+  }
+  .method-steps li::before {
+    content: counter(mstep);
+    position: absolute; left: 0; top: 7px;
+    width: 22px; height: 22px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .method-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .tag-best { background: rgba(86,211,100,.18); color: var(--accent3); }
+  .tag-easy { background: rgba(88,166,255,.18); color: var(--accent); }
+  .tag-rough { background: rgba(188,140,255,.18); color: var(--accent4); }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.93rem;
+    margin: 18px 0 4px;
+  }
+  .compare-table th {
+    background: #1e2d42;
+    color: var(--accent);
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    text-align: left;
+  }
+  .compare-table td {
+    background: var(--surface2);
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .elec-example2 {
+    background: #131020;
+    border: 1px solid #3a2a5a;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 12px 0 20px;
+  }
+  .elec-label2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #3a2a5a;
+    color: var(--accent4);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .elec-label2::before { content: '🔬'; font-size: 1rem; }
+  .elec-context2 {
+    background: rgba(188,140,255,.07);
+    border-left: 3px solid var(--accent4);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 18px;
+    margin: 12px 0 18px;
+    font-size: 0.97rem;
+    color: #d8c0ff;
+    line-height: 1.7;
+  }
+  .pilot-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.93rem;
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 14px 0;
+    display: block;
+    overflow-x: auto;
+  }
+  .pilot-table th {
+    background: #1e1530;
+    color: var(--accent4);
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .pilot-table td {
+    background: var(--surface2);
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    body { font-size: 17px; }
+    header h1 { font-size: 2.1rem; }
+    main { padding: 32px 16px 60px; }
+    .example, .elec-example, .theorem { padding: 20px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-chip">전자공학과 · 확률과 통계</div>
+  <h1>6.7 <span>표본의 크기</span> 결정</h1>
+  <p>Sample Size Determination · 오차한계와 신뢰수준의 균형</p>
+</header>
+
+<main>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#intro">왜 표본의 크기를 결정해야 하는가?</a></li>
+      <li><a href="#mean-n">모평균 추정에서 표본의 크기 결정 — 정리 6-17</a></li>
+      <li><a href="#ex27">예제 6-27 (교과서)</a></li>
+      <li><a href="#ex-elec1">전자공학 예제 1 — 온도 센서 측정 정밀도</a></li>
+      <li><a href="#sigma-unknown">σ를 모를 때 어떻게 하는가? — 3가지 방법</a></li>
+      <li><a href="#ex-elec1b">전자공학 예제 1-B — 예비표본으로 σ 추정하기</a></li>
+      <li><a href="#prop-n">모비율 추정에서 표본의 크기 결정 — 정리 6-18</a></li>
+      <li><a href="#ex28">예제 6-28 (교과서)</a></li>
+      <li><a href="#ex-elec2">전자공학 예제 2 — 반도체 불량률 조사</a></li>
+      <li><a href="#summary">핵심 공식 정리</a></li>
+    </ol>
+  </nav>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 1. 도입 -->
+  <!-- ══════════════════════════════════════════ -->
+  <h2 class="section-title" id="intro">왜 표본의 크기를 결정해야 하는가?</h2>
+
+  <p>
+    모수를 추정하기 위해 표본을 추출할 때, 표본의 크기를 얼마로 해야 하는지를 결정해야 한다.
+  </p>
+
+  <div class="callout-orange">
+    <strong>표본 크기의 트레이드오프:</strong><br>
+    표본이 너무 크면 → 시간과 비용이 많이 소비된다.<br>
+    표본이 너무 작으면 → 오차가 커서 신뢰할 수 없는 정보를 얻는다.<br>
+    따라서 <strong>정해진 오차한계를 만족하는 최소 표본의 크기</strong>를 결정하는 것이 필요하다.
+  </div>
+
+  <p>
+    핵심 아이디어는 다음과 같다.
+    신뢰구간을 구할 때 등장하는 <span class="hl">오차한계(margin of error)</span>가
+    원하는 정밀도 \(d\)보다 작아지도록 \(n\)에 대해 부등식을 풀면 필요한 표본의 크기를 구할 수 있다.
+  </p>
+
+  <hr class="section-hr">
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 2. 모평균 추정 -->
+  <!-- ══════════════════════════════════════════ -->
+  <h2 class="section-title" id="mean-n">모평균 추정에서 표본의 크기 결정</h2>
+
+  <p>
+    모평균 \(\mu\)를 추정하는 데 오차한계를 정해진 값 \(d\)보다 작게 하고자 할 때 표본의 크기를 결정해보자.
+    모분산 \(\sigma^2\)을 알 때, 모평균 \(\mu\)의 \(100(1-\alpha)\%\) 신뢰구간은 다음과 같다.
+  </p>
+
+  <div class="formula-box">
+    \[\overline{X} \pm z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}}\]
+  </div>
+
+  <p>
+    여기서 <span class="hl-p">\(z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}}\)</span>이
+    모수와 추정량 차이의 \(100(1-\alpha)\%\) <strong>오차한계</strong>를 의미한다.
+    따라서 오차한계 \(z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}}\)를 \(d\)보다 작다고 두고 \(n\)에 대해 풀면 표본의 크기를 결정할 수 있다.
+  </p>
+
+  <div class="derive">
+    <div class="derive-title">📐 도출 과정</div>
+    <ol>
+      <li>오차한계 조건: \(\;z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}} \leq d\)</li>
+      <li>양변을 제곱하고 \(n\)에 대해 정리: \(\;\dfrac{z_{\alpha/2}^2\,\sigma^2}{n} \leq d^2\)</li>
+      <li>\(n\)을 좌변으로 이항: \(\;n \geq \left(z_{\alpha/2}\dfrac{\sigma}{d}\right)^{\!2}\)</li>
+    </ol>
+  </div>
+
+  <div class="theorem">
+    <div class="theorem-label">정리 6-17</div>
+    <div class="theorem-title">모평균 추정에서 표본의 크기 결정</div>
+    <p>모분산 \(\sigma^2\)을 아는 경우, 모평균 \(\mu\)에 대한 표본의 크기 \(n\)의 범위는 다음과 같다.</p>
+    <div class="formula-box" style="margin-top:16px;">
+      \[n \geq \left(z_{\alpha/2}\dfrac{\sigma}{d}\right)^{\!2}\]
+    </div>
+    <p style="font-size:0.95rem; color:var(--text-muted); margin-top:10px;">
+      여기서 \(d\)는 허용 오차한계, \(z_{\alpha/2}\)는 신뢰수준에 대응하는 표준정규분포의 임계값이다.<br>
+      (95% 신뢰수준: \(z_{0.025}=1.96\), &nbsp; 99% 신뢰수준: \(z_{0.005}=2.576\))
+    </p>
+  </div>
+
+  <div class="callout">
+    <strong>실무 팁:</strong> 모표준편차 \(\sigma\)를 알고 있는 경우 위 식을 이용하면 되지만,
+    실제로는 \(\sigma\)를 모르는 경우가 대부분이다.
+    이럴 때는 <strong>예비표본(pilot sample)</strong>을 추출한 후 \(\sigma\)를 추정하여 표본의 크기 \(n\)을 구할 수 있다.
+  </div>
+
+  <!-- ─── 예제 6-27 ─── -->
+  <div class="example" id="ex27">
+    <div class="example-label">예제 6-27</div>
+    <p>
+      어느 대학교에 다니는 학생의 한 달 평균 생활비는 30만 원이고, 표준편차는 5만 원이라고 한다.
+      이 대학교에 다니는 학생의 한 달 평균 생활비의 95% 추정 오차한계가 1만 원 이내이기
+      위해 필요한 최소 표본의 크기를 구하라.
+    </p>
+
+    <div class="solution">
+      <div class="solution-title">풀이</div>
+      <p>
+        95% 신뢰수준이므로 \(z_{0.025} = 1.96\),&nbsp;
+        \(\sigma = 50000\),&nbsp; \(d = 10000\).
+      </p>
+      <p>[정리 6-17]을 이용하여 표본의 크기에 대한 식을 계산하면 다음과 같다.</p>
+      <div class="formula-box">
+        \[n \geq \left(z_{0.025}\dfrac{\sigma}{d}\right)^{\!2}
+          = \left(1.96 \times \dfrac{50000}{10000}\right)^{\!2}
+          = (1.96 \times 5)^2
+          = 9.8^2 = 96.04\]
+      </div>
+      <p>따라서 필요한 최소 표본의 크기는 96.04보다 큰 수 중 가장 작은 정수인 \(n = 97\)이다.</p>
+    </div>
+  </div>
+
+  <!-- ─── 전자공학 예제 1 ─── -->
+  <div class="elec-example" id="ex-elec1">
+    <div class="elec-label">전자공학 예제 1 — 온도 센서 측정 정밀도</div>
+
+    <div class="elec-context">
+      💡 <strong>배경 지식:</strong>
+      전자 시스템에는 온도 센서(thermistor, thermocouple, PT100 등)가 많이 사용된다.
+      예를 들어 CPU 온도 모니터링, 배터리 열 관리, 스마트 가전 제어 등에 모두 온도 센서가 쓰인다.
+      센서의 측정값은 내부 노이즈, 주변 온도 변화, ADC 변환 오차 때문에 매번 조금씩 다르게 나온다.
+      즉, 반복 측정값은 일정한 <em>분산</em>을 가지는 확률변수로 볼 수 있다.
+      "진짜 온도(모평균)"를 높은 정밀도로 추정하려면 몇 번이나 측정해야 할까?
+      바로 이것이 표본의 크기 결정 문제다.
+    </div>
+
+    <p>
+      어떤 전자 시스템에 장착된 PT100 온도 센서의 반복 측정값은 평균 \(\mu\)°C, 표준편차 \(\sigma = 0.8\)°C의 정규분포를 따른다고 한다.
+      실제 온도를 95% 신뢰수준에서 오차한계 <strong>0.2°C 이내</strong>로 추정하기 위해 필요한 최소 측정 횟수를 구하라.
+    </p>
+
+    <div class="solution">
+      <div class="solution-title">풀이</div>
+      <p>
+        95% 신뢰수준이므로 \(z_{0.025} = 1.96\),&nbsp;
+        \(\sigma = 0.8\)°C,&nbsp; \(d = 0.2\)°C.
+      </p>
+      <p>[정리 6-17]을 적용하면</p>
+      <div class="formula-box">
+        \[n \geq \left(z_{0.025}\dfrac{\sigma}{d}\right)^{\!2}
+          = \left(1.96 \times \dfrac{0.8}{0.2}\right)^{\!2}
+          = \left(1.96 \times 4\right)^2
+          = 7.84^2
+          \approx 61.47\]
+      </div>
+      <p>따라서 필요한 최소 측정 횟수는 \(n = 62\)회이다.</p>
+
+      <div class="callout">
+        <strong>해석:</strong>
+        같은 센서로 측정 정밀도를 더 높이려면(예: \(d = 0.1\)°C로 절반으로 줄이면)
+        \(n \geq (1.96 \times 8)^2 \approx 246\)회가 필요하다.
+        오차한계를 절반으로 줄이려면 측정 횟수는 약 4배가 필요하다.
+        이처럼 정밀도와 측정 비용 사이의 트레이드오프를 설계 단계에서 미리 계산하는 것이 중요하다.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- σ를 모를 때 -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="sigma-section" id="sigma-unknown">
+    <div class="sigma-section-title">σ를 모를 때 어떻게 하는가?</div>
+
+    <p>
+      표본 크기 공식 \(n \geq \!\left(z_{\alpha/2}\dfrac{\sigma}{d}\right)^{\!2}\)을 쓰려면
+      <span style="color:#f0c060; font-weight:600;">\(\sigma\)(모표준편차)를 미리 알아야 한다.</span>
+      그런데 \(\sigma\)를 알려면 모집단을 이미 조사해야 한다 — 닭이 먼저냐, 달걀이 먼저냐 같은 딜레마다.
+      실무에서는 이 문제를 아래 세 가지 방법으로 해결한다.
+    </p>
+
+    <!-- 방법 1 -->
+    <div class="method-card">
+      <div class="method-card-title">
+        <span class="method-card-num">1</span>
+        예비표본(Pilot Sample) 활용
+        <span class="method-tag tag-best">가장 표준적</span>
+      </div>
+      <p style="margin-bottom:10px; font-size:0.97rem;">
+        소규모 예비표본을 먼저 뽑아 \(\sigma\)를 추정한 뒤, 그 값으로 필요한 \(n\)을 계산하는 방법이다.
+      </p>
+      <ul class="method-steps">
+        <li>소규모 예비표본(보통 20~30개)을 먼저 뽑는다.</li>
+        <li>예비표본의 표본표준편차 \(s\)를 계산한다: \(\;s = \sqrt{\dfrac{1}{m-1}\sum_{i=1}^{m}(X_i-\overline{X})^2}\)</li>
+        <li>이 \(s\)를 \(\sigma\) 대신 공식에 넣어 최종 필요한 \(n\)을 계산한다.</li>
+        <li>이미 뽑은 예비표본 \(m\)개를 제외하고, 나머지 \(n - m\)개만 추가로 뽑는다.</li>
+      </ul>
+      <div class="callout" style="margin-top:12px;">
+        <strong>주의:</strong> 예비표본이 너무 작으면 \(s\)의 추정 오차가 커서 최종 \(n\)이 부정확해진다.
+        일반적으로 예비표본은 최소 20개 이상을 권장한다.
+      </div>
+    </div>
+
+    <!-- 방법 2 -->
+    <div class="method-card m2">
+      <div class="method-card-title">
+        <span class="method-card-num">2</span>
+        과거 데이터 · 데이터시트 활용
+        <span class="method-tag tag-easy">전자공학에서 자주 사용</span>
+      </div>
+      <p style="font-size:0.97rem;">
+        동일하거나 유사한 시스템에서 이미 측정된 \(\sigma\) 값을 사용하는 방법이다.
+        전자공학에서는 특히 유용하다.
+      </p>
+      <ul style="padding-left:22px; margin-top:10px; font-size:0.97rem;">
+        <li style="margin:7px 0;">부품 <strong>데이터시트(datasheet)</strong>에 노이즈, 정밀도, 표준편차 정보가 명시된 경우 → 그 값 사용</li>
+        <li style="margin:7px 0;">이전 실험 기록, 선행 논문, 제조사 사양서의 \(\sigma\) 값 활용</li>
+        <li style="margin:7px 0;">예: "PT100 온도 센서: 측정 노이즈 표준편차 ≈ 0.8°C" → \(\sigma = 0.8\) 대입</li>
+      </ul>
+      <div style="background:rgba(0,212,170,.07); border-left:3px solid var(--elec-accent); border-radius:0 8px 8px 0; padding:10px 16px; margin-top:12px; font-size:0.93rem; color:#b0f0e0;">
+        <strong>전자공학 팁:</strong> 부품을 구매할 때 항상 데이터시트를 확인하는 습관을 들이자.
+        데이터시트에는 입력 노이즈(input noise), RMS 노이즈, 정확도(accuracy) 등의 통계값이 명시되어 있다.
+      </div>
+    </div>
+
+    <!-- 방법 3 -->
+    <div class="method-card m3">
+      <div class="method-card-title">
+        <span class="method-card-num">3</span>
+        범위(Range)로 \(\sigma\) 추정
+        <span class="method-tag tag-rough">거친 근사, 초기 설계에 활용</span>
+      </div>
+      <p style="font-size:0.97rem;">
+        데이터의 최솟값과 최댓값만 알아도 \(\sigma\)를 대략 추정할 수 있다.
+        정규분포에서 데이터의 99.7%는 평균 ± 3\(\sigma\) 안에 들어오므로, 전체 범위는 약 6\(\sigma\)에 해당한다.
+      </p>
+      <div class="formula-box" style="margin:14px 0;">
+        \[\sigma \;\approx\; \frac{\text{예상 최댓값} - \text{예상 최솟값}}{6}\]
+      </div>
+      <p style="font-size:0.97rem;">
+        예를 들어 온도 측정값이 대략 18°C ~ 22°C 사이에 분포한다고 예상된다면,
+        \(\sigma \approx (22 - 18)/6 \approx 0.67\)°C로 추정하여 \(n\)을 계산한다.
+      </p>
+      <div class="callout" style="margin-top:12px;">
+        <strong>주의:</strong> 이 방법은 정밀하지 않으므로, 계산된 \(n\)에 <strong>10~20% 여유(buffer)</strong>를 더하는 것이 안전하다.
+        예비 설계(preliminary design) 단계의 빠른 추정에 적합하다.
+      </div>
+    </div>
+
+    <!-- 세 방법 비교표 -->
+    <p style="margin-top:24px; margin-bottom:6px; font-weight:700; color:var(--text-muted); font-size:0.88rem; letter-spacing:1px; text-transform:uppercase;">세 방법 비교</p>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>방법</th>
+          <th>정확도</th>
+          <th>사용 조건</th>
+          <th>전자공학 적용 예</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--accent);">① 예비표본</strong></td>
+          <td>높음</td>
+          <td>시간·비용 여유 있을 때</td>
+          <td>신규 센서 도입 초기 평가</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--elec-accent);">② 과거 데이터·데이터시트</strong></td>
+          <td>중간~높음</td>
+          <td>유사 시스템 데이터 존재</td>
+          <td>데이터시트 노이즈 사양 활용</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent4);">③ 범위 추정</strong></td>
+          <td>낮음(거친 근사)</td>
+          <td>아무 정보 없을 때</td>
+          <td>개략 설계 단계</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout-orange" style="margin-top:20px;">
+      <strong>실용 원칙:</strong>
+      \(\sigma\)를 추정값으로 사용하는 만큼 계산된 \(n\)도 완벽하지 않다.
+      따라서 데이터를 수집하면서 \(\sigma\) 추정값을 업데이트하고 \(n\)을 재조정하는
+      <strong>순차적 표본추출(sequential sampling)</strong>을 병행하면 더 효율적이다.
+    </div>
+  </div>
+
+  <!-- ─── 전자공학 예제 1-B ─── -->
+  <div class="elec-example2" id="ex-elec1b">
+    <div class="elec-label2">전자공학 예제 1-B — 예비표본으로 σ 추정하기</div>
+
+    <div class="elec-context2">
+      🔬 <strong>상황:</strong>
+      새로운 습도 센서(humidity sensor)를 구매했다.
+      데이터시트에는 정확도만 나와 있고 측정 노이즈의 표준편차 \(\sigma\)가 명시되어 있지 않다.
+      이 센서로 실내 습도를 95% 신뢰수준에서 오차한계 <strong>1% RH(Relative Humidity, 상대습도) 이내</strong>로 측정하고 싶다.
+      \(\sigma\)를 모르므로, 먼저 예비표본을 뽑아 \(\sigma\)를 추정한 뒤 필요한 총 측정 횟수를 결정하라.
+    </div>
+
+    <p>
+      예비로 20회 측정한 결과가 다음과 같았다 (단위: % RH, Relative Humidity).
+    </p>
+
+    <table class="pilot-table">
+      <thead>
+        <tr>
+          <th>측정 번호</th>
+          <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+          <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+          <th>11</th><th>12</th><th>13</th><th>14</th><th>15</th>
+          <th>16</th><th>17</th><th>18</th><th>19</th><th>20</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>측정값</th>
+          <td>52.3</td><td>51.8</td><td>53.1</td><td>52.6</td><td>51.5</td>
+          <td>53.4</td><td>52.0</td><td>52.9</td><td>51.7</td><td>53.2</td>
+          <td>52.4</td><td>51.9</td><td>53.0</td><td>52.7</td><td>51.6</td>
+          <td>53.3</td><td>52.1</td><td>52.8</td><td>51.4</td><td>53.5</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="solution">
+      <div class="solution-title">풀이</div>
+
+      <p><strong>Step 1.</strong> 예비표본(\(m = 20\))으로 \(\sigma\) 추정</p>
+      <p>표본평균을 먼저 계산한다.</p>
+      <div class="formula-box">
+        \[\overline{X} = \frac{52.3 + 51.8 + \cdots + 53.5}{20} = \frac{1051.2}{20} = 52.56 \text{ (\% RH)}\]
+      </div>
+      <p>표본분산과 표본표준편차를 계산한다.</p>
+      <div class="formula-box">
+        \[s^2 = \frac{1}{20-1}\sum_{i=1}^{20}(X_i - \overline{X})^2 = \frac{18.672}{19} \approx 0.983\]
+        \[s = \sqrt{0.983} \approx 0.991 \text{ (\% RH)}\]
+      </div>
+      <p>따라서 \(\sigma \approx s = 0.991\) % RH로 추정한다.</p>
+
+      <p style="margin-top:18px;"><strong>Step 2.</strong> 필요한 총 측정 횟수 \(n\) 계산</p>
+      <p>
+        95% 신뢰수준이므로 \(z_{0.025} = 1.96\),&nbsp;
+        \(\sigma \approx 0.991\),&nbsp; \(d = 1.0\).
+      </p>
+      <div class="formula-box">
+        \[n \geq \left(z_{0.025}\frac{\sigma}{d}\right)^{\!2}
+          = \left(1.96 \times \frac{0.991}{1.0}\right)^{\!2}
+          = (1.942)^2
+          \approx 3.77\]
+      </div>
+      <p>올림하면 \(n = 4\)회이다.</p>
+
+      <p style="margin-top:18px;"><strong>Step 3.</strong> 추가 측정 횟수 결정</p>
+      <div class="formula-box" style="background:rgba(188,140,255,.07); border-color:#3a2a5a;">
+        \[\text{추가 측정 횟수} = n - m = 4 - 20 = -16\]
+      </div>
+
+      <div class="callout" style="margin-top:4px;">
+        <strong>결론:</strong>
+        계산된 \(n = 4\)가 예비표본 수 \(m = 20\)보다 작다.
+        이것은 예비표본만으로 이미 충분하다는 뜻이다.
+        즉, 측정 노이즈가 생각보다 작아서(\(\sigma \approx 1.0\)), 오차한계 1% RH를 달성하는 데
+        20회 측정이 충분히 많았다.
+        <strong>추가 측정 없이 예비표본의 평균값을 최종 추정값으로 사용하면 된다.</strong>
+      </div>
+
+      <p style="margin-top:18px;"><strong>만약 오차한계를 0.3% RH로 더 엄격하게 설정한다면?</strong></p>
+      <div class="formula-box">
+        \[n \geq \left(1.96 \times \frac{0.991}{0.3}\right)^{\!2}
+          = (6.472)^2
+          \approx 41.89 \;\Rightarrow\; n = 42\]
+      </div>
+      <p>
+        이 경우 예비표본 20개를 이미 뽑았으므로
+        <strong>추가로 \(42 - 20 = 22\)회</strong> 더 측정하면 된다.
+      </p>
+
+      <div class="callout-orange" style="margin-top:14px;">
+        <strong>정리 — 예비표본 방법의 절차:</strong><br>
+        ① 예비표본 \(m\)개 측정 → \(s\) 계산 → \(\sigma \approx s\)<br>
+        ② \(n \geq \!\left(z_{\alpha/2}\,s/d\right)^2\) 계산 (올림)<br>
+        ③ \(n > m\)이면 추가로 \(n - m\)개 측정, \(n \leq m\)이면 추가 측정 불필요<br>
+        ④ 전체 \(\min(n,\,m)\)개 이상의 데이터로 최종 \(\overline{X}\) 계산
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 3. 모비율 추정 -->
+  <!-- ══════════════════════════════════════════ -->
+  <h2 class="section-title" id="prop-n">모비율 추정에서 표본의 크기 결정</h2>
+
+  <p>
+    모비율 \(p\)의 \(100(1-\alpha)\%\) 신뢰구간은 다음과 같다.
+  </p>
+
+  <div class="formula-box">
+    \[\hat{p} \pm z_{\alpha/2}\sqrt{\dfrac{\hat{p}(1-\hat{p})}{n}}\]
+  </div>
+
+  <p>
+    오차한계 \(z_{\alpha/2}\sqrt{\dfrac{\hat{p}(1-\hat{p})}{n}}\)를 정해진 값 \(d\)보다 작다고 두고 \(n\)에 대해 풀면 다음과 같다.
+  </p>
+
+  <div class="formula-box">
+    \[n > \hat{p}(1-\hat{p})\left(\dfrac{z_{\alpha/2}}{d}\right)^{\!2}\]
+  </div>
+
+  <div class="callout-orange">
+    <strong>사전 정보가 없을 때:</strong>
+    위 식은 \(\hat{p}\)이 사전조사나 과거 경험으로 추정한 \(p\)값과 일치하리라 기대할 수 있을 경우에만 사용할 수 있다.
+    그러나 \(p\)값에 대한 사전정보가 전혀 없을 때는 \(\hat{p}(1-\hat{p})\)의
+    최대변동인 <strong>\(\hat{p} = \dfrac{1}{2}\)일 때</strong>를 주로 사용한다.
+    이때 \(\hat{p}(1-\hat{p}) = \dfrac{1}{2} \times \dfrac{1}{2} = \dfrac{1}{4}\)이다.
+  </div>
+
+  <div class="derive">
+    <div class="derive-title">📐 도출 과정 (사전정보 없는 경우)</div>
+    <ol>
+      <li>\(\hat{p} = \dfrac{1}{2}\)을 대입: \(\;n > \dfrac{1}{4}\left(\dfrac{z_{\alpha/2}}{d}\right)^{\!2}\)</li>
+      <li>이는 가능한 모든 \(p\)에 대해 오차한계 \(d\)를 보장하는 <strong>최대(보수적) 표본 크기</strong>이다.</li>
+    </ol>
+  </div>
+
+  <div class="theorem">
+    <div class="theorem-label">정리 6-18</div>
+    <div class="theorem-title">모비율 추정에서 표본의 크기 결정</div>
+    <p>모비율 \(p\)에 대한 표본의 크기 \(n\)의 범위는 다음과 같다.</p>
+    <div class="formula-box" style="margin-top:16px;">
+      \[n > \dfrac{1}{4}\left(\dfrac{z_{\alpha/2}}{d}\right)^{\!2}\]
+    </div>
+    <p style="font-size:0.95rem; color:var(--text-muted); margin-top:10px;">
+      \(p\)에 대한 사전정보가 없을 때 사용하는 보수적(conservative) 표본 크기 공식이다.
+    </p>
+  </div>
+
+  <!-- ─── 예제 6-28 ─── -->
+  <div class="example" id="ex28">
+    <div class="example-label">예제 6-28</div>
+    <p>
+      어느 대학교에서 신입생의 교육 만족도를 조사하려고 한다.
+      교육 만족도의 95% 추정 오차한계가 3% 이내이기 위해 필요한 최소 표본의 크기를 구하라.
+    </p>
+
+    <div class="solution">
+      <div class="solution-title">풀이</div>
+      <p>
+        신입생이므로 교육 만족도에 대한 사전정보가 전혀 없다.
+        따라서 [정리 6-18]을 이용하여 표본의 크기에 대한 식을 구하면 다음과 같다.
+      </p>
+      <div class="formula-box">
+        \[n \geq \dfrac{1}{4}\left(\dfrac{z_{0.025}}{d}\right)^{\!2}
+          = \dfrac{1}{4}\left(\dfrac{1.96}{0.03}\right)^{\!2}
+          = \dfrac{1}{4} \times 4268.44
+          = 1067.11\]
+      </div>
+      <p>따라서 필요한 최소 표본의 크기는 \(n = 1068\)이다.</p>
+    </div>
+  </div>
+
+  <!-- ─── 전자공학 예제 2 ─── -->
+  <div class="elec-example" id="ex-elec2">
+    <div class="elec-label">전자공학 예제 2 — 반도체 불량률 조사</div>
+
+    <div class="elec-context">
+      💡 <strong>배경 지식:</strong>
+      반도체 제조 공정에서는 수많은 소자(트랜지스터, 저항, 커패시터 등)가 웨이퍼(wafer) 위에
+      한꺼번에 만들어진다.
+      이 중 일부는 공정 오차로 인해 불량(defect)이 발생한다.
+      불량률(defect rate)을 파악하는 것은 수율(yield) 관리와 생산 비용 예측에 매우 중요하다.
+      전수 검사(모든 소자를 검사)는 시간과 비용이 너무 크므로,
+      일부만 샘플링하여 불량률을 추정한다.
+      이때 "몇 개나 검사해야 신뢰할 수 있는 결과를 얻는가?"가 바로 표본의 크기 결정 문제다.
+    </div>
+
+    <p>
+      어느 반도체 공장에서 생산되는 메모리 칩의 불량률을 조사하려고 한다.
+      과거 데이터에 따르면 불량률은 약 <strong>5%</strong>로 알려져 있다.
+      이 불량률을 95% 신뢰수준에서 오차한계 <strong>1% 이내</strong>로 추정하기 위해
+      필요한 최소 검사 개수를 구하라.
+      (단, 불량률에 대한 사전정보가 있는 경우와 없는 경우 모두 계산하라.)
+    </p>
+
+    <div class="solution">
+      <div class="solution-title">풀이</div>
+
+      <p>95% 신뢰수준이므로 \(z_{0.025} = 1.96\),&nbsp; \(d = 0.01\).</p>
+
+      <p><strong>① 사전정보 있는 경우</strong> (\(\hat{p} = 0.05\) 사용)</p>
+      <div class="formula-box">
+        \[n > \hat{p}(1-\hat{p})\left(\dfrac{z_{\alpha/2}}{d}\right)^{\!2}
+          = 0.05 \times 0.95 \times \left(\dfrac{1.96}{0.01}\right)^{\!2}
+          = 0.0475 \times 38416
+          = 1824.76\]
+      </div>
+      <p>따라서 최소 \(n = 1825\)개를 검사해야 한다.</p>
+
+      <p style="margin-top:18px;"><strong>② 사전정보 없는 경우</strong> (보수적 공식, 정리 6-18)</p>
+      <div class="formula-box">
+        \[n > \dfrac{1}{4}\left(\dfrac{z_{0.025}}{d}\right)^{\!2}
+          = \dfrac{1}{4}\left(\dfrac{1.96}{0.01}\right)^{\!2}
+          = \dfrac{1}{4} \times 38416
+          = 9604\]
+      </div>
+      <p>따라서 최소 \(n = 9604\)개를 검사해야 한다.</p>
+
+      <div class="callout">
+        <strong>비교 및 해석:</strong>
+        사전정보(불량률 5%)를 활용하면 1825개로 충분하지만,
+        사전정보 없이 최악의 경우를 가정하면 9604개가 필요하다.
+        불량률이 낮을수록(\(p\)가 0 또는 1에 가까울수록) 분산이 작아
+        더 적은 표본으로도 정밀한 추정이 가능하다.
+        반도체 현장에서는 사전 공정 데이터가 축적되어 있기 때문에
+        보통 ①의 방법으로 효율적으로 검사 표본 수를 결정한다.
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 핵심 공식 정리 -->
+  <!-- ══════════════════════════════════════════ -->
+  <h2 class="section-title" id="summary">핵심 공식 정리</h2>
+
+  <div class="key-box">
+    <h4>📌 표본의 크기 결정 공식 비교</h4>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+        <thead>
+          <tr>
+            <th style="background:#1e2d42; color:var(--accent); padding:12px 16px; border:1px solid var(--border); text-align:left;">구분</th>
+            <th style="background:#1e2d42; color:var(--accent); padding:12px 16px; border:1px solid var(--border); text-align:left;">공식</th>
+            <th style="background:#1e2d42; color:var(--accent); padding:12px 16px; border:1px solid var(--border); text-align:left;">조건</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">모평균 추정<br><span style="font-size:0.85rem; color:var(--text-muted);">(정리 6-17)</span></td>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">\(n \geq \left(z_{\alpha/2}\dfrac{\sigma}{d}\right)^{\!2}\)</td>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">\(\sigma\)를 알고 있을 때</td>
+          </tr>
+          <tr>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">모비율 추정<br><span style="font-size:0.85rem; color:var(--text-muted);">(\(p\) 사전정보 있음)</span></td>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">\(n > \hat{p}(1-\hat{p})\!\left(\dfrac{z_{\alpha/2}}{d}\right)^{\!2}\)</td>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">과거 \(p\) 추정값 있을 때</td>
+          </tr>
+          <tr>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">모비율 추정<br><span style="font-size:0.85rem; color:var(--text-muted);">(정리 6-18, 보수적)</span></td>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">\(n > \dfrac{1}{4}\!\left(\dfrac{z_{\alpha/2}}{d}\right)^{\!2}\)</td>
+            <td style="background:var(--surface2); padding:12px 16px; border:1px solid var(--border);">사전정보 전혀 없을 때</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:20px; font-size:0.93rem; color:var(--text-muted);">
+      <strong style="color:var(--accent3);">공통 기호:</strong>
+      &nbsp;\(d\) = 허용 오차한계,
+      &nbsp;\(z_{\alpha/2}\) = 신뢰수준 임계값
+      &nbsp;(95%: 1.96, &nbsp;99%: 2.576),
+      &nbsp;\(n\)은 항상 <strong>올림(ceiling)</strong>하여 정수로 결정.
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:60px; color:var(--text-muted); font-size:.88rem;">
+    전자공학과 확률과 통계 · 6.7 표본의 크기 결정 · 수업자료
+  </div>
+
+</main>
+</body>
+</html>

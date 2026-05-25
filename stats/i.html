@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>교과서 상의 추정 이론과 전자공학의 신호처리와의 연결</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e18;
+    --surface: #10151f;
+    --surface2: #161d2c;
+    --border: #232f45;
+    --accent: #58a6ff;
+    --accent2: #f0883e;
+    --accent3: #56d364;
+    --accent4: #bc8cff;
+    --accent5: #f78166;
+    --teal: #00d4aa;
+    --yellow: #e3b341;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --formula-bg: #0d1520;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 19px;
+    line-height: 1.9;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(160deg, #060c1a 0%, #0d1525 50%, #070d15 100%);
+    border-bottom: 2px solid var(--accent4);
+    padding: 64px 0 52px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 50%, rgba(88,166,255,.08), transparent),
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(188,140,255,.08), transparent);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent4), var(--accent), var(--accent4), transparent);
+  }
+  .header-chip {
+    display: inline-block;
+    background: rgba(188,140,255,.15);
+    border: 1px solid var(--accent4);
+    color: var(--accent4);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 20px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.4;
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  header h1 .hl-blue { color: var(--accent); }
+  header h1 .hl-purple { color: var(--accent4); }
+  header p {
+    margin-top: 16px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    position: relative;
+  }
+
+  /* ── Layout ── */
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 56px 28px 90px;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 30px;
+    margin-bottom: 56px;
+  }
+  .toc h2 {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 8px 0; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 1rem; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Intro callout ── */
+  .intro-box {
+    background: linear-gradient(135deg, #0d1525 0%, #100d20 100%);
+    border: 1px solid #2a3550;
+    border-radius: 14px;
+    padding: 30px 34px;
+    margin-bottom: 52px;
+    font-size: 1.05rem;
+  }
+  .intro-box p { margin-bottom: 12px; }
+  .intro-box p:last-child { margin-bottom: 0; }
+
+  /* ── 연결 카드 (메인 섹션) ── */
+  .connect-section {
+    margin: 48px 0;
+  }
+  .connect-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .connect-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px; height: 44px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .n1 { background: rgba(88,166,255,.2); color: var(--accent); border: 1px solid var(--accent); }
+  .n2 { background: rgba(86,211,100,.2); color: var(--accent3); border: 1px solid var(--accent3); }
+  .n3 { background: rgba(240,136,62,.2); color: var(--accent2); border: 1px solid var(--accent2); }
+  .n4 { background: rgba(188,140,255,.2); color: var(--accent4); border: 1px solid var(--accent4); }
+  .n5 { background: rgba(0,212,170,.2); color: var(--teal); border: 1px solid var(--teal); }
+
+  .connect-title-wrap h2 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .connect-title-wrap .subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+  .c1 h2 { color: var(--accent); }
+  .c2 h2 { color: var(--accent3); }
+  .c3 h2 { color: var(--accent2); }
+  .c4 h2 { color: var(--accent4); }
+  .c5 h2 { color: var(--teal); }
+
+  /* ── 화살표 브리지 ── */
+  .bridge {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 90px;
+  }
+  .bridge-left {
+    flex: 1;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .bridge-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .bridge-right {
+    flex: 1;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .bridge-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    opacity: 0.75;
+  }
+  .bridge-content {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .bridge-sub {
+    font-size: 0.85rem;
+    margin-top: 4px;
+    opacity: 0.75;
+  }
+
+  /* 색상 변형 */
+  .br1 .bridge-left  { background: rgba(88,166,255,.1); border: 1px solid rgba(88,166,255,.25); border-right: none; border-radius: 12px 0 0 12px; }
+  .br1 .bridge-arrow { background: rgba(88,166,255,.06); border-top: 1px solid rgba(88,166,255,.15); border-bottom: 1px solid rgba(88,166,255,.15); color: var(--accent); }
+  .br1 .bridge-right { background: rgba(88,166,255,.06); border: 1px solid rgba(88,166,255,.15); border-left: none; border-radius: 0 12px 12px 0; }
+  .br1 .bridge-label { color: var(--accent); }
+
+  .br2 .bridge-left  { background: rgba(86,211,100,.1); border: 1px solid rgba(86,211,100,.25); border-right: none; border-radius: 12px 0 0 12px; }
+  .br2 .bridge-arrow { background: rgba(86,211,100,.06); border-top: 1px solid rgba(86,211,100,.15); border-bottom: 1px solid rgba(86,211,100,.15); color: var(--accent3); }
+  .br2 .bridge-right { background: rgba(86,211,100,.06); border: 1px solid rgba(86,211,100,.15); border-left: none; border-radius: 0 12px 12px 0; }
+  .br2 .bridge-label { color: var(--accent3); }
+
+  .br3 .bridge-left  { background: rgba(240,136,62,.1); border: 1px solid rgba(240,136,62,.25); border-right: none; border-radius: 12px 0 0 12px; }
+  .br3 .bridge-arrow { background: rgba(240,136,62,.06); border-top: 1px solid rgba(240,136,62,.15); border-bottom: 1px solid rgba(240,136,62,.15); color: var(--accent2); }
+  .br3 .bridge-right { background: rgba(240,136,62,.06); border: 1px solid rgba(240,136,62,.15); border-left: none; border-radius: 0 12px 12px 0; }
+  .br3 .bridge-label { color: var(--accent2); }
+
+  .br4 .bridge-left  { background: rgba(188,140,255,.1); border: 1px solid rgba(188,140,255,.25); border-right: none; border-radius: 12px 0 0 12px; }
+  .br4 .bridge-arrow { background: rgba(188,140,255,.06); border-top: 1px solid rgba(188,140,255,.15); border-bottom: 1px solid rgba(188,140,255,.15); color: var(--accent4); }
+  .br4 .bridge-right { background: rgba(188,140,255,.06); border: 1px solid rgba(188,140,255,.15); border-left: none; border-radius: 0 12px 12px 0; }
+  .br4 .bridge-label { color: var(--accent4); }
+
+  .br5 .bridge-left  { background: rgba(0,212,170,.1); border: 1px solid rgba(0,212,170,.25); border-right: none; border-radius: 12px 0 0 12px; }
+  .br5 .bridge-arrow { background: rgba(0,212,170,.06); border-top: 1px solid rgba(0,212,170,.15); border-bottom: 1px solid rgba(0,212,170,.15); color: var(--teal); }
+  .br5 .bridge-right { background: rgba(0,212,170,.06); border: 1px solid rgba(0,212,170,.15); border-left: none; border-radius: 0 12px 12px 0; }
+  .br5 .bridge-label { color: var(--teal); }
+
+  /* ── Formula box ── */
+  .formula-box {
+    background: var(--formula-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin: 18px 0;
+    text-align: center;
+    font-size: 1.05rem;
+    overflow-x: auto;
+  }
+
+  /* ── 설명 본문 ── */
+  .detail {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 28px;
+    margin: 16px 0;
+    font-size: 1rem;
+  }
+  .detail p { margin-bottom: 12px; }
+  .detail p:last-child { margin-bottom: 0; }
+  .detail ul { padding-left: 22px; }
+  .detail ul li { margin: 7px 0; }
+
+  /* ── 예시 ── */
+  .example-inline {
+    background: var(--surface2);
+    border-left: 3px solid var(--yellow);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 18px;
+    margin: 12px 0;
+    font-size: 0.97rem;
+    color: #f0e0a0;
+  }
+  .example-inline strong { color: var(--yellow); }
+
+  /* ── Callout ── */
+  .callout-green {
+    background: rgba(86,211,100,.07);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 8px 8px 0;
+    padding: 13px 18px;
+    margin: 14px 0;
+    font-size: 0.97rem;
+  }
+  .callout-green strong { color: var(--accent3); }
+
+  .callout-blue {
+    background: rgba(88,166,255,.07);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 13px 18px;
+    margin: 14px 0;
+    font-size: 0.97rem;
+  }
+  .callout-blue strong { color: var(--accent); }
+
+  /* ── 심화 표 ── */
+  .deep-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin: 20px 0;
+  }
+  .deep-table th {
+    background: #1a2035;
+    color: var(--accent4);
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    text-align: left;
+  }
+  .deep-table td {
+    background: var(--surface2);
+    padding: 11px 16px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .deep-table tr:hover td { background: #1a2030; }
+  .deep-table .course-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+  .tag-3 { background: rgba(240,136,62,.2); color: var(--accent2); }
+  .tag-4 { background: rgba(188,140,255,.2); color: var(--accent4); }
+
+  /* ── 구분선 ── */
+  hr.sec-hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 52px 0;
+  }
+
+  /* ── 핵심 메시지 ── */
+  .key-message {
+    background: linear-gradient(135deg, #10152a 0%, #150f25 100%);
+    border: 1px solid var(--accent4);
+    border-radius: 14px;
+    padding: 32px 36px;
+    margin: 40px 0;
+  }
+  .key-message h3 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.3rem;
+    color: var(--accent4);
+    margin-bottom: 18px;
+    font-weight: 700;
+  }
+  .key-message p { font-size: 1.02rem; margin-bottom: 14px; }
+  .key-message p:last-child { margin-bottom: 0; }
+
+  /* ── 학년 로드맵 ── */
+  .roadmap {
+    display: flex;
+    gap: 0;
+    margin: 24px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-wrap: wrap;
+  }
+  .roadmap-step {
+    flex: 1;
+    min-width: 160px;
+    padding: 18px 16px;
+    text-align: center;
+    position: relative;
+  }
+  .roadmap-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -10px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    z-index: 1;
+  }
+  .rs1 { background: rgba(88,166,255,.12); border: 1px solid rgba(88,166,255,.25); }
+  .rs2 { background: rgba(86,211,100,.12); border: 1px solid rgba(86,211,100,.25); border-left: none; }
+  .rs3 { background: rgba(240,136,62,.12); border: 1px solid rgba(240,136,62,.25); border-left: none; }
+  .rs4 { background: rgba(188,140,255,.12); border: 1px solid rgba(188,140,255,.25); border-left: none; }
+  .roadmap-yr { font-size: 0.78rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; }
+  .roadmap-title { font-size: 0.97rem; font-weight: 700; margin: 5px 0 3px; }
+  .roadmap-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+  .rs1 .roadmap-yr, .rs1 .roadmap-title { color: var(--accent); }
+  .rs2 .roadmap-yr, .rs2 .roadmap-title { color: var(--accent3); }
+  .rs3 .roadmap-yr, .rs3 .roadmap-title { color: var(--accent2); }
+  .rs4 .roadmap-yr, .rs4 .roadmap-title { color: var(--accent4); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    body { font-size: 17px; }
+    header h1 { font-size: 1.7rem; }
+    main { padding: 32px 16px 60px; }
+    .bridge { flex-direction: column; }
+    .bridge-arrow { width: 100%; height: 36px; border: none !important; border-top: 1px solid var(--border) !important; border-bottom: 1px solid var(--border) !important; }
+    .roadmap { flex-direction: column; }
+    .roadmap-step::after { display: none; }
+    .roadmap-step:not(:first-child) { border-left: 1px solid var(--border) !important; border-top: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-chip">전자공학과 · 확률과 통계 · 연결 자료</div>
+  <h1>
+    <span class="hl-blue">교과서 상의 추정 이론</span>과<br>
+    전자공학의 <span class="hl-purple">신호처리</span>와의 연결
+  </h1>
+  <p>Statistical Estimation Theory ↔ Signal Processing</p>
+</header>
+
+<main>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#intro">이 자료를 읽기 전에 — 왜 연결이 중요한가?</a></li>
+      <li><a href="#conn1">연결 1 — 모평균 추정 ↔ 신호의 DC 성분 추정</a></li>
+      <li><a href="#conn2">연결 2 — 모분산 추정 ↔ 노이즈 전력(SNR) 추정</a></li>
+      <li><a href="#conn3">연결 3 — 표본의 크기 결정 ↔ 샘플링 횟수 설계</a></li>
+      <li><a href="#conn4">연결 4 — 모비율 추정 ↔ 비트 오류율(BER) 추정</a></li>
+      <li><a href="#conn5">연결 5 — 심화: 신호처리 고유 추정 기법과의 대응</a></li>
+      <li><a href="#roadmap">핵심 메시지 — 지금 배우는 것의 의미</a></li>
+    </ol>
+  </nav>
+
+  <!-- 도입 -->
+  <div class="intro-box" id="intro">
+    <p>
+      지금 배우고 있는 <strong style="color:var(--accent);">통계적 추정 이론</strong>은 단순히 시험을 위한 공식이 아니다.
+      전자공학에서 다루는 신호처리의 핵심 문제들 — 노이즈 속에서 신호를 찾아내고,
+      시스템의 성능을 측정하고, 얼마나 많은 데이터가 필요한지 결정하는 일 —
+      이 모두가 교과서의 추정 이론과 <strong style="color:var(--accent4);">정확히 같은 수학적 구조</strong>를 갖는다.
+    </p>
+    <p>
+      이 자료는 교과서에서 배운 각 개념이 신호처리의 어떤 문제에 해당하는지를
+      하나씩 대응시켜 보여준다. 지금은 전공 지식이 깊지 않아도 괜찮다.
+      "아, 나중에 이런 곳에 쓰이는구나"라는 큰 그림을 그리는 것이 목표다.
+    </p>
+  </div>
+
+  <hr class="sec-hr">
+
+  <!-- ══════════ 연결 1 ══════════ -->
+  <div class="connect-section" id="conn1">
+    <div class="connect-header c1">
+      <div class="connect-num n1">1</div>
+      <div class="connect-title-wrap">
+        <h2>모평균 추정 ↔ 신호의 DC 성분 추정</h2>
+        <div class="subtitle">교과서 6.4절 · 모평균의 구간추정</div>
+      </div>
+    </div>
+
+    <div class="bridge br1">
+      <div class="bridge-left">
+        <div class="bridge-label">교과서 개념</div>
+        <div class="bridge-content">모평균 \(\mu\)를 표본평균 \(\overline{X}\)로 추정</div>
+        <div class="bridge-sub">반복 관측값의 평균으로 모수를 추정</div>
+      </div>
+      <div class="bridge-arrow">→</div>
+      <div class="bridge-right">
+        <div class="bridge-label">신호처리 응용</div>
+        <div class="bridge-content">노이즈 속 신호의 DC 레벨(직류 성분) 추정</div>
+        <div class="bridge-sub">ADC 반복 측정값 평균 → 실제 전압값</div>
+      </div>
+    </div>
+
+    <div class="detail">
+      <p>
+        노이즈가 섞인 신호를 반복 측정한다고 생각해보자. 매번 측정값이 다르게 나오는 이유는
+        측정 노이즈 \(\epsilon_i\)가 더해지기 때문이다. 이 상황을 수식으로 쓰면:
+      </p>
+      <div class="formula-box">
+        \[X_i = \mu + \epsilon_i, \quad \epsilon_i \sim N(0,\,\sigma^2)\]
+      </div>
+      <p>
+        여기서 \(\mu\)는 실제 신호값(모평균), \(\epsilon_i\)는 가우시안 노이즈(오차)다.
+        이것은 교과서의 추정 모형과 <strong>완전히 동일한 구조</strong>이다.
+        따라서 표본평균 \(\overline{X} = \frac{1}{n}\sum X_i\)를 계산하면 \(\mu\)를 추정할 수 있다.
+      </p>
+      <ul>
+        <li>측정 횟수 \(n\)이 많을수록 추정 정밀도가 높아진다. (표준오차 \(\sigma/\sqrt{n}\))</li>
+        <li>신호처리에서 이를 <strong>앙상블 평균(ensemble averaging)</strong>이라 부른다.</li>
+        <li>오실로스코프의 "Average" 기능이 바로 이 원리다.</li>
+      </ul>
+    </div>
+
+    <div class="example-inline">
+      <strong>실제 예:</strong> 마이크로컨트롤러의 ADC로 배터리 전압을 100회 측정하여 평균을 낸다.
+      측정 노이즈가 \(\sigma = 5\) mV이면, 평균의 표준오차는 \(5/\sqrt{100} = 0.5\) mV로 줄어든다.
+      이것이 "반복 측정 후 평균"이 정밀도를 높이는 이유다.
+    </div>
+  </div>
+
+  <hr class="sec-hr">
+
+  <!-- ══════════ 연결 2 ══════════ -->
+  <div class="connect-section" id="conn2">
+    <div class="connect-header c2">
+      <div class="connect-num n2">2</div>
+      <div class="connect-title-wrap">
+        <h2>모분산 추정 ↔ 노이즈 전력(SNR) 추정</h2>
+        <div class="subtitle">교과서 6.6절 · 모분산의 구간추정</div>
+      </div>
+    </div>
+
+    <div class="bridge br2">
+      <div class="bridge-left">
+        <div class="bridge-label">교과서 개념</div>
+        <div class="bridge-content">모분산 \(\sigma^2\)을 표본분산 \(S^2\)으로 추정</div>
+        <div class="bridge-sub">카이제곱 분포 활용 신뢰구간</div>
+      </div>
+      <div class="bridge-arrow">→</div>
+      <div class="bridge-right">
+        <div class="bridge-label">신호처리 응용</div>
+        <div class="bridge-content">노이즈 전력(noise power) 및 SNR 추정</div>
+        <div class="bridge-sub">수신 신호 품질 평가, 통신 시스템 설계</div>
+      </div>
+    </div>
+
+    <div class="detail">
+      <p>
+        신호처리에서 <strong>노이즈 전력(noise power)</strong>은 노이즈 신호의 분산과 같다.
+        노이즈 \(\epsilon_i \sim N(0, \sigma^2)\)이면 노이즈 전력 = \(\sigma^2\)이다.
+        이를 측정 데이터로 추정하는 것이 바로 교과서의 모분산 추정이다.
+      </p>
+      <div class="formula-box">
+        \[\text{SNR} = \frac{\text{신호 전력}}{\text{노이즈 전력}} = \frac{\mu^2}{\sigma^2}
+        \quad \Longrightarrow \quad
+        \widehat{\text{SNR}} = \frac{\overline{X}^2}{S^2}\]
+      </div>
+      <ul>
+        <li><strong>모평균 추정</strong> \(\overline{X}\) → 신호 성분(signal)</li>
+        <li><strong>모분산 추정</strong> \(S^2\) → 노이즈 성분(noise)</li>
+        <li>SNR은 두 추정량의 비로 계산된다.</li>
+      </ul>
+    </div>
+
+    <div class="example-inline">
+      <strong>실제 예:</strong> 라디오 수신기에서 수신 신호를 100번 샘플링했다.
+      표본평균 \(\overline{X} = 2.0\) V, 표본분산 \(S^2 = 0.04\) V²이면,
+      추정 SNR = \(2.0^2 / 0.04 = 100\) (= 20 dB).
+      SNR이 높을수록 신호가 노이즈보다 훨씬 강하다는 뜻이다.
+    </div>
+
+    <div class="callout-green">
+      <strong>카이제곱 분포의 역할:</strong> 교과서에서 모분산의 신뢰구간을 구할 때 카이제곱 분포를 사용했다.
+      신호처리에서도 노이즈 전력 추정의 불확실성을 정량화할 때 동일하게 카이제곱 분포가 등장한다.
+      이것이 카이제곱 분포가 중요한 이유 중 하나다.
+    </div>
+  </div>
+
+  <hr class="sec-hr">
+
+  <!-- ══════════ 연결 3 ══════════ -->
+  <div class="connect-section" id="conn3">
+    <div class="connect-header c3">
+      <div class="connect-num n3">3</div>
+      <div class="connect-title-wrap">
+        <h2>표본의 크기 결정 ↔ 샘플링 횟수 설계</h2>
+        <div class="subtitle">교과서 6.7절 · 표본의 크기 결정</div>
+      </div>
+    </div>
+
+    <div class="bridge br3">
+      <div class="bridge-left">
+        <div class="bridge-label">교과서 개념</div>
+        <div class="bridge-content">오차한계 \(d\) 이내 추정을 위한 최소 표본 수 \(n\)</div>
+        <div class="bridge-sub">\(n \geq (z_{\alpha/2}\,\sigma/d)^2\)</div>
+      </div>
+      <div class="bridge-arrow">→</div>
+      <div class="bridge-right">
+        <div class="bridge-label">신호처리 응용</div>
+        <div class="bridge-content">원하는 정밀도를 위한 평균화 횟수 및 측정 시간 결정</div>
+        <div class="bridge-sub">스펙트럼 분석, 레이더 펄스 적분, FFT 앙상블 수</div>
+      </div>
+    </div>
+
+    <div class="detail">
+      <p>
+        신호처리에서 "몇 번 측정·샘플링해야 하는가"는 교과서의 표본 크기 결정 문제와 동일하다.
+        구체적인 응용 예는 다음과 같다.
+      </p>
+      <ul>
+        <li>
+          <strong>스펙트럼 분석의 앙상블 평균:</strong>
+          FFT 결과를 \(n\)번 평균하면 노이즈가 \(\sqrt{n}\)배 줄어든다.
+          원하는 SNR 개선량에 따라 \(n\)을 결정하는 것이 표본 크기 결정이다.
+        </li>
+        <li>
+          <strong>레이더의 펄스 적분(pulse integration):</strong>
+          목표물 탐지를 위해 레이더 펄스를 \(n\)번 쏘고 합산한다.
+          탐지 확률과 오탐지 확률 요구사항이 오차한계 \(d\)에 해당한다.
+        </li>
+        <li>
+          <strong>잠금증폭기(Lock-in Amplifier)의 시정수 설정:</strong>
+          노이즈 속 미세 신호를 추출하는 시간이 길수록(많은 적분 = 큰 \(n\)) 정밀도가 올라간다.
+        </li>
+      </ul>
+      <div class="formula-box">
+        \[\text{SNR 개선} = \sqrt{n} \quad \Leftrightarrow \quad
+        n \geq \left(\frac{z_{\alpha/2}\,\sigma}{d}\right)^{\!2}\]
+      </div>
+    </div>
+
+    <div class="example-inline">
+      <strong>실제 예:</strong> 오실로스코프에서 "Avg: 64"로 설정하면
+      64번 측정을 평균내어 표시한다. 이때 노이즈는 \(1/\sqrt{64} = 1/8\)로 줄어든다.
+      "몇 번 평균할 것인가"를 결정하는 것이 바로 표본 크기 결정이다.
+    </div>
+  </div>
+
+  <hr class="sec-hr">
+
+  <!-- ══════════ 연결 4 ══════════ -->
+  <div class="connect-section" id="conn4">
+    <div class="connect-header c4">
+      <div class="connect-num n4">4</div>
+      <div class="connect-title-wrap">
+        <h2>모비율 추정 ↔ 비트 오류율(BER) 추정</h2>
+        <div class="subtitle">교과서 6.5절 · 모비율의 구간추정 및 6.7절</div>
+      </div>
+    </div>
+
+    <div class="bridge br4">
+      <div class="bridge-left">
+        <div class="bridge-label">교과서 개념</div>
+        <div class="bridge-content">모비율 \(p\)를 표본비율 \(\hat{p}\)으로 추정</div>
+        <div class="bridge-sub">"성공" 비율의 신뢰구간 및 표본 크기 결정</div>
+      </div>
+      <div class="bridge-arrow">→</div>
+      <div class="bridge-right">
+        <div class="bridge-label">신호처리/통신 응용</div>
+        <div class="bridge-content">비트 오류율 BER(Bit Error Rate) 추정</div>
+        <div class="bridge-sub">디지털 통신 시스템의 성능 측정 및 장비 설계</div>
+      </div>
+    </div>
+
+    <div class="detail">
+      <p>
+        디지털 통신에서 수신된 비트 중 몇 %가 오류인지를 나타내는
+        <strong>BER(Bit Error Rate, 비트 오류율)</strong>은 교과서의 모비율 \(p\)와 정확히 같은 구조다.
+      </p>
+      <div class="formula-box">
+        \[\hat{p} = \widehat{\text{BER}} = \frac{\text{오류 비트 수}}{\text{전체 전송 비트 수}}
+        = \frac{N_e}{N}\]
+      </div>
+      <ul>
+        <li>모비율 \(p\) = 실제 BER (알 수 없는 모수)</li>
+        <li>표본비율 \(\hat{p}\) = 측정된 BER (추정량)</li>
+        <li>신뢰구간 → BER 측정의 불확실성 범위</li>
+        <li>표본 크기 \(n\) → 몇 비트를 전송해야 신뢰할 수 있는 BER 측정이 되는가</li>
+      </ul>
+      <div class="callout-blue" style="margin-top:14px;">
+        <strong>BERT(BER Tester)의 원리:</strong>
+        BER 측정 장비는 몇 비트를 전송해야 원하는 정밀도로 BER을 측정할 수 있는지를
+        자동으로 계산한다. 이것이 정리 6-18의 모비율 추정 표본 크기 결정 공식의 직접적인 응용이다.
+        예를 들어 BER = \(10^{-9}\) 수준을 95% 신뢰수준으로 측정하려면
+        수십억 비트를 전송해야 한다.
+      </div>
+    </div>
+
+    <div class="example-inline">
+      <strong>실제 예:</strong> 광섬유 통신 링크에서 \(10^{10}\)비트를 전송했더니
+      오류가 8비트 발생했다. 추정 BER = \(8/10^{10} = 8 \times 10^{-10}\).
+      이 추정값의 95% 신뢰구간을 교과서 공식으로 계산할 수 있다.
+    </div>
+  </div>
+
+  <hr class="sec-hr">
+
+  <!-- ══════════ 연결 5 (심화) ══════════ -->
+  <div class="connect-section" id="conn5">
+    <div class="connect-header c5">
+      <div class="connect-num n5">5</div>
+      <div class="connect-title-wrap">
+        <h2>심화 — 신호처리 고유 추정 기법과의 대응</h2>
+        <div class="subtitle">3~4학년 신호처리·통신이론 과목에서 배울 내용</div>
+      </div>
+    </div>
+
+    <p style="margin-bottom:16px; font-size:1rem;">
+      교과서의 추정 이론이 더 발전하면 아래와 같은 신호처리 고유의 추정 기법들이 된다.
+      지금 배우는 개념이 이 기법들의 <strong style="color:var(--teal);">이론적 뿌리</strong>다.
+    </p>
+
+    <div style="overflow-x:auto;">
+      <table class="deep-table">
+        <thead>
+          <tr>
+            <th>신호처리 기법</th>
+            <th>교과서 대응 개념</th>
+            <th>핵심 아이디어</th>
+            <th>배우는 시기</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--accent);">칼만 필터<br>(Kalman Filter)</strong></td>
+            <td>최소분산 불편추정량(MVUE)</td>
+            <td>시간에 따라 변하는 모평균을 순차적으로 업데이트하며 추정. GPS, 드론 자세 제어에 사용</td>
+            <td><span class="course-tag tag-4">4학년</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--accent3);">최대우도추정<br>(MLE, Maximum Likelihood)</strong></td>
+            <td>점추정의 일반화<br>(불편성, 일치성)</td>
+            <td>관측 데이터가 나올 가능성을 최대화하는 파라미터를 찾는 추정법. 통신 수신기 복조에 사용</td>
+            <td><span class="course-tag tag-3">3학년</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--accent2);">웰치법<br>(Welch's Method)</strong></td>
+            <td>모분산 추정<br>+ 구간추정</td>
+            <td>신호를 여러 구간으로 나누어 전력 스펙트럼을 추정. 진동 분석, 오디오 처리에 사용</td>
+            <td><span class="course-tag tag-3">3학년</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--accent4);">적응 필터<br>(LMS · RLS)</strong></td>
+            <td>순차적 표본추출<br>(sequential estimation)</td>
+            <td>새 데이터가 들어올 때마다 추정값을 갱신. 에코 제거, 능동 소음 제거(ANC)에 사용</td>
+            <td><span class="course-tag tag-4">4학년</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--teal);">위상 고정 루프<br>(PLL, Phase-Locked Loop)</strong></td>
+            <td>모평균(주파수) 추정<br>+ 신뢰구간</td>
+            <td>수신 신호의 주파수·위상을 연속적으로 추정·추적. FM 라디오, USB·HDMI 클록 복원에 사용</td>
+            <td><span class="course-tag tag-3">3학년</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="sec-hr">
+
+  <!-- 핵심 메시지 -->
+  <div class="key-message" id="roadmap">
+    <h3>📌 핵심 메시지 — 지금 배우는 것의 의미</h3>
+    <p>
+      교과서의 통계적 추정은 신호처리의 <strong style="color:var(--accent4);">이론적 토대</strong>다.
+      "노이즈 속에서 진실을 찾아내는" 모든 전자 시스템은
+      결국 이 추정 이론 위에 세워져 있다.
+    </p>
+    <p>
+      지금 당장 전공 응용이 보이지 않더라도 걱정하지 않아도 된다.
+      아래 로드맵처럼, 학년이 올라갈수록 지금 배운 개념들이
+      구체적인 시스템과 알고리즘으로 연결된다.
+    </p>
+
+    <div class="roadmap">
+      <div class="roadmap-step rs1">
+        <div class="roadmap-yr">1학년</div>
+        <div class="roadmap-title">확률과 통계</div>
+        <div class="roadmap-desc">추정의 원리<br>모평균·분산·비율<br>표본 크기 결정</div>
+      </div>
+      <div class="roadmap-step rs2">
+        <div class="roadmap-yr">2학년</div>
+        <div class="roadmap-title">회로이론 · 신호와 시스템</div>
+        <div class="roadmap-desc">신호 모델링<br>푸리에 변환<br>주파수 해석</div>
+      </div>
+      <div class="roadmap-step rs3">
+        <div class="roadmap-yr">3학년</div>
+        <div class="roadmap-title">디지털 신호처리 · 통신이론</div>
+        <div class="roadmap-desc">MLE · PLL · BER<br>스펙트럼 추정<br>SNR 분석</div>
+      </div>
+      <div class="roadmap-step rs4">
+        <div class="roadmap-yr">4학년</div>
+        <div class="roadmap-title">고급 신호처리 · 설계</div>
+        <div class="roadmap-desc">칼만 필터<br>적응 필터<br>시스템 설계</div>
+      </div>
+    </div>
+
+    <p style="margin-top:20px;">
+      정리하면, 교과서에서 배우는
+      <strong style="color:var(--accent);">점추정</strong>은 신호 파라미터를 하나의 값으로 추정하는 것,
+      <strong style="color:var(--accent3);">구간추정</strong>은 추정값의 불확실성을 정량화하는 것,
+      <strong style="color:var(--accent2);">표본 크기 결정</strong>은 시스템 설계 시 필요한 측정·샘플 수를 결정하는 것으로
+      신호처리의 모든 곳에 직접 응용된다.
+    </p>
+  </div>
+
+  <div style="text-align:center; margin-top:60px; color:var(--text-muted); font-size:.88rem;">
+    전자공학과 확률과 통계 · 교과서 추정 이론과 신호처리의 연결 · 보충 자료
+  </div>
+
+</main>
+</body>
+</html>

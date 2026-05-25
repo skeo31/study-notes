@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.2 모평균의 추정 | 확률및통계</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --blue: #58a6ff;
+    --blue-dim: #1f6feb;
+    --green: #3fb950;
+    --green-dim: #196c2e;
+    --orange: #ffa657;
+    --orange-dim: #9e4a1d;
+    --purple: #d2a8ff;
+    --purple-dim: #6e40c9;
+    --red: #ff7b72;
+    --yellow: #e3b341;
+    --teal: #39d0d8;
+    --teal-dim: #0b5d63;
+    --pink: #f778ba;
+    --accent: #58a6ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.8;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #0a1628 40%, #0d1f3c 70%, #0a2040 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 80px 60px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(88,166,255,0.08) 0%, transparent 70%);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(88,166,255,0.15);
+    border: 1px solid rgba(88,166,255,0.4);
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .hero h1 span { color: var(--blue); }
+  .hero-sub {
+    font-size: 20px;
+    color: var(--text2);
+    margin-bottom: 40px;
+  }
+  .hero-tags {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .hero-tag {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 15px;
+    color: var(--text2);
+  }
+  .hero-tag strong { color: var(--text); }
+
+  /* ── NAV ── */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  .nav a {
+    display: block;
+    padding: 16px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text2);
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav a:hover { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* ── LAYOUT ── */
+  .content { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 80px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    width: 52px; height: 52px;
+    background: var(--blue-dim);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900; color: var(--blue); flex-shrink: 0;
+  }
+  .section-title { font-family: 'Noto Serif KR', serif; font-size: 32px; font-weight: 700; color: #fff; }
+  .section-title span { color: var(--blue); }
+
+  /* ── CONNECTION BANNER ── */
+  .connection-banner {
+    background: linear-gradient(135deg, rgba(62,175,215,0.1), rgba(88,166,255,0.08));
+    border: 1px solid rgba(88,166,255,0.3);
+    border-left: 4px solid var(--blue);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 36px;
+  }
+  .connection-banner .cb-title {
+    font-size: 14px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 12px;
+  }
+  .connection-banner p { font-size: 19px; color: var(--text); line-height: 1.7; }
+  .connection-banner .chain {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 16px;
+  }
+  .chain-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; font-size: 15px; font-weight: 600; color: var(--text);
+  }
+  .chain-arrow { color: var(--blue); font-size: 20px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+  }
+  .card-title {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .card-title .dot {
+    width: 10px; height: 10px; border-radius: 50%; background: var(--blue); flex-shrink: 0;
+  }
+
+  /* ── BOX ── */
+  .formula-box {
+    background: var(--bg);
+    border: 1.5px solid var(--blue-dim);
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 22px;
+    overflow-x: auto;
+  }
+  .highlight-box {
+    background: rgba(88,166,255,0.07);
+    border: 1px solid rgba(88,166,255,0.25);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+  .warn-box {
+    background: rgba(255,166,87,0.08);
+    border: 1px solid rgba(255,166,87,0.3);
+    border-left: 4px solid var(--orange);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+  .success-box {
+    background: rgba(63,185,80,0.08);
+    border: 1px solid rgba(63,185,80,0.3);
+    border-left: 4px solid var(--green);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+  .info-box {
+    background: rgba(210,168,255,0.07);
+    border: 1px solid rgba(210,168,255,0.25);
+    border-left: 4px solid var(--purple);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  /* ── EXAMPLE ── */
+  .example {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .example-header {
+    background: var(--bg3);
+    padding: 16px 28px;
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .example-num {
+    background: var(--blue-dim);
+    color: var(--blue);
+    border: 1px solid rgba(88,166,255,0.4);
+    font-weight: 700; font-size: 15px;
+    padding: 4px 14px; border-radius: 20px;
+  }
+  .example-question { font-size: 19px; font-weight: 500; color: var(--text); }
+  .example-body { padding: 28px 36px; }
+  .example-problem {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 28px;
+    margin-bottom: 24px;
+    font-size: 20px;
+    line-height: 1.9;
+  }
+  .example-solution { padding-top: 4px; }
+  .solution-label {
+    font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--green); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .solution-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── TABLE ── */
+  .data-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .data-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  /* ── STEP ── */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex; gap: 20px; margin-bottom: 20px; align-items: flex-start;
+  }
+  .step-num {
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: var(--blue-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: var(--blue);
+    margin-top: 4px;
+  }
+  .step-content { flex: 1; font-size: 20px; line-height: 1.8; }
+
+  /* ── ANSWER ── */
+  .answer-box {
+    background: rgba(63,185,80,0.1);
+    border: 1.5px solid rgba(63,185,80,0.4);
+    border-radius: 10px;
+    padding: 16px 24px;
+    font-size: 20px;
+    margin-top: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .answer-box .label {
+    color: var(--green); font-weight: 700; font-size: 15px;
+    text-transform: uppercase; letter-spacing: 1px; white-space: nowrap;
+  }
+
+  /* ── DIAGRAM SVG ── */
+  .diagram-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 24px 0;
+    text-align: center;
+  }
+  .diagram-caption {
+    font-size: 16px; color: var(--text2); margin-top: 16px; text-align: center;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .comp-table {
+    width: 100%; border-collapse: collapse; font-size: 19px; margin: 20px 0;
+  }
+  .comp-table th {
+    background: var(--bg3);
+    padding: 14px 20px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .comp-table td {
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1.7;
+  }
+  .comp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .comp-table .highlight-cell { background: rgba(88,166,255,0.1) !important; color: var(--blue); font-weight: 600; }
+  .comp-table .orange-cell { background: rgba(255,166,87,0.08) !important; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex; gap: 0; align-items: stretch; margin: 28px 0; flex-wrap: wrap;
+  }
+  .flow-item {
+    flex: 1; min-width: 180px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 20px 16px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.6;
+    position: relative;
+  }
+  .flow-item:first-child { border-radius: 12px 0 0 12px; }
+  .flow-item:last-child { border-radius: 0 12px 12px 0; }
+  .flow-item .fi-tag {
+    font-size: 12px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 8px; display: block;
+  }
+  .flow-item .fi-val { font-size: 20px; font-weight: 700; }
+  .flow-arrow {
+    display: flex; align-items: center; padding: 0 8px;
+    color: var(--blue); font-size: 24px; flex-shrink: 0;
+  }
+
+  /* ── KEY POINT ── */
+  .key-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; margin: 24px 0;
+  }
+  .key-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 22px;
+  }
+  .key-card .kc-icon { font-size: 28px; margin-bottom: 12px; }
+  .key-card .kc-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .key-card .kc-body { font-size: 17px; color: var(--text2); line-height: 1.7; }
+  .key-card.blue-card { border-color: rgba(88,166,255,0.3); background: rgba(88,166,255,0.05); }
+  .key-card.green-card { border-color: rgba(63,185,80,0.3); background: rgba(63,185,80,0.05); }
+  .key-card.orange-card { border-color: rgba(255,166,87,0.3); background: rgba(255,166,87,0.05); }
+  .key-card.purple-card { border-color: rgba(210,168,255,0.3); background: rgba(210,168,255,0.05); }
+
+  /* ── INLINE MATH STYLE ── */
+  .math-inline { font-size: 21px; }
+
+  p { font-size: 20px; line-height: 1.85; margin-bottom: 16px; }
+  ul, ol { padding-left: 28px; margin-bottom: 16px; }
+  li { font-size: 19px; line-height: 1.85; margin-bottom: 6px; }
+
+  strong { color: var(--yellow); }
+  em { color: var(--teal); font-style: normal; font-weight: 600; }
+
+  .text-blue { color: var(--blue); }
+  .text-green { color: var(--green); }
+  .text-orange { color: var(--orange); }
+  .text-purple { color: var(--purple); }
+  .text-red { color: var(--red); }
+  .text-teal { color: var(--teal); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    text-align: center;
+    color: var(--text2);
+    font-size: 16px;
+  }
+
+  @media (max-width: 700px) {
+    .hero { padding: 40px 20px; }
+    .hero h1 { font-size: 34px; }
+    .content { padding: 40px 20px; }
+    .example-body { padding: 20px; }
+    .flow-item { min-width: 140px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-badge">확률및통계 · 전기전자공학과</div>
+  <h1>Chapter 6.2<br><span>모평균의 추정</span></h1>
+  <p class="hero-sub">표본분포 이론을 기반으로 모집단 평균을 추정하는 방법</p>
+  <div class="hero-tags">
+    <div class="hero-tag"><strong>선수 지식 1</strong> 5.2 표본평균의 분포</div>
+    <div class="hero-tag"><strong>선수 지식 2</strong> 5.3 여러 가지 표본분포 (t-분포)</div>
+    <div class="hero-tag"><strong>핵심 개념</strong> 점추정 · 구간추정 · 신뢰구간</div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <a href="#prereq">📚 선수 지식</a>
+  <a href="#point-est">① 점추정</a>
+  <a href="#interval-known">② 구간추정 (σ 아는 경우)</a>
+  <a href="#confidence">③ 신뢰구간의 의미</a>
+  <a href="#interval-large">④ 대표본 (σ 모름)</a>
+  <a href="#interval-small">⑤ 소표본 (σ 모름)</a>
+  <a href="#examples">📝 예제 모음</a>
+</nav>
+
+<!-- ── CONTENT ── -->
+<div class="content">
+
+<!-- ===== 0. 선수지식 연결 ===== -->
+<section class="section" id="prereq">
+  <div class="section-header">
+    <div class="section-num">📚</div>
+    <div class="section-title">선수 지식 연결 — <span>5.2 & 5.3</span></div>
+  </div>
+
+  <div class="connection-banner">
+    <div class="cb-title">🔗 지식 흐름</div>
+    <p>6.2 모평균의 추정은 <strong>5.2 표본평균의 분포</strong>와 <strong>5.3 t-분포·χ²-분포</strong>를 직접 활용합니다. 선수 지식이 없으면 신뢰구간 공식을 외울 수만 있고, 왜 그런지 알 수 없습니다.</p>
+    <div class="chain">
+      <div class="chain-item">5.2 표본평균의 분포<br><small style="color:var(--text2)">E(X̄) = μ, Var(X̄) = σ²/n</small></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-item">5.3 Z·t·χ²-분포<br><small style="color:var(--text2)">Z = (X̄−μ)/(σ/√n)</small></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-item">6.2 모평균 추정<br><small style="color:var(--text2)">신뢰구간 공식 유도</small></div>
+    </div>
+  </div>
+
+  <!-- 5.2 핵심 복습 -->
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--teal)"></div>복습: 5.2 표본평균의 분포</div>
+    <div class="key-grid">
+      <div class="key-card blue-card">
+        <div class="kc-icon">📐</div>
+        <div class="kc-title">기댓값 (불편성)</div>
+        <div class="formula-box" style="margin:8px 0; font-size:20px;">$$\text{E}(\bar{X}) = \mu$$</div>
+        <div class="kc-body">표본평균의 기댓값은 모평균과 같다. 이 때문에 표본평균은 모평균의 <strong>불편추정량</strong>이다.</div>
+      </div>
+      <div class="key-card green-card">
+        <div class="kc-icon">📉</div>
+        <div class="kc-title">분산 (표준오차)</div>
+        <div class="formula-box" style="margin:8px 0; font-size:20px;">$$\text{Var}(\bar{X}) = \dfrac{\sigma^2}{n}$$</div>
+        <div class="kc-body">표본 크기 n이 클수록 분산이 감소 → 추정 정밀도 증가. 표준편차를 <strong>표준오차(SE)</strong>라 한다.</div>
+      </div>
+      <div class="key-card orange-card">
+        <div class="kc-icon">🔔</div>
+        <div class="kc-title">중심극한정리</div>
+        <div class="formula-box" style="margin:8px 0; font-size:18px;">$$\bar{X} \sim \text{N}\!\left(\mu, \dfrac{\sigma^2}{n}\right)$$</div>
+        <div class="kc-body">모집단이 정규분포이면 n에 무관하게, 아니더라도 <strong>n→∞이면 근사적으로</strong> 정규분포를 따른다.</div>
+      </div>
+      <div class="key-card purple-card">
+        <div class="kc-icon">📊</div>
+        <div class="kc-title">Z-통계량 표준화</div>
+        <div class="formula-box" style="margin:8px 0; font-size:20px;">$$Z = \dfrac{\bar{X} - \mu}{\sigma/\sqrt{n}} \sim \text{N}(0,1)$$</div>
+        <div class="kc-body">이 Z-통계량이 신뢰구간 유도의 <strong>핵심 출발점</strong>이다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5.3 핵심 복습 -->
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--purple)"></div>복습: 5.3 t-분포와 χ²-분포</div>
+
+    <div class="key-grid" style="grid-template-columns: 1fr;">
+      <div class="key-card purple-card">
+        <div class="kc-icon">📈</div>
+        <div class="kc-title">t-분포 (소표본 핵심)</div>
+        <p style="font-size:17px; color:var(--text2); margin-bottom:8px;">Z~N(0,1), V~χ²(n)이 독립일 때:</p>
+        <div class="formula-box" style="margin:8px 0; font-size:20px;">$$T = \dfrac{Z}{\sqrt{V/n}} \sim t(n)$$</div>
+        <p style="font-size:17px; color:var(--text2);">정규분포보다 <strong>꼬리가 두껍다</strong>. n→∞이면 N(0,1)에 수렴.</p>
+      </div>
+      <div class="key-card blue-card">
+        <div class="kc-icon">🔑</div>
+        <div class="kc-title">정규모집단 + 모분산 모름</div>
+        <div style="background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.3); border-radius:8px; padding:10px 14px; margin-bottom:12px;">
+          <p style="font-size:16px; color:var(--text); margin-bottom:4px;"><strong style="color:var(--blue);">❓ 정규모집단이란?</strong></p>
+          <p style="font-size:16px; color:var(--text2); line-height:1.6; margin:0;">모집단(전체 데이터)의 분포가 <strong style="color:var(--text);">정규분포(종 모양 곡선)</strong>를 따른다는 가정이다.<br>
+          예: 사람 키·몸무게, 공장 제품 치수 등은 현실에서 대체로 정규분포를 따른다.<br>
+          이 가정이 있어야 <em>소표본(n &lt; 30)에서도</em> T 통계량이 t-분포를 따른다는 것이 수학적으로 보장된다. n ≥ 30이면 중심극한정리에 의해 이 가정 없이도 근사적으로 성립한다.</p>
+        </div>
+        <p style="font-size:17px; color:var(--text2); margin-bottom:8px;">σ 대신 표본표준편차 S를 쓰면:</p>
+        <div class="formula-box" style="margin:8px 0; font-size:20px;">$$T = \dfrac{\bar{X}-\mu}{S/\sqrt{n}} \sim t(n-1)$$</div>
+
+        <!-- 유도 전개 -->
+        <div style="background:rgba(210,168,255,0.08); border:1px solid rgba(210,168,255,0.3); border-radius:10px; padding:14px 16px; margin-top:12px;">
+          <p style="font-size:15px; color:var(--purple); font-weight:700; margin-bottom:10px; letter-spacing:1px;">▶ 왜 t(n−1)인가? — 좌측 정의와 연결</p>
+
+          <!-- Step 1: Z 정의 -->
+          <p style="font-size:14px; color:var(--text2); margin:0 0 2px 0;"><strong style="color:var(--text);">① 표준화</strong> (5.2에서): Z ~ N(0,1)</p>
+          <div style="background:rgba(0,0,0,0.25); border-radius:6px; padding:6px 12px; margin-bottom:8px; font-size:17px; text-align:center;">
+            $$Z = \dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}}$$
+          </div>
+
+          <!-- Step 2: V 정의 -->
+          <p style="font-size:14px; color:var(--text2); margin:0 0 2px 0;"><strong style="color:var(--text);">② χ²-통계량</strong> (5.3에서): V ~ χ²(n−1),&nbsp; Z와 독립</p>
+          <div style="background:rgba(0,0,0,0.25); border-radius:6px; padding:6px 12px; margin-bottom:8px; font-size:17px; text-align:center;">
+            $$V = \dfrac{(n-1)S^2}{\sigma^2} \;\sim\; \chi^2(n-1)$$
+          </div>
+
+          <!-- Step 3: S와 V의 관계 -->
+          <p style="font-size:14px; color:var(--text2); margin:0 0 2px 0;"><strong style="color:var(--text);">③ S를 V로 표현</strong> (②를 S²에 대해 풀면):</p>
+          <div style="background:rgba(0,0,0,0.25); border-radius:6px; padding:6px 12px; margin-bottom:8px; font-size:17px; text-align:center;">
+            $$S^2 = \dfrac{\sigma^2 V}{n-1} \quad\Longrightarrow\quad \dfrac{S}{\sqrt{n}} = \dfrac{\sigma}{\sqrt{n}}\cdot\sqrt{\dfrac{V}{n-1}}$$
+          </div>
+
+          <!-- Step 4: T 대입 -->
+          <p style="font-size:14px; color:var(--text2); margin:0 0 2px 0;"><strong style="color:var(--text);">④ T에 대입</strong> — ③을 분모에 넣으면:</p>
+          <div style="background:rgba(0,0,0,0.25); border-radius:6px; padding:6px 12px; margin-bottom:8px; font-size:17px; text-align:center;">
+            $$T = \dfrac{\bar{X}-\mu}{S/\sqrt{n}} = \dfrac{\bar{X}-\mu}{\dfrac{\sigma}{\sqrt{n}}\cdot\sqrt{\dfrac{V}{n-1}}} = \dfrac{\dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}}}{\sqrt{\dfrac{V}{n-1}}}$$
+          </div>
+
+          <!-- Step 5: 최종 -->
+          <p style="font-size:14px; color:var(--text2); margin:0 0 2px 0;"><strong style="color:var(--text);">⑤ 최종</strong> — ①의 Z를 대입하면 좌측 t-분포 정의와 일치:</p>
+          <div style="background:rgba(210,168,255,0.15); border:1px solid rgba(210,168,255,0.5); border-radius:6px; padding:8px 12px; margin-bottom:0; font-size:19px; text-align:center;">
+            $$\boxed{T = \dfrac{Z}{\sqrt{V/(n-1)}} \sim t(n-1)}$$
+          </div>
+          <p style="font-size:14px; color:var(--text2); margin-top:8px; margin-bottom:0; line-height:1.6;">
+            좌측 정의 \(T=Z/\sqrt{V/n}\)에서 자유도 <em>n</em> 자리에 <strong style="color:var(--purple);">(n−1)</strong>이 들어간 형태 → 자유도 <strong>(n−1)</strong>인 t-분포.
+          </p>
+        </div>
+
+        <p style="font-size:17px; color:var(--text2); margin-top:10px;">자유도 <strong>(n−1)</strong>인 t-분포를 따른다. 소표본 신뢰구간에 사용.</p>
+      </div>
+    </div>
+
+    <!-- t-분포 vs 정규분포 시각화 -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 320" width="100%" style="max-width:680px;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#8b949e"/>
+          </marker>
+          <!-- shaded tail fill for t-distribution -->
+          <clipPath id="rightTail">
+            <rect x="500" y="0" width="200" height="320"/>
+          </clipPath>
+          <clipPath id="leftTail">
+            <rect x="0" y="0" width="210" height="320"/>
+          </clipPath>
+        </defs>
+
+        <!-- Axes -->
+        <line x1="50" y1="265" x2="660" y2="265" stroke="#30363d" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <line x1="355" y1="285" x2="355" y2="25" stroke="#30363d" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <!-- Normal distribution curve (blue) — tall peak, near-zero tails -->
+        <path d="M 70,263
+                 C 100,263 130,261 160,255
+                 C 185,249 205,234 225,213
+                 C 248,188 270,155 295,120
+                 C 315,93  335,66  355,55
+                 C 375,66  395,93  415,120
+                 C 440,155 462,188 485,213
+                 C 505,234 525,249 550,255
+                 C 580,261 610,263 640,263"
+              fill="none" stroke="#58a6ff" stroke-width="3"/>
+
+        <!-- t(5) distribution curve (orange)
+             Key: center peak LOWER than normal, but tails clearly HIGHER than normal -->
+        <path d="M 70,263
+                 C 95,261  120,256  148,246
+                 C 168,239  188,225  208,207
+                 C 230,186  252,158  278,130
+                 C 302,103  330,78   355,68
+                 C 380,78   408,103  432,130
+                 C 458,158  480,186  502,207
+                 C 522,225  542,239  562,246
+                 C 590,256  615,261  640,263"
+              fill="none" stroke="#ffa657" stroke-width="3" stroke-dasharray="7,4"/>
+
+        <!-- Highlight the tail difference — right tail zoom arrows -->
+        <!-- right tail region: t is clearly above normal -->
+        <!-- fill t-tail area orange transparent -->
+        <path d="M 500,263
+                 C 510,257 520,249 530,240 C 540,232 550,228 562,226
+                 C 575,228 590,236 600,244 C 612,252 625,260 640,263 Z"
+              fill="rgba(255,166,87,0.18)" stroke="none"/>
+        <path d="M 70,263
+                 C 80,261 95,257 110,252 C 122,249 135,244 148,242
+                 C 160,241 172,244 183,249 C 195,255 205,261 215,263 Z"
+              fill="rgba(255,166,87,0.18)" stroke="none"/>
+
+        <!-- Annotations -->
+        <!-- right tail callout -->
+        <line x1="580" y1="235" x2="605" y2="205" stroke="#ffa657" stroke-width="1.5"/>
+        <rect x="560" y="185" width="130" height="40" rx="6" fill="#21262d" stroke="#ffa657" stroke-width="1"/>
+        <text x="625" y="200" fill="#ffa657" font-size="13" font-family="Noto Sans KR" text-anchor="middle">t(5) 꼬리:</text>
+        <text x="625" y="217" fill="#ffa657" font-size="13" font-family="Noto Sans KR" text-anchor="middle">정규보다 높음</text>
+
+        <!-- left tail callout -->
+        <line x1="130" y1="247" x2="100" y2="205" stroke="#ffa657" stroke-width="1.5"/>
+        <rect x="20" y="185" width="115" height="40" rx="6" fill="#21262d" stroke="#ffa657" stroke-width="1"/>
+        <text x="78" y="200" fill="#ffa657" font-size="13" font-family="Noto Sans KR" text-anchor="middle">왼쪽 꼬리도</text>
+        <text x="78" y="217" fill="#ffa657" font-size="13" font-family="Noto Sans KR" text-anchor="middle">마찬가지</text>
+
+        <!-- peak difference annotation -->
+        <line x1="355" y1="55" x2="355" y2="68" stroke="#e6edf3" stroke-width="1.5"/>
+        <line x1="348" y1="55" x2="348" y2="68" stroke="none"/>
+        <!-- brace-like marker -->
+        <line x1="340" y1="55" x2="370" y2="55" stroke="#58a6ff" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="340" y1="68" x2="370" y2="68" stroke="#ffa657" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="385" y="58" fill="#58a6ff" font-size="12" font-family="Noto Sans KR">N(0,1) 최고점</text>
+        <text x="385" y="74" fill="#ffa657" font-size="12" font-family="Noto Sans KR">t(5) 최고점 (더 낮음)</text>
+
+        <!-- Axis labels -->
+        <text x="350" y="300" fill="#8b949e" font-size="14" font-family="Noto Sans KR" text-anchor="middle">0</text>
+        <text x="498" y="300" fill="#8b949e" font-size="14" font-family="Noto Sans KR" text-anchor="middle">2</text>
+        <text x="212" y="300" fill="#8b949e" font-size="14" font-family="Noto Sans KR" text-anchor="middle">−2</text>
+        <text x="570" y="300" fill="#8b949e" font-size="14" font-family="Noto Sans KR" text-anchor="middle">3</text>
+        <text x="140" y="300" fill="#8b949e" font-size="14" font-family="Noto Sans KR" text-anchor="middle">−3</text>
+        <text x="660" y="270" fill="#8b949e" font-size="14" font-family="Noto Sans KR">t / z</text>
+
+        <!-- Legend -->
+        <line x1="60" y1="130" x2="100" y2="130" stroke="#58a6ff" stroke-width="3"/>
+        <text x="108" y="135" fill="#58a6ff" font-size="14" font-family="Noto Sans KR">표준정규 N(0,1)</text>
+        <line x1="60" y1="155" x2="100" y2="155" stroke="#ffa657" stroke-width="3" stroke-dasharray="7,4"/>
+        <text x="108" y="160" fill="#ffa657" font-size="14" font-family="Noto Sans KR">t-분포 t(5)</text>
+
+        <text x="355" y="20" fill="#e6edf3" font-size="15" font-family="Noto Sans KR" font-weight="600" text-anchor="middle">t-분포 vs 표준정규분포: 꼬리 두께 비교</text>
+      </svg>
+      <div class="diagram-caption">
+        t-분포는 정규분포보다 <strong style="color:#ffa657;">꼬리(주황 음영)가 높이 올라와 있다</strong> — 극단값이 나올 확률이 더 크다는 뜻.<br>
+        대신 중앙 봉우리는 정규분포보다 낮다. 자유도가 커질수록 t-분포는 N(0,1)에 가까워진다.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 1. 점추정 ===== -->
+<section class="section" id="point-est">
+  <div class="section-header">
+    <div class="section-num">①</div>
+    <div class="section-title"><span>모평균의 점추정</span></div>
+  </div>
+
+  <p>모집단에서 표본을 추출하여 <strong>모수(parameter)</strong>를 하나의 값으로 추정하는 것을 <em>점추정(point estimation)</em>이라 한다.</p>
+
+  <div class="formula-box">
+    $$\hat{\mu} = \bar{X}$$
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>모평균 점추정의 요약</div>
+
+    <div class="key-grid">
+      <div class="key-card blue-card">
+        <div class="kc-icon">🎯</div>
+        <div class="kc-title">(1) 점추정량</div>
+        <div class="kc-body">모평균 μ의 점추정량은 표본평균 <strong>X̄</strong>이다.</div>
+      </div>
+      <div class="key-card green-card">
+        <div class="kc-icon">📏</div>
+        <div class="kc-title">(2) 표준오차 SE</div>
+        <div class="formula-box" style="margin:8px 0;">$$\text{SE}(\bar{X}) = \dfrac{\sigma}{\sqrt{n}}$$</div>
+        <div class="kc-body">
+          <strong>표준오차(standard error)</strong>란 추정량 \(\bar{X}\)의 표준편차이다.<br><br>
+          <strong style="color:var(--yellow);">❓ 표본표준편차 S와 다른가?</strong><br>
+          <span style="color:#8b949e;">
+          • <strong style="color:var(--text);">표본표준편차 S</strong>: 표본 내 데이터들이 표본평균 주위에 얼마나 퍼져 있는지 (= 데이터 자체의 산포)<br>
+          • <strong style="color:var(--text);">표준오차 \(\text{SE} = \sigma/\sqrt{n}\)</strong>: 표본평균 \(\bar{X}\)가 모평균 μ 주위에 얼마나 퍼져 있는지 (= 추정값의 불확실성)<br><br>
+          SE는 S를 √n으로 나눈 것 → n이 클수록 SE가 작아져 추정이 정밀해진다.
+          </span>
+        </div>
+      </div>
+      <div class="key-card orange-card">
+        <div class="kc-icon">↔️</div>
+        <div class="kc-title">(3) 오차한계</div>
+        <div class="formula-box" style="margin:8px 0;">$$z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}}$$</div>
+        <div class="kc-body">
+          <strong>오차한계(limit of error)</strong>란 점추정값(X̄)이 참값(μ)과 얼마나 차이날 수 있는지의 <strong>최대 허용 범위</strong>이다.<br><br>
+          즉,
+          \[|\bar{X} - \mu| \leq z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}} \quad\left(\Longleftrightarrow\; \left|\dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}}\right| \leq z_{\alpha/2}\right)\]
+          가 100(1−α)% 확률로 성립한다는 의미다.
+          우변의 괄호 안 식에서 좌변 \(\dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}} = Z \sim N(0,1)\)이므로, 이 부등식은 표준화 Z의 절댓값이 임계값 \(z_{\alpha/2}\) 이내임을 뜻한다.<br><br>
+          <span style="color:#8b949e;">예) 95% 오차한계 = 3.72 이면, "추정값이 참값과 3.72 이상 차이날 확률은 5% 이하"라는 뜻.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <strong>⚠️ 점추정의 한계 — 그리고 구간추정이 필요한 이유</strong>
+      <p style="margin-top:10px;">점추정은 단 하나의 값(예: \(\bar{X} = 35.6\))을 제시한다. 그런데 <strong>그 값이 얼마나 믿을 만한지, 얼마나 오차가 있을 수 있는지는 알 수 없다.</strong></p>
+      <p style="margin-top:10px; padding:12px 16px; background:rgba(0,0,0,0.2); border-radius:8px; font-size:18px;">
+        🤔 "\(\bar{X} = 35.6\)이라고 했는데, 진짜 μ가 35.6인지, 아니면 30일 수도 있고 40일 수도 있는 건지 어떻게 알지?"
+      </p>
+      <p style="margin-top:12px;"><strong>구간추정(interval estimation)</strong>은 이 물음에 답한다. 하나의 점(35.6)이 아니라 <strong>"35.6 ± 3.72, 즉 (31.88, 39.32) 구간 안에 모평균이 있다"</strong>는 식으로, <strong>불확실성의 크기를 구간의 폭으로 표현</strong>한다.</p>
+      <p style="margin-top:10px; color:var(--text2); font-size:18px;">
+        구간이 좁을수록 → 추정이 정밀함 / 구간이 넓을수록 → 불확실성이 큼.<br>
+        신뢰도(예: 95%)는 이 구간이 얼마나 믿을 만한지를 확률로 나타낸 것이다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 2. 구간추정 (σ 아는 경우) ===== -->
+<section class="section" id="interval-known">
+  <div class="section-header">
+    <div class="section-num">②</div>
+    <div class="section-title">구간추정 — <span>모분산 σ² 아는 경우</span></div>
+  </div>
+
+  <div class="connection-banner">
+    <div class="cb-title">📌 5.2와의 연결</div>
+    <p>5.2에서 증명한 \(\text{E}(\bar{X}) = \mu,\ \text{Var}(\bar{X}) = \sigma^2/n\)으로부터 \(\bar{X}\)를 표준화하면 Z ~ N(0,1)이 된다. 이것이 신뢰구간 유도의 출발점이다.</p>
+  </div>
+
+  <!-- 유도 과정 -->
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>신뢰구간 유도</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          표준정규분포의 성질로부터 임의의 양수 α (0 < α < 1)에 대해:
+          <div class="formula-box">$$\text{P}\!\left(-z_{\alpha/2} < Z < z_{\alpha/2}\right) = 1 - \alpha$$</div>
+          여기서 z₀.₀₅ = 1.645, z₀.₀₂₅ = 1.96, z₀.₀₀₅ = 2.58
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          Z-통계량 \(Z = \dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}}\)을 대입하면:
+          <div class="formula-box">$$\text{P}\!\left(\left|\dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}}\right| < z_{\alpha/2}\right) = 1-\alpha$$</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          동치 변환: \(|\bar{X} - \mu| < z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}}\)
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          μ에 대해 풀면 <strong>100(1−α)% 신뢰구간</strong>:
+          <div class="formula-box" style="border-color:var(--green);">$$\left(\bar{X} - z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}},\quad \bar{X} + z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}}\right)$$</div>
+          즉, <strong>추정값 ± 100(1−α)% 오차한계</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 신뢰도별 z값 -->
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--yellow)"></div>신뢰도별 z 값 및 신뢰구간</div>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>신뢰도</th>
+          <th>α</th>
+          <th>α/2</th>
+          <th>z<sub>α/2</sub></th>
+          <th>신뢰구간</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="orange-cell">90%</td>
+          <td>0.10</td>
+          <td>0.05</td>
+          <td class="text-orange"><strong>1.645</strong></td>
+          <td>\(\bar{X} \pm 1.645\,\dfrac{\sigma}{\sqrt{n}}\)</td>
+        </tr>
+        <tr>
+          <td class="highlight-cell">95%</td>
+          <td>0.05</td>
+          <td>0.025</td>
+          <td class="text-blue"><strong>1.96</strong></td>
+          <td>\(\bar{X} \pm 1.96\,\dfrac{\sigma}{\sqrt{n}}\)</td>
+        </tr>
+        <tr>
+          <td style="background:rgba(255,123,114,0.08)!important; color:var(--red)"><strong>99%</strong></td>
+          <td>0.01</td>
+          <td>0.005</td>
+          <td class="text-red"><strong>2.58</strong></td>
+          <td>\(\bar{X} \pm 2.58\,\dfrac{\sigma}{\sqrt{n}}\)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 표준정규분포 그림 -->
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 280" width="100%" style="max-width:680px;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="fill95" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1f6feb" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#1f6feb" stop-opacity="0.1"/>
+        </linearGradient>
+      </defs>
+      <!-- Filled area under curve between ±z_α/2 -->
+      <path d="M 195,256 C 215,253 235,241 255,222 C 275,198 295,163 315,132
+               C 328,112 342,95 355,88 C 368,95 382,112 395,132
+               C 415,163 435,198 455,222 C 475,241 495,253 515,256 Z"
+            fill="url(#fill95)"/>
+      <!-- Normal curve -->
+      <path d="M 80,257 C 100,257 120,255 140,248 C 160,240 180,220 200,195
+               C 220,165 240,130 260,105 C 280,82 310,60 355,50
+               C 400,60 430,82 450,105 C 470,130 490,165 510,195
+               C 530,220 550,240 570,248 C 590,255 610,257 630,257"
+            fill="none" stroke="#58a6ff" stroke-width="2.5"/>
+      <!-- Axes -->
+      <line x1="50" y1="257" x2="660" y2="257" stroke="#30363d" stroke-width="1.5"/>
+      <line x1="355" y1="270" x2="355" y2="30" stroke="#30363d" stroke-width="1.5"/>
+      <!-- vertical lines at ±z_α/2 -->
+      <line x1="195" y1="256" x2="195" y2="150" stroke="#ffa657" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="515" y1="256" x2="515" y2="150" stroke="#ffa657" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Labels -->
+      <text x="185" y="272" fill="#ffa657" font-size="15" text-anchor="middle" font-family="serif">−z<tspan font-size="11" dy="4">α/2</tspan></text>
+      <text x="515" y="272" fill="#ffa657" font-size="15" text-anchor="middle" font-family="serif">z<tspan font-size="11" dy="4">α/2</tspan></text>
+      <text x="355" y="272" fill="#8b949e" font-size="14" text-anchor="middle">0</text>
+      <!-- 1-α text in middle -->
+      <text x="355" y="175" fill="#58a6ff" font-size="18" font-weight="bold" text-anchor="middle" font-family="Noto Sans KR">1 − α</text>
+      <!-- α/2 left -->
+      <text x="130" y="255" fill="#ffa657" font-size="14" text-anchor="middle" font-family="Noto Sans KR">α/2</text>
+      <!-- α/2 right -->
+      <text x="580" y="255" fill="#ffa657" font-size="14" text-anchor="middle" font-family="Noto Sans KR">α/2</text>
+      <text x="355" y="22" fill="#e6edf3" font-size="15" font-weight="600" text-anchor="middle" font-family="Noto Sans KR">P(−z<tspan font-size="11">α/2</tspan> &lt; Z &lt; z<tspan font-size="11">α/2</tspan>) = 1 − α</text>
+    </svg>
+    <div class="diagram-caption">신뢰구간은 표준정규분포의 중앙 (1−α) 면적에 해당하는 구간에서 유도된다</div>
+  </div>
+</section>
+
+<!-- ===== 3. 신뢰구간의 의미 ===== -->
+<section class="section" id="confidence">
+  <div class="section-header">
+    <div class="section-num">③</div>
+    <div class="section-title">신뢰도 95% <span>신뢰구간의 의미</span></div>
+  </div>
+
+  <div class="warn-box">
+    <strong>⚠️ 흔한 오해</strong>: "모평균 μ가 이 구간에 있을 확률이 95%이다"
+    <br><strong style="color:var(--green)">✅ 올바른 해석</strong>: "이 절차를 반복하면, 만들어지는 신뢰구간 중 약 95%가 모평균 μ를 포함한다"
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--green)"></div>정확한 해석</div>
+    <p>모집단으로부터 크기가 n인 표본의 임의추출을 반복하여 신뢰구간을 만들 때, 이들 중 약 <strong>95%는 모평균 μ를 포함</strong>한다는 의미이다.</p>
+    <p>즉, 표본평균 \(\bar{X}\)로 추정한 \(\bar{X} - 1.96\dfrac{\sigma}{\sqrt{n}}\) 와 \(\bar{X} + 1.96\dfrac{\sigma}{\sqrt{n}}\) 사이에 모평균 μ가 포함될 것이라는 <strong>신뢰 정도가 95%</strong>라는 의미이다.</p>
+
+    <!-- 신뢰구간 시각화 -->
+    <div class="diagram-wrap" style="padding: 24px 16px;">
+      <svg viewBox="0 0 650 280" width="100%" style="max-width:650px;" xmlns="http://www.w3.org/2000/svg">
+        <!-- μ vertical line -->
+        <line x1="330" y1="20" x2="330" y2="265" stroke="#ffa657" stroke-width="2" stroke-dasharray="6,4"/>
+        <text x="330" y="15" fill="#ffa657" font-size="15" text-anchor="middle" font-family="serif" font-weight="bold">μ</text>
+
+        <!-- CI bars - some containing μ, one not -->
+        <!-- row 1: contains μ -->
+        <line x1="230" y1="50" x2="430" y2="50" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="330" cy="50" r="4" fill="#3fb950"/>
+        <text x="200" y="55" fill="#8b949e" font-size="13" text-anchor="end" font-family="Noto Sans KR">X̄₁</text>
+
+        <!-- row 2: contains μ -->
+        <line x1="260" y1="90" x2="450" y2="90" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="355" cy="90" r="4" fill="#3fb950"/>
+        <text x="200" y="95" fill="#8b949e" font-size="13" text-anchor="end" font-family="Noto Sans KR">X̄₂</text>
+
+        <!-- row 3: does NOT contain μ -->
+        <line x1="365" y1="130" x2="560" y2="130" stroke="#ff7b72" stroke-width="3"/>
+        <circle cx="462" cy="130" r="4" fill="#ff7b72"/>
+        <text x="200" y="135" fill="#ff7b72" font-size="13" text-anchor="end" font-family="Noto Sans KR">X̄₃ ❌</text>
+        <text x="565" y="134" fill="#ff7b72" font-size="13" font-family="Noto Sans KR">μ 미포함</text>
+
+        <!-- row 4: contains μ -->
+        <line x1="200" y1="170" x2="400" y2="170" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="300" cy="170" r="4" fill="#3fb950"/>
+        <text x="200" y="175" fill="#8b949e" font-size="13" text-anchor="end" font-family="Noto Sans KR">X̄₄</text>
+
+        <!-- row 5: contains μ -->
+        <line x1="245" y1="210" x2="440" y2="210" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="343" cy="210" r="4" fill="#3fb950"/>
+        <text x="200" y="215" fill="#8b949e" font-size="13" text-anchor="end" font-family="Noto Sans KR">X̄₅</text>
+
+        <!-- row 6: contains μ -->
+        <line x1="280" y1="250" x2="480" y2="250" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="380" cy="250" r="4" fill="#3fb950"/>
+        <text x="200" y="255" fill="#8b949e" font-size="13" text-anchor="end" font-family="Noto Sans KR">X̄₆</text>
+
+        <text x="325" y="280" fill="#8b949e" font-size="12" text-anchor="middle" font-family="Noto Sans KR">100번 중 약 95개의 구간이 μ를 포함 (초록), 약 5개는 미포함 (빨강)</text>
+      </svg>
+      <div class="diagram-caption">각 가로 선분이 하나의 신뢰구간. 대부분 μ(점선)를 포함하지만, 일부는 포함하지 않는다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4. 대표본 (σ 모름) ===== -->
+<section class="section" id="interval-large">
+  <div class="section-header">
+    <div class="section-num">④</div>
+    <div class="section-title">모분산 모름 — <span>대표본 (n ≥ 30)</span></div>
+  </div>
+
+  <div class="connection-banner">
+    <div class="cb-title">📌 중심극한정리 연결 (5.2)</div>
+    <p>n ≥ 30이면 <strong>중심극한정리</strong>에 의해 모집단 분포에 상관없이 \(\bar{X}\)는 근사적으로 정규분포를 따른다. 또한 σ가 알려지지 않아도 <strong>표본표준편차 S로 대체</strong>할 수 있다.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--orange)"></div>대표본에서 모평균의 구간추정</div>
+    <p>모분산 σ²를 모를 때, n이 대표본(n ≥ 30)이면 모평균 μ의 100(1−α)% 신뢰구간은 다음과 같다. 여기서 S는 <strong>표본표준편차</strong>이다.</p>
+    <div class="formula-box" style="border-color:var(--orange);">
+      $$\left(\bar{X} - z_{\alpha/2}\dfrac{S}{\sqrt{n}},\quad \bar{X} + z_{\alpha/2}\dfrac{S}{\sqrt{n}}\right)$$
+    </div>
+    <div class="success-box">
+      σ → S로 교체. 그 외 공식 형태는 동일하다.
+    </div>
+  </div>
+
+  <!-- 비교표 -->
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--yellow)"></div>σ 아는 경우 vs 대표본에서 모르는 경우</div>
+    <table class="comp-table">
+      <thead>
+        <tr><th>구분</th><th>σ 아는 경우</th><th>대표본 σ 모르는 경우</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>조건</strong></td>
+          <td>모분산 σ² 알려짐</td>
+          <td>n ≥ 30</td>
+        </tr>
+        <tr>
+          <td><strong>사용 분포</strong></td>
+          <td class="text-blue">Z ~ N(0,1)</td>
+          <td class="text-blue">Z ~ N(0,1) (근사)</td>
+        </tr>
+        <tr>
+          <td><strong>표준편차</strong></td>
+          <td>\(\sigma/\sqrt{n}\)</td>
+          <td class="highlight-cell">\(S/\sqrt{n}\)</td>
+        </tr>
+        <tr>
+          <td><strong>신뢰구간</strong></td>
+          <td>\(\bar{X} \pm z_{\alpha/2}\dfrac{\sigma}{\sqrt{n}}\)</td>
+          <td class="highlight-cell">\(\bar{X} \pm z_{\alpha/2}\dfrac{S}{\sqrt{n}}\)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 5. 소표본 (σ 모름) ===== -->
+<section class="section" id="interval-small">
+  <div class="section-header">
+    <div class="section-num">⑤</div>
+    <div class="section-title">모분산 모름 — <span>소표본 (n &lt; 30)</span></div>
+  </div>
+
+  <div class="connection-banner">
+    <div class="cb-title">📌 5.3 t-분포 연결</div>
+    <p>소표본(n < 30)에서는 σ를 S로 교체할 때 Z-분포를 사용할 수 없다. 5.3에서 배운 <strong>t-분포</strong>를 사용해야 한다. T통계량은 자유도 (n−1)인 t-분포를 따른다.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--purple)"></div>소표본 T-통계량과 구간추정</div>
+    <p>모분산 σ²를 모를 때, n이 소표본(n &lt; 30)이면 Z-통계량 대신 <strong>T-통계량</strong>을 사용한다:</p>
+    <div class="formula-box">
+      $$T = \dfrac{\bar{X} - \mu}{S/\sqrt{n}} \sim t(n-1)$$
+    </div>
+
+    <p style="margin-top:20px;">임의의 양수 α에 대해:</p>
+    <div class="formula-box">
+      $$\text{P}\!\left(-t_{\alpha/2}(n-1) < T < t_{\alpha/2}(n-1)\right) = 1 - \alpha$$
+    </div>
+
+    <p style="margin-top:20px;">μ에 대해 풀면 <strong>소표본 100(1−α)% 신뢰구간</strong>:</p>
+    <div class="formula-box" style="border-color:var(--purple);">
+      $$\left(\bar{X} - t_{\alpha/2}(n-1)\dfrac{S}{\sqrt{n}},\quad \bar{X} + t_{\alpha/2}(n-1)\dfrac{S}{\sqrt{n}}\right)$$
+    </div>
+
+    <div class="warn-box" style="margin-top:20px;">
+      <strong>📌 주의</strong>: t 분포표에서 자유도 <strong>(n−1)</strong>행, α/2 열의 값을 찾아 사용한다. t값은 항상 z값보다 크다 (꼬리가 두꺼운 분포이므로).
+    </div>
+  </div>
+
+  <!-- 전체 비교표 -->
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--yellow)"></div>모평균 구간추정 방법 총정리</div>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>경우</th>
+          <th>σ 아는 경우</th>
+          <th>대표본 (n≥30)<br>σ 모름</th>
+          <th>소표본 (n&lt;30)<br>σ 모름</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>사용 분포</strong></td>
+          <td class="text-blue">Z (정규)</td>
+          <td class="text-blue">Z (정규, 근사)</td>
+          <td class="text-purple">t (n−1 자유도)</td>
+        </tr>
+        <tr>
+          <td><strong>통계량</strong></td>
+          <td>\(\dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}}\)</td>
+          <td>\(\dfrac{\bar{X}-\mu}{S/\sqrt{n}}\)</td>
+          <td class="highlight-cell">\(\dfrac{\bar{X}-\mu}{S/\sqrt{n}}\)</td>
+        </tr>
+        <tr>
+          <td><strong>임계값</strong></td>
+          <td>\(z_{\alpha/2}\)</td>
+          <td>\(z_{\alpha/2}\)</td>
+          <td class="highlight-cell">\(t_{\alpha/2}(n-1)\)</td>
+        </tr>
+        <tr>
+          <td><strong>95% CI 폭</strong></td>
+          <td>\(2 \times 1.96 \dfrac{\sigma}{\sqrt{n}}\)</td>
+          <td>\(2 \times 1.96 \dfrac{S}{\sqrt{n}}\)</td>
+          <td class="orange-cell">\(2 \times t_{0.025}(n{-}1) \dfrac{S}{\sqrt{n}}\)<br><small>(t > 1.96 이므로 더 넓음)</small></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 예제 모음 ===== -->
+<section class="section" id="examples">
+  <div class="section-header">
+    <div class="section-num">📝</div>
+    <div class="section-title"><span>예제 모음</span></div>
+  </div>
+
+  <!-- 예제 6-5 -->
+  <div class="example" id="ex65">
+    <div class="example-header">
+      <span class="example-num">예제 6-5</span>
+      <span class="example-question">점추정, 표준오차, 95% 오차한계</span>
+    </div>
+    <div class="example-body">
+      <div class="example-problem">
+        모표준편차가 6인 정규 모집단에서 10개의 자료를 표본으로 추출하여 다음 결과를 얻었다.<br>
+        <div class="data-row">
+          <span class="data-item">27</span>
+          <span class="data-item">34</span>
+          <span class="data-item">34</span>
+          <span class="data-item">36</span>
+          <span class="data-item">30</span>
+          <span class="data-item">28</span>
+          <span class="data-item">41</span>
+          <span class="data-item">35</span>
+          <span class="data-item">48</span>
+          <span class="data-item">43</span>
+        </div>
+        (a) 모집단의 평균을 추정하라. &emsp; (b) 표준오차를 구하라. &emsp; (c) 95% 오차한계를 구하라.
+      </div>
+      <div class="example-solution">
+        <div class="solution-label">풀이</div>
+        <p><strong class="text-blue">(a) 점추정</strong> — 모평균의 점추정량은 표본평균 \(\bar{X}\)이다.</p>
+        <div class="formula-box">
+          $$\hat{\mu} = \bar{X} = \dfrac{1}{10}(27+34+34+36+30+28+41+35+48+43) = \dfrac{356}{10} = 35.6$$
+        </div>
+        <div class="answer-box"><span class="label">답 (a)</span> \(\hat{\mu} = 35.6\)</div>
+
+        <p style="margin-top:24px;"><strong class="text-green">(b) 표준오차</strong> — 모분산 σ² = 36이 알려져 있으므로:</p>
+        <div class="formula-box">
+          $$\text{SE}(\bar{X}) = \dfrac{\sigma}{\sqrt{n}} = \dfrac{6}{\sqrt{10}} \approx 1.897$$
+        </div>
+        <div class="answer-box"><span class="label">답 (b)</span> \(\text{SE}(\bar{X}) \approx 1.897\)</div>
+
+        <p style="margin-top:24px;"><strong class="text-orange">(c) 95% 오차한계</strong> — 신뢰도 95%이므로 z₀.₀₂₅ = 1.96 사용:</p>
+        <div class="formula-box">
+          $$z_{0.025} \cdot \dfrac{\sigma}{\sqrt{n}} = 1.96 \times \dfrac{6}{\sqrt{10}} = 1.96 \times 1.897 \approx 3.72$$
+        </div>
+        <div class="answer-box"><span class="label">답 (c)</span> 95% 오차한계 ≈ 3.72</div>
+
+        <div class="info-box" style="margin-top:20px;">
+          <strong>💡 해석</strong>: 모평균은 35.6 ± 3.72, 즉 (31.88, 39.32) 구간에 있다고 95% 신뢰할 수 있다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예제 6-6 -->
+  <div class="example" id="ex66">
+    <div class="example-header">
+      <span class="example-num">예제 6-6</span>
+      <span class="example-question">추정값이 참값 근처에 놓일 확률 (표본 크기 영향)</span>
+    </div>
+    <div class="example-body">
+      <div class="example-problem">
+        모분산 σ²이 알려진 정규 모집단 N(μ, σ²)에서 크기 n인 표본을 추출하여 \(\hat{\mu} = \bar{X}\)가 μ의 참값 \(\pm\dfrac{\sigma}{4}\) 안에 놓일 확률을 각각 구하라.<br>
+        (a) n = 20인 경우 &emsp;&emsp; (b) n = 100인 경우
+      </div>
+      <div class="example-solution">
+        <div class="solution-label">풀이</div>
+        <p>\(\dfrac{\bar{X}-\mu}{\sigma/\sqrt{n}} \sim \text{N}(0,1)\)이므로 다음과 같이 계산할 수 있다.</p>
+
+        <p style="margin-top:20px;"><strong class="text-blue">(a) n = 20인 경우</strong></p>
+        <div class="formula-box">
+          $$\text{P}\!\left(|\bar{X}-\mu| < \dfrac{\sigma}{4}\right)
+          = \text{P}\!\left(\dfrac{|\bar{X}-\mu|}{\sigma/\sqrt{20}} < \dfrac{\sqrt{20}}{4}\right)
+          = \text{P}(|Z| < 1.12)$$
+        </div>
+        <div class="formula-box">
+          $$= \Phi(1.12) - \Phi(-1.12) = 2 \times 0.8686 - 1 = \mathbf{0.7372}$$
+        </div>
+        <div class="answer-box"><span class="label">답 (a)</span> 약 73.72%</div>
+
+        <p style="margin-top:24px;"><strong class="text-green">(b) n = 100인 경우</strong></p>
+        <div class="formula-box">
+          $$\text{P}\!\left(|\bar{X}-\mu| < \dfrac{\sigma}{4}\right)
+          = \text{P}\!\left(\dfrac{|\bar{X}-\mu|}{\sigma/\sqrt{100}} < \dfrac{\sqrt{100}}{4}\right)
+          = \text{P}(|Z| < 2.5)$$
+        </div>
+        <div class="formula-box">
+          $$= \Phi(2.5) - \Phi(-2.5) = 2 \times 0.9938 - 1 = \mathbf{0.9876}$$
+        </div>
+        <div class="answer-box"><span class="label">답 (b)</span> 약 98.76%</div>
+
+        <div class="warn-box" style="margin-top:20px;">
+          <strong>💡 핵심 교훈</strong>: 표본 크기 n이 20 → 100으로 5배 커지자, 확률이 73.7% → 98.8%로 급증.<br>
+          <strong>n이 클수록 추정 정밀도가 높아진다</strong> — 5.2에서 \(\text{Var}(\bar{X}) = \sigma^2/n\)이 작아지는 것과 직결된 결과.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예제 6-8 -->
+  <div class="example" id="ex68">
+    <div class="example-header">
+      <span class="example-num">예제 6-8</span>
+      <span class="example-question">모분산 아는 경우 — 99% 신뢰구간</span>
+    </div>
+    <div class="example-body">
+      <div class="example-problem">
+        코스닥 등록법인의 평균 종업원 수를 조사하기 위해 코스닥 등록법인 중 <strong>64개사</strong>를 무작위로 선택하여 조사한 결과 평균 종업원 수는 <strong>55.8명</strong>이었고 모집단 표준편차는 <strong>8명</strong>이었다. 코스닥 등록법인의 종업원 수가 정규분포를 따른다고 할 때, 코스닥 등록법인 평균 종업원 수의 <strong>99% 신뢰구간</strong>을 구하라.
+      </div>
+      <div class="example-solution">
+        <div class="solution-label">풀이</div>
+        <div class="flow" style="margin-bottom:20px;">
+          <div class="flow-item">
+            <span class="fi-tag text-blue">주어진 값</span>
+            <div>\(\bar{X} = 55.8\)<br>\(\sigma = 8\)<br>\(n = 64\)</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item">
+            <span class="fi-tag text-orange">임계값</span>
+            <div>신뢰도 99%<br>\(z_{0.005} = 2.58\)</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item">
+            <span class="fi-tag text-green">신뢰구간</span>
+            <div>\(\bar{X} \pm 2.58 \dfrac{\sigma}{\sqrt{n}}\)</div>
+          </div>
+        </div>
+        <div class="formula-box">
+          $$55.8 - 2.58 \times \dfrac{8}{\sqrt{64}} < \mu < 55.8 + 2.58 \times \dfrac{8}{\sqrt{64}}$$
+        </div>
+        <div class="formula-box">
+          $$55.8 - 2.58 \times 1 < \mu < 55.8 + 2.58 \times 1$$
+        </div>
+        <div class="answer-box"><span class="label">답</span> \(53.22 < \mu < 58.38\)</div>
+        <div class="info-box" style="margin-top:20px;">
+          <strong>💡</strong> \(\sqrt{64} = 8\)이므로 \(\sigma/\sqrt{n} = 8/8 = 1\)로 계산이 단순해진다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예제 6-9 -->
+  <div class="example" id="ex69">
+    <div class="example-header">
+      <span class="example-num">예제 6-9</span>
+      <span class="example-question">대표본, 모분산 모름 — 95% 신뢰구간</span>
+    </div>
+    <div class="example-body">
+      <div class="example-problem">
+        어느 회사에서 입사시험 평균 성적을 알기 위해 지원자 <strong>100명</strong>을 무작위로 조사하였더니 평균 성적이 <strong>70점</strong>, 표본표준편차가 <strong>10점</strong>이었다. 전체 지원자의 평균 성적의 <strong>95% 신뢰구간</strong>을 구하라.
+      </div>
+      <div class="example-solution">
+        <div class="solution-label">풀이</div>
+        <div class="highlight-box">
+          <strong>조건 확인</strong>: n = 100 ≥ 30 → <em>대표본</em>, 모분산 σ² 모름 → S 사용, Z-분포 사용
+        </div>
+        <p style="margin-top:16px;">z₀.₀₂₅ = 1.96이고, \(\bar{X} = 70\), S = 10, n = 100이므로:</p>
+        <div class="formula-box">
+          $$70 - 1.96 \times \dfrac{10}{\sqrt{100}} < \mu < 70 + 1.96 \times \dfrac{10}{\sqrt{100}}$$
+        </div>
+        <div class="formula-box">
+          $$70 - 1.96 \times 1 < \mu < 70 + 1.96 \times 1$$
+        </div>
+        <div class="answer-box"><span class="label">답</span> \(68.04 < \mu < 71.96\)</div>
+        <div class="info-box" style="margin-top:20px;">
+          <strong>💡</strong> n = 100이므로 \(\sqrt{100} = 10\), 따라서 \(S/\sqrt{n} = 10/10 = 1\). 대표본이므로 Z-분포 사용 (t 아님).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예제 6-10 -->
+  <div class="example" id="ex610">
+    <div class="example-header">
+      <span class="example-num">예제 6-10</span>
+      <span class="example-question">소표본, 모분산 모름 — t-분포 활용, 95% 신뢰구간</span>
+    </div>
+    <div class="example-body">
+      <div class="example-problem">
+        정규 모집단 N(μ, σ²)에서 크기 <strong>10</strong>인 표본을 추출하여 다음과 같은 결과를 얻었을 때, 주어진 물음에 답하라.<br>
+        <div class="data-row">
+          <span class="data-item">295</span>
+          <span class="data-item">302</span>
+          <span class="data-item">310</span>
+          <span class="data-item">285</span>
+          <span class="data-item">290</span>
+          <span class="data-item">198</span>
+          <span class="data-item">307</span>
+          <span class="data-item">300</span>
+          <span class="data-item">291</span>
+          <span class="data-item">288</span>
+        </div>
+        (a) 모평균의 점추정값 &emsp; (b) 모평균의 표준오차 &emsp; (c) 모평균의 95% 오차한계 &emsp; (d) 모평균의 95% 신뢰구간
+      </div>
+      <div class="example-solution">
+        <div class="solution-label">풀이</div>
+
+        <div class="highlight-box">
+          <strong>조건 확인</strong>: n = 10 &lt; 30 → <em>소표본</em>, σ² 모름 → <strong>t-분포</strong> 사용, 자유도 = n − 1 = 9
+        </div>
+
+        <p style="margin-top:20px;"><strong class="text-blue">(a) 점추정값</strong></p>
+        <div class="formula-box">
+          $$\bar{X} = \dfrac{1}{10}(295+302+310+285+290+198+307+300+291+288) = \dfrac{2866}{10} = 286.6$$
+        </div>
+        <div class="answer-box"><span class="label">답 (a)</span> \(\hat{\mu} = \bar{X} = 286.6\)</div>
+
+        <p style="margin-top:24px;"><strong class="text-green">(b) 표준오차</strong></p>
+        <p>표본분산을 구한다:</p>
+        <div class="formula-box">
+          $$S^2 = \dfrac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2 = \dfrac{1}{9}(70.56 + 237.16 + \cdots + 1.96) \approx 1037.38$$
+        </div>
+        <div class="formula-box">
+          $$S = \sqrt{1037.38} \approx 32.2083$$
+        </div>
+        <div class="formula-box">
+          $$\text{SE}(\bar{X}) = \dfrac{S}{\sqrt{n}} = \dfrac{32.2083}{\sqrt{10}} \approx 10.185$$
+        </div>
+        <div class="answer-box"><span class="label">답 (b)</span> \(\text{SE}(\bar{X}) \approx 10.185\)</div>
+
+        <p style="margin-top:24px;"><strong class="text-orange">(c) 95% 오차한계</strong></p>
+        <div class="highlight-box">
+          <strong>📌 5.3 t-분포 연결</strong>: t₀.₀₂₅(9) = 2.262 (자유도 9인 t-분포표에서)
+        </div>
+        <div class="formula-box">
+          $$t_{0.025}(n-1)\cdot\dfrac{S}{\sqrt{n}} = 2.262 \times 10.185 \approx 23.038$$
+        </div>
+        <div class="answer-box"><span class="label">답 (c)</span> 95% 오차한계 ≈ 23.038</div>
+
+        <p style="margin-top:24px;"><strong class="text-purple">(d) 95% 신뢰구간</strong></p>
+        <div class="formula-box" style="border-color:var(--purple);">
+          $$\bar{X} \pm t_{0.025}(9)\dfrac{S}{\sqrt{n}} = 286.6 \pm 23.038$$
+        </div>
+        <div class="answer-box"><span class="label">답 (d)</span> \((263.562,\; 309.638)\)</div>
+
+        <div class="warn-box" style="margin-top:20px;">
+          <strong>💡 비교</strong>: 만약 대표본으로 가정하고 z = 1.96을 쓰면 오차한계 = 1.96 × 10.185 ≈ 19.96.
+          t = 2.262를 쓴 결과(23.038)보다 <strong>좁은 구간</strong>이 된다.
+          소표본에서 t를 써야 하는 이유가 바로 이것이다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== 최종 정리 ===== -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-num">✅</div>
+    <div class="section-title"><span>핵심 정리</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--yellow)"></div>선수지식 → 모평균 추정 흐름 요약</div>
+    <div class="flow" style="flex-direction:column; gap:8px;">
+      <div style="background:rgba(88,166,255,0.08); border:1px solid rgba(88,166,255,0.3); border-radius:10px; padding:16px 24px;">
+        <strong class="text-blue">5.2 표본평균의 분포</strong>: \(\text{E}(\bar{X}) = \mu,\ \text{Var}(\bar{X}) = \sigma^2/n\) → \(\bar{X}\)를 표준화하면 Z ~ N(0,1)
+      </div>
+      <div style="text-align:center; color:var(--blue); font-size:22px;">↓</div>
+      <div style="background:rgba(210,168,255,0.08); border:1px solid rgba(210,168,255,0.3); border-radius:10px; padding:16px 24px;">
+        <strong class="text-purple">5.3 t-분포</strong>: σ 모를 때 S로 대체하면 t(n−1) 분포를 따름
+      </div>
+      <div style="text-align:center; color:var(--blue); font-size:22px;">↓</div>
+      <div style="background:rgba(63,185,80,0.08); border:1px solid rgba(63,185,80,0.3); border-radius:10px; padding:16px 24px;">
+        <strong class="text-green">6.2 모평균 구간추정</strong>: P 부등식을 μ에 대해 풀어 신뢰구간 도출
+      </div>
+    </div>
+
+    <table class="comp-table" style="margin-top:28px;">
+      <thead>
+        <tr>
+          <th>경우</th>
+          <th>σ² 아는 경우 (어떤 n)</th>
+          <th>대표본 n≥30, σ² 모름</th>
+          <th>소표본 n&lt;30, σ² 모름</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>95% 신뢰구간</strong></td>
+          <td>\(\bar{X} \pm 1.96\dfrac{\sigma}{\sqrt{n}}\)</td>
+          <td>\(\bar{X} \pm 1.96\dfrac{S}{\sqrt{n}}\)</td>
+          <td class="highlight-cell">\(\bar{X} \pm t_{0.025}(n{-}1)\dfrac{S}{\sqrt{n}}\)</td>
+        </tr>
+        <tr>
+          <td><strong>99% 신뢰구간</strong></td>
+          <td>\(\bar{X} \pm 2.58\dfrac{\sigma}{\sqrt{n}}\)</td>
+          <td>\(\bar{X} \pm 2.58\dfrac{S}{\sqrt{n}}\)</td>
+          <td class="highlight-cell">\(\bar{X} \pm t_{0.005}(n{-}1)\dfrac{S}{\sqrt{n}}\)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="success-box" style="margin-top:20px;">
+      <strong>🔑 n이 클수록</strong>: (1) 신뢰구간이 좁아진다 (정밀도 증가), (2) t → z 값에 가까워진다. 두 가지 모두 5.2의 \(\text{Var}(\bar{X}) = \sigma^2/n\)에서 직접 유도된다.
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  확률및통계 · 전기전자공학과 1학년 · Chapter 6.2 모평균의 추정
+  <br><span style="font-size:14px;">선수지식: 5.2 표본평균의 분포 · 5.3 여러 가지 표본분포 (χ²-분포, t-분포)</span>
+</footer>
+
+<script>
+// MathJax config
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    tags: 'none'
+  },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+
+</body>
+</html>

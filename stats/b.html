@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구간 추정의 의미</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!-- MathJax -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] },
+    options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  :root {
+    --bg:      #0d1117;
+    --bg2:     #161b22;
+    --bg3:     #1c2330;
+    --card:    #1e2535;
+    --border:  #30404d;
+    --accent1: #58a6ff;
+    --accent2: #f78166;
+    --accent3: #3fb950;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --text:    #e6edf3;
+    --text2:   #8b949e;
+    --text3:   #cdd9e5;
+    --yellow:  #f7c948;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 22px;
+    line-height: 1.9;
+    padding: 60px 36px 100px;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  h1 {
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  h1 span { color: var(--accent1); }
+
+  .subtitle {
+    font-size: 20px;
+    color: var(--text2);
+    margin-bottom: 48px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  /* 섹션 */
+  .section { margin-top: 56px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .section-num {
+    width: 44px;
+    height: 44px;
+    background: var(--accent1);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: -0.3px;
+  }
+
+  /* 카드 */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 20px 0;
+    font-size: 21px;
+    color: var(--text3);
+    line-height: 1.9;
+  }
+
+  /* 수식 박스 */
+  .formula-box {
+    background: var(--bg3);
+    border: 1px solid var(--accent1);
+    border-left: 4px solid var(--accent1);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 24px 0;
+    text-align: center;
+    font-size: 24px;
+    overflow-x: auto;
+  }
+
+  /* 예시 구간 목록 */
+  .interval-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .interval-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 21px;
+  }
+
+  .interval-label {
+    color: var(--text2);
+    min-width: 80px;
+    font-size: 19px;
+    flex-shrink: 0;
+  }
+
+  .interval-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--accent1);
+  }
+
+  .interval-arrow {
+    color: var(--text2);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* 핵심 포인트 박스 */
+  .point-box {
+    background: var(--bg2);
+    border: 1px solid var(--accent5);
+    border-left: 4px solid var(--accent5);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    font-size: 21px;
+    color: var(--text3);
+    line-height: 1.9;
+  }
+
+  .point-box strong { color: var(--accent5); }
+
+  /* 불릿 */
+  .bullet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+    padding-left: 4px;
+  }
+
+  .bullet-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    font-size: 21px;
+    color: var(--text3);
+    line-height: 1.8;
+  }
+
+  .bullet-dot {
+    color: var(--accent3);
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* 경고/강조 박스 */
+  .warning-box {
+    background: rgba(247,129,102,0.08);
+    border: 1px solid var(--accent2);
+    border-left: 4px solid var(--accent2);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    font-size: 21px;
+    color: var(--text3);
+    line-height: 1.9;
+  }
+
+  .warning-box strong { color: var(--accent2); }
+
+  /* 낚시꾼 비유 박스 */
+  .fishing-box {
+    background: var(--card);
+    border: 1px solid var(--accent4);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin: 24px 0;
+  }
+
+  .fishing-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent4);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .fishing-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 21px;
+    color: var(--text3);
+    line-height: 1.85;
+  }
+
+  .fishing-step:last-child { border-bottom: none; }
+
+  .fishing-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* 최종 외침 박스 */
+  .shout-box {
+    background: linear-gradient(135deg, rgba(63,185,80,0.12), rgba(88,166,255,0.08));
+    border: 2px solid var(--accent3);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 20px 0;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1.9;
+    font-weight: 500;
+  }
+
+  .shout-box strong { color: var(--accent3); }
+
+  /* 한 줄 요약 */
+  .summary-box {
+    background: var(--card);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 48px 0 0;
+    text-align: center;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 2;
+  }
+
+  .summary-box .label {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .hl-blue   { color: var(--accent1); font-weight: 700; }
+  .hl-green  { color: var(--accent3); font-weight: 700; }
+  .hl-yellow { color: var(--yellow);  font-weight: 700; }
+  .hl-orange { color: var(--accent5); font-weight: 700; }
+  .hl-purple { color: var(--accent4); font-weight: 700; }
+  .hl-red    { color: var(--accent2); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>구간 추정의 의미 <span>Interval Estimation</span></h1>
+  <p class="subtitle">'수식으로서의 구간(확률변수)'과 '실제 계산된 구간(실숫값)'의 차이</p>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">수식으로서의 구간은 '움직이는 그물'이다</div>
+    </div>
+
+    <div class="card">
+      데이터를 실제로 수집하기 전, 통계학 책에 나오는 신뢰구간의 정의는 다음과 같다.
+    </div>
+
+    <div class="formula-box">
+      $$\left[ \bar{X} - z_{\alpha/2}\frac{\sigma}{\sqrt{n}}, \;\; \bar{X} + z_{\alpha/2}\frac{\sigma}{\sqrt{n}} \right]$$
+    </div>
+
+    <div class="card">
+      이 식에서 하한과 상한을 결정하는 핵심 요소는 표본평균 <span class="hl-blue">$\bar{X}$</span>이다.<br><br>
+      표본평균 $\bar{X}$는 고정된 숫자가 아니라, <strong style="color:var(--accent5)">표본을 새로 뽑을 때마다 매번 바뀌는 확률변수</strong>이다.
+    </div>
+
+    <div class="interval-list">
+      <div class="interval-item">
+        <span class="interval-label">1번째 표본</span>
+        <span class="interval-arrow">무작위 100명 →</span>
+        <span class="interval-val">[171, 179]</span>
+      </div>
+      <div class="interval-item">
+        <span class="interval-label">2번째 표본</span>
+        <span class="interval-arrow">또 다른 100명 →</span>
+        <span class="interval-val">[169, 177]</span>
+      </div>
+      <div class="interval-item">
+        <span class="interval-label">3번째 표본</span>
+        <span class="interval-arrow">또 다른 100명 →</span>
+        <span class="interval-val">[172, 180]</span>
+      </div>
+    </div>
+
+    <div class="point-box">
+      데이터를 실제로 넣기 전의 구간 추정식은<br>
+      표본에 따라 하한과 상한이 <strong>통째로 좌우로 움직이는</strong><br>
+      <strong>'가상의 그물 100개(혹은 무한대)'</strong>를 의미한다.
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:var(--accent5);">2</div>
+      <div class="section-title">우리가 보는 [하한, 상한]은 100개 중 '단 하나'이다</div>
+    </div>
+
+    <div class="card">
+      "구간은 $[\text{하한}, \text{상한}]$ 하나뿐인데 왜 100번 만든다고 하지?"라고 느끼는 이유는,<br>
+      이미 실험이나 조사가 끝나고 <strong style="color:var(--accent5)">내 화면에 실제 숫자로 계산된 결과</strong>를 보고 있기 때문이다.
+    </div>
+
+    <div class="formula-box" style="border-color:var(--accent5);border-left-color:var(--accent5);">
+      조사 결과: &nbsp; $[170, 180]$ &nbsp; — 딱 하나의 구간이 나왔다
+    </div>
+
+    <div class="bullet-list">
+      <div class="bullet-item">
+        <span class="bullet-dot">▪</span>
+        <span>이제 이 구간은 더 이상 움직이지 않는 <span class="hl-orange">고정된 실수의 구간</span>이다.</span>
+      </div>
+      <div class="bullet-item">
+        <span class="bullet-dot">▪</span>
+        <span>참값인 모수(예: 진짜 전 국민 평균 키 $\mu$)도 <span class="hl-orange">고정된 하나의 숫자</span>이다.</span>
+      </div>
+    </div>
+
+    <div class="warning-box">
+      이미 둘 다 고정되어 버렸기 때문에,<br>
+      <strong>"모수가 이 $[170, 180]$ 안에 들어갈 확률이 95%이다"</strong>라고 말할 수 없다.<br><br>
+      모수가 175라면 → <strong>100%</strong> 들어있는 것<br>
+      모수가 165라면 → <strong>0%</strong> 들어있는 것<br><br>
+      모르지만 <strong>결과는 이미 결정되어 있다.</strong>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:var(--accent3);">3</div>
+      <div class="section-title">"그물을 100번 만들면"이라는 표현의 진짜 의미</div>
+    </div>
+
+    <div class="card">
+      통계학자들이 자꾸 "100번 만들면 95번은 모수를 포함한다"라는 가상의 이야기를 하는 이유는,<br><br>
+      내가 지금 손에 쥐고 있는 <strong style="color:var(--accent3)">단 하나의 구간 $[170, 180]$이 믿을 만한 가치가 있는지를<br>
+      '신뢰성(Confidence)'으로 보증</strong>하기 위해서이다.
+    </div>
+
+    <div class="fishing-box">
+      <div class="fishing-title">🎣 낚시꾼의 비유</div>
+
+      <div class="fishing-step">
+        <span class="fishing-icon">🔧</span>
+        <span>어떤 낚시꾼이 물고기<span class="hl-purple">(모수)</span>를 잡으려고 그물을 던지는 기계<span class="hl-purple">(구간추정 수식)</span>를 개발했다.<br>
+        이 기계는 성능이 아주 좋아서, <span class="hl-green">아무렇게나 100번을 던지면 그중 95번은 물고기를 정확히 가둔다.</span> (95% 신뢰수준)</span>
+      </div>
+
+      <div class="fishing-step">
+        <span class="fishing-icon">🎯</span>
+        <span>이제 이 낚시꾼이 강가에 가서 기계를 딱 <span class="hl-orange">'한 번'</span> 작동시켜 그물을 던졌고,<br>
+        그 결과 그물이 강바닥의 <span class="hl-blue">$[\text{특정 영역}]$</span>에 딱 멈췄다.<br>
+        <span style="color:var(--text2);font-size:19px;">(이것이 바로 단 하나의 구간)</span></span>
+      </div>
+
+      <div class="fishing-step">
+        <span class="fishing-icon">👁️</span>
+        <span>낚시꾼은 지금 이 멈춰 있는 단 하나의 그물 속에<br>
+        물고기가 있는지 없는지 <span class="hl-red">눈으로 볼 수는 없다.</span><br>
+        하지만 이렇게 외칠 수는 있다:</span>
+      </div>
+
+      <div class="shout-box" style="margin-top:16px;">
+        <strong>"내가 방금 던진 이 단 하나의 그물 $[\text{하한}, \text{상한}]$은,</strong><br>
+        100번 던지면 95번은 성공하는 아주 우수한 기계로 만든 그물입니다.<br>
+        따라서 이 안에 물고기가 있을 것이라고 <strong>95% 신뢰합니다!"</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- 한 줄 요약 -->
+  <div class="summary-box">
+    <div class="label">핵심 정리</div>
+    <span class="hl-blue">수식의 구간</span> = 표본마다 움직이는 확률변수 &nbsp;(그물 제조 기계)<br>
+    <span class="hl-orange">계산된 구간</span> = 고정된 실숫값 &nbsp;(실제로 던진 그물 하나)<br>
+    <span class="hl-green">신뢰수준 95%</span> = 그 구간 자체의 확률이 아니라,<br>
+    그 구간을 만든 <strong>방법의 장기적 성공률</strong>
+  </div>
+
+</div>
+</body>
+</html>
