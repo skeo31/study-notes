@@ -19,9 +19,16 @@
     { "file": "5-4-3.html", "title": "10.naive bayes classification 연속확률 복습" },
     { "file": "11-1.html", "title": "11.자료의 정리와 요약" },
     { "file": "11-2.html", "title": "11.변동 계수 예제" },
-    { "file": "12-1.html", "title": "12.통계적 추정" },
-    { "file": "12-2.html", "title": "12.모평균의 추정(5.2, 5.3과 연결)" },
-    { "file": "12-3-1.html", "title": "12.추정량의 성질: 불편성vs일치성" }
+    { "file": "a0.html", "title": "12.통계적 추정" },
+    { "file": "a.html", "title": "12.unbias와 consistency 비교" },
+    { "file": "b.html", "title": "12.구간 추정의 의미" },
+    { "file": "c.html", "title": "12.모평균의 추정(5.2표본평균의 분포, 5.3여러가지 표본분포 연결)" },  
+    { "file": "d.html", "title": "12.점추정vs구간추정(표본집단이 하나일 때)" },
+    { "file": "e.html", "title": "12.점추정vs구간추정(표본집단이 여럿일 때)" },
+    { "file": "f.html", "title": "13.모비율의 추정(5.5표본비율 분포와 연결)" },    
+    { "file": "g.html", "title": "13.모분산의 추정" },
+    { "file": "h.html", "title": "13.표본크기의 결정" },    
+    { "file": "i.html", "title": "13.총정리(6장) 추정이론과 신호처리의 연결" }
   ],
   
   "calc":[
