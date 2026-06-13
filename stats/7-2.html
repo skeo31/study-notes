@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>귀무가설 설정의 원칙</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+  // MathJax config
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['$$','$$'],['\\[','\\]']] },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+  :root {
+    --ink:       #1a1a2e;
+    --ink-mid:   #2d2d4e;
+    --paper:     #faf8f3;
+    --cream:     #f2ede3;
+    --rule:      #d4c9b0;
+    --accent:    #c0392b;
+    --accent2:   #1a6b8a;
+    --accent3:   #27793a;
+    --gold:      #b5830a;
+    --highlight: #fff3cd;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 20px;
+    line-height: 1.85;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 48px 100px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-top: 6px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 36px 0 28px;
+    margin-bottom: 56px;
+    position: relative;
+  }
+  header .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2.6rem;
+    font-weight: 900;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  header h1 span { color: var(--accent); }
+  header .subtitle {
+    margin-top: 12px;
+    font-size: 17px;
+    color: #666;
+    font-weight: 300;
+  }
+
+  /* ── SECTION ── */
+  section { margin-bottom: 56px; }
+
+  h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--ink);
+    padding-bottom: 10px;
+    border-bottom: 2.5px solid var(--ink);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h2 .num {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  p { margin-bottom: 18px; font-size: 20px; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 5px solid var(--accent2);
+    background: #eef6fb;
+    padding: 20px 24px;
+    margin: 28px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 20px;
+  }
+  .callout.gold {
+    border-left-color: var(--gold);
+    background: var(--highlight);
+  }
+  .callout.red {
+    border-left-color: var(--accent);
+    background: #fdf0ef;
+  }
+  .callout strong {
+    display: block;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .callout.gold strong { color: var(--gold); }
+  .callout.red strong  { color: var(--accent); }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; margin: 28px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 19px;
+  }
+  thead tr {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  thead th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: 0.03em;
+  }
+  tbody tr { border-bottom: 1px solid var(--rule); }
+  tbody tr:nth-child(even) { background: var(--cream); }
+  tbody td {
+    padding: 13px 20px;
+    vertical-align: middle;
+  }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+  .tag-양측 { background: #dbeafe; color: #1e40af; }
+  .tag-우측 { background: #dcfce7; color: #166534; }
+  .tag-좌측 { background: #fce7f3; color: #9d174d; }
+
+  /* ── MATH BLOCK ── */
+  .math-block {
+    background: var(--cream);
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 22px 28px;
+    margin: 24px 0;
+    text-align: center;
+    font-size: 1.15em;
+    overflow-x: auto;
+  }
+
+  /* ── VERDICT TABLE ── */
+  .verdict-table { width: 100%; border-collapse: collapse; font-size: 18px; margin-top: 20px; }
+  .verdict-table th {
+    background: var(--ink-mid);
+    color: var(--paper);
+    padding: 12px 18px;
+    text-align: left;
+  }
+  .verdict-table td { padding: 13px 18px; border-bottom: 1px solid var(--rule); }
+  .verdict-table tr:nth-child(even) td { background: var(--cream); }
+  .ok  { color: var(--accent3); font-weight: 700; font-size: 1.2em; }
+  .warn { color: var(--gold); font-weight: 700; font-size: 1.2em; }
+
+  /* ── LIST ── */
+  ol.styled { padding-left: 0; list-style: none; counter-reset: item; }
+  ol.styled li {
+    counter-increment: item;
+    padding: 12px 0 12px 52px;
+    position: relative;
+    border-bottom: 1px dashed var(--rule);
+    font-size: 20px;
+  }
+  ol.styled li::before {
+    content: counter(item);
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 32px; height: 32px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+  }
+  ol.styled li strong { color: var(--accent2); }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 72px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+    font-size: 14px;
+    color: #888;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { padding: 30px 40px; font-size: 16px; }
+    header h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="label">통계학 수업자료 · 가설 검정</div>
+  <h1>귀무가설 설정의 <span>원칙</span></h1>
+  <div class="subtitle">"등호를 넣을 수 있는 주장을 귀무가설로 하라" — 이 말은 얼마나 맞는가?</div>
+</header>
+
+<!-- 1 -->
+<section>
+  <h2><span class="num">01</span> 핵심 명제: "등호를 포함하는 쪽"</h2>
+  <p>
+    일부 교재에서 "<strong>말의 뜻으로 보아 등호를 넣을 수 있는 주장을 귀무가설로 하라</strong>"고 기술합니다.
+    이 표현은 <strong>실용적으로 꽤 맞는 말</strong>입니다. 다만, 왜 그런지 근본 이유를 이해하는 것이 중요합니다.
+  </p>
+  <div class="callout gold">
+    <strong>결론 미리보기</strong>
+    이 규칙은 좋은 <em>암기 규칙</em>이지만, 수학적·철학적 이유를 생략한 요약입니다.
+    이면에 있는 진짜 이유까지 함께 이해해야 합니다.
+  </div>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2><span class="num">02</span> 왜 귀무가설에 등호가 들어가는가?</h2>
+  <p>가설 검정의 논리 구조는 <strong>반증(falsification)</strong>에 기반합니다.</p>
+
+  <div class="callout">
+    <strong>검정의 핵심 질문</strong>
+    "귀무가설이 참이라고 <em>가정했을 때</em>, 관측된 데이터가 나올 확률(p-값)이 얼마나 되는가?"
+  </div>
+
+  <p>
+    이 계산을 하려면 <strong>귀무가설 하에서 검정통계량의 분포를 정확히 특정</strong>해야 합니다.
+    등호(\(=\), \(\le\), \(\ge\))가 있어야 특정 값을 고정하고 분포를 계산할 수 있습니다.
+  </p>
+
+  <div class="callout red">
+    <strong>반례: 등호 없이는 분포를 특정할 수 없다</strong>
+    귀무가설이 \(\mu > 5\) 라면, "어느 값"을 기준으로 검정통계량의 분포를 세울지 결정할 수 없습니다.
+    \(\mu = 5\)처럼 고정된 값이 있어야 기준 분포가 결정됩니다.
+  </div>
+
+  <div class="math-block">
+    $$H_0: \mu = \mu_0 \quad \Rightarrow \quad T = \frac{\bar{X} - \mu_0}{S/\sqrt{n}} \sim t(n-1)$$
+    <br>
+    <span style="font-size:17px; color:#555;">귀무가설이 \(\mu_0\)를 특정해야 \(T\)의 분포가 결정된다.</span>
+  </div>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2><span class="num">03</span> 등호 포함 여부와 가설 구조</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>귀무가설 \(H_0\)</th>
+          <th>대립가설 \(H_1\)</th>
+          <th>검정 종류</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>\(\mu = \mu_0\)</td>
+          <td>\(\mu \neq \mu_0\)</td>
+          <td><span class="tag tag-양측">양측 검정</span></td>
+        </tr>
+        <tr>
+          <td>\(\mu \le \mu_0\)</td>
+          <td>\(\mu > \mu_0\)</td>
+          <td><span class="tag tag-우측">단측 검정 (우측)</span></td>
+        </tr>
+        <tr>
+          <td>\(\mu \ge \mu_0\)</td>
+          <td>\(\mu < \mu_0\)</td>
+          <td><span class="tag tag-좌측">단측 검정 (좌측)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>\(H_0\)에는 항상 \(=\), \(\le\), \(\ge\) 중 하나가 포함됩니다. \(H_1\)에는 <strong>절대 등호가 없습니다.</strong></p>
+</section>
+
+<!-- 4 -->
+<section>
+  <h2><span class="num">04</span> "등호" 규칙의 한계 — 진짜 기준 3가지</h2>
+  <p>등호 포함 여부는 결과이지 원인이 아닙니다. 귀무가설 설정의 진짜 기준은 다음 세 가지입니다.</p>
+
+  <ol class="styled">
+    <li>
+      <strong>증명하고 싶은 것의 반대를 \(H_0\)로 설정합니다.</strong><br>
+      연구자가 주장하고 싶은 것은 대립가설 \(H_1\)에 넣고,
+      귀무가설은 그것을 부정하는 쪽입니다.
+      가설 검정은 \(H_1\)을 직접 증명하는 것이 아니라,
+      \(H_0\)를 기각함으로써 간접 지지합니다.
+    </li>
+    <li>
+      <strong>현상 유지 / 기존 믿음 / 차이 없음이 \(H_0\)입니다.</strong><br>
+      "효과 없다", "차이 없다", "기존과 같다"가 전형적인 귀무가설입니다.
+      새로운 주장을 하려면 \(H_0\)를 깨뜨리는 증거를 보여야 합니다.
+    </li>
+    <li>
+      <strong>오류 비용 구조도 영향을 줍니다.</strong><br>
+      1종 오류(\(H_0\)를 틀리게 기각)를 엄격히 통제해야 할 쪽을 \(H_0\)로 설정합니다.
+      예: 신약 효능 검정에서 "효능 없음"을 \(H_0\)로 — 효능 없는 약을 승인하는 오류를 막기 위함.
+    </li>
+  </ol>
+</section>
+
+<!-- 5 -->
+<section>
+  <h2><span class="num">05</span> 최종 평가</h2>
+
+  <table class="verdict-table">
+    <thead>
+      <tr><th>관점</th><th>평가</th><th>비고</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"등호가 있는 쪽을 \(H_0\)로"</td>
+        <td><span class="ok">✔ 맞음</span></td>
+        <td>결과적으로 거의 항상 성립</td>
+      </tr>
+      <tr>
+        <td>근본 이유를 설명하는가</td>
+        <td><span class="warn">△ 불완전</span></td>
+        <td>수학적·철학적 이유를 생략한 규칙</td>
+      </tr>
+      <tr>
+        <td>실용적 암기 규칙으로서</td>
+        <td><span class="ok">✔ 충분히 유용</span></td>
+        <td>시험·실무에서 빠른 판단에 도움</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout gold" style="margin-top: 32px;">
+    <strong>최종 정리</strong>
+    <strong>"등호를 넣을 수 있는 주장을 \(H_0\)로"</strong>라는 표현은 좋은 실용적 규칙입니다.
+    그러나 그 이면에는 <em>검정통계량 분포의 특정 가능성</em>과
+    <em>반증의 논리 구조</em>라는 더 깊은 이유가 있습니다.
+    규칙과 이유를 함께 이해할 때 가설 검정을 올바르게 적용할 수 있습니다.
+  </div>
+</section>
+
+<footer>
+  <span>통계학 수업자료</span>
+  <span>가설 검정 · 귀무가설 설정 원칙</span>
+</footer>
+
+</body>
+</html>
