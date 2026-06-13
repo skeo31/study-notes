@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>혼동행렬 & 오류 유형 비교</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-50: #E1F5EE; --teal-100: #9FE1CB; --teal-600: #0F6E56; --teal-800: #085041;
+    --coral-50: #FAECE7; --coral-100: #F5C4B3; --coral-600: #993C1D; --coral-800: #712B13;
+    --amber-50: #FAEEDA; --amber-100: #FAC775; --amber-600: #854F0B; --amber-800: #633806;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-400: #888780; --gray-600: #5F5E5A; --gray-800: #444441;
+    --purple-50: #EEEDFE; --purple-800: #3C3489;
+    --bg: #f8f7f2;
+    --text: #1a1a18;
+    --text-sub: #5F5E5A;
+    --border: rgba(0,0,0,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.6;
+    padding: 48px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .page-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .page-subtitle {
+    font-size: 18px;
+    color: var(--text-sub);
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  /* ── Section ── */
+  .section {
+    margin-bottom: 56px;
+  }
+  .section-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .section-desc {
+    font-size: 17px;
+    color: var(--text-sub);
+    margin-bottom: 24px;
+  }
+
+  /* ── Matrix grid ── */
+  .matrix-wrap {
+    display: grid;
+    grid-template-columns: 140px 1fr 1fr;
+    grid-template-rows: 60px 1fr 1fr;
+    gap: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    background: white;
+  }
+
+  .matrix-corner { background: transparent; }
+
+  .col-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 12px;
+    background: var(--gray-50);
+    border-bottom: 2px solid var(--border);
+    border-left: 2px solid var(--border);
+    color: var(--gray-800);
+  }
+  .col-header:first-of-type { border-left: none; }
+
+  .row-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 16px 8px;
+    background: var(--gray-50);
+    border-top: 2px solid var(--border);
+    border-right: 2px solid var(--border);
+    text-align: center;
+    writing-mode: horizontal-tb;
+    color: var(--gray-800);
+    line-height: 1.4;
+  }
+
+  .cell {
+    padding: 24px 20px;
+    border-top: 2px solid var(--border);
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-height: 130px;
+  }
+
+  .cell-title {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .cell-desc {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .cell-label {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+    width: fit-content;
+  }
+
+  /* Cell colors */
+  .cell-tp { background: var(--teal-50); }
+  .cell-tp .cell-title { color: var(--teal-800); }
+  .cell-tp .cell-desc { color: var(--teal-600); }
+  .cell-tp .cell-label { background: var(--teal-100); color: var(--teal-800); }
+
+  .cell-fn { background: var(--amber-50); }
+  .cell-fn .cell-title { color: var(--amber-800); }
+  .cell-fn .cell-desc { color: var(--amber-600); }
+  .cell-fn .cell-label { background: var(--amber-100); color: var(--amber-800); }
+
+  .cell-fp { background: var(--coral-50); }
+  .cell-fp .cell-title { color: var(--coral-800); }
+  .cell-fp .cell-desc { color: var(--coral-600); }
+  .cell-fp .cell-label { background: var(--coral-100); color: var(--coral-800); }
+
+  .cell-tn { background: var(--teal-50); }
+  .cell-tn .cell-title { color: var(--teal-800); }
+  .cell-tn .cell-desc { color: var(--teal-600); }
+  .cell-tn .cell-label { background: var(--teal-100); color: var(--teal-800); }
+
+  /* ── Divider ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0 48px;
+  }
+  .divider hr { flex: 1; border: none; border-top: 2px dashed var(--border); }
+  .divider span { font-size: 15px; color: var(--text-sub); white-space: nowrap; }
+
+  /* ── Legend / Key ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: white;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .legend-dot {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .legend-dot.teal  { background: var(--teal-100); border: 2px solid var(--teal-600); }
+  .legend-dot.coral { background: var(--coral-100); border: 2px solid var(--coral-600); }
+  .legend-dot.amber { background: var(--amber-100); border: 2px solid var(--amber-600); }
+
+  /* ── Tradeoff box ── */
+  .tradeoff {
+    margin-top: 24px;
+    padding: 22px 28px;
+    background: white;
+    border-radius: 12px;
+    border-left: 6px solid var(--gray-400);
+    border-top: 1.5px solid var(--border);
+    border-right: 1.5px solid var(--border);
+    border-bottom: 1.5px solid var(--border);
+  }
+  .tradeoff-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 10px;
+  }
+  .tradeoff p {
+    font-size: 16px;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    line-height: 1.7;
+  }
+  .tradeoff p:last-child { margin-bottom: 0; }
+  .tradeoff strong { color: var(--text); }
+
+  /* ── Comparison table ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 17px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+  }
+  .compare-table th {
+    background: var(--gray-50);
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--gray-800);
+    border-bottom: 2px solid var(--border);
+  }
+  .compare-table td {
+    padding: 14px 18px;
+    border-bottom: 1.5px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:nth-child(even) td { background: var(--gray-50); }
+
+  .tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 20px;
+    margin-right: 4px;
+  }
+  .tag-coral { background: var(--coral-100); color: var(--coral-800); }
+  .tag-amber { background: var(--amber-100); color: var(--amber-800); }
+
+  /* ── Print styles ── */
+  @media print {
+    body { padding: 24px 20px; font-size: 14px; }
+    .page-title { font-size: 26px; }
+    .section-title { font-size: 20px; }
+    .cell-title { font-size: 16px; }
+    .cell-desc { font-size: 13px; }
+    .col-header, .row-header { font-size: 14px; }
+    .compare-table { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">혼동행렬 & 오류 유형 비교</h1>
+<p class="page-subtitle">Confusion Matrix · 1종 오류(α) · 2종 오류(β) — 핵심 개념 정리</p>
+
+<!-- ════════════════════════════════════ SECTION 1 ════ -->
+<div class="section">
+  <h2 class="section-title">① 혼동행렬 (Confusion Matrix)</h2>
+  <p class="section-desc">모델의 <strong>예측(Predicted)</strong> 결과와 <strong>실제(Actual)</strong> 레이블을 교차 분류</p>
+
+  <div class="matrix-wrap">
+    <!-- Row 0: corner + 2 col headers -->
+    <div class="matrix-corner" style="background:var(--gray-50); border-bottom:2px solid var(--border);"></div>
+    <div class="col-header">예측: Positive</div>
+    <div class="col-header">예측: Negative</div>
+
+    <!-- Row 1: header + TP + FN -->
+    <div class="row-header">실제<br>Positive</div>
+    <div class="cell cell-tp">
+      <span class="cell-title">TP (True Positive)</span>
+      <span class="cell-desc">양성을 양성으로 예측</span>
+      <span class="cell-label">✓ 정답</span>
+    </div>
+    <div class="cell cell-fn">
+      <span class="cell-title">FN (False Negative)</span>
+      <span class="cell-desc">양성인데 음성으로 예측</span>
+      <span class="cell-label">2종 오류 (β)</span>
+    </div>
+
+    <!-- Row 2: header + FP + TN -->
+    <div class="row-header">실제<br>Negative</div>
+    <div class="cell cell-fp">
+      <span class="cell-title">FP (False Positive)</span>
+      <span class="cell-desc">음성인데 양성으로 예측</span>
+      <span class="cell-label">1종 오류 (α)</span>
+    </div>
+    <div class="cell cell-tn">
+      <span class="cell-title">TN (True Negative)</span>
+      <span class="cell-desc">음성을 음성으로 예측</span>
+      <span class="cell-label">✓ 정답</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot teal"></span> 올바른 판단 (TP, TN)</div>
+    <div class="legend-item"><span class="legend-dot coral"></span> 1종 오류 (α) — FP: "없는데 있다"고 판단 → 오경보</div>
+    <div class="legend-item"><span class="legend-dot amber"></span> 2종 오류 (β) — FN: "있는데 없다"고 판단 → 누락</div>
+  </div>
+</div>
+
+<div class="divider"><hr><span>통계 검정과의 대응</span><hr></div>
+
+<!-- ════════════════════════════════════ SECTION 2 ════ -->
+<div class="section">
+  <h2 class="section-title">② 통계 검정: 1종 오류 vs 2종 오류</h2>
+  <p class="section-desc"><strong>귀무가설(H₀)</strong>의 실제 참/거짓 여부와 검정 결과의 교차 분류</p>
+
+  <div class="matrix-wrap">
+    <div class="matrix-corner" style="background:var(--gray-50); border-bottom:2px solid var(--border);"></div>
+    <div class="col-header">검정: H₀ 기각</div>
+    <div class="col-header">검정: H₀ 채택</div>
+
+    <div class="row-header">H₀ 실제<br>거짓</div>
+    <div class="cell cell-tp">
+      <span class="cell-title">올바른 기각</span>
+      <span class="cell-desc">효과가 있고, 있다고 판단</span>
+      <span class="cell-label">✓ 검정력 (1−β, Power)</span>
+    </div>
+    <div class="cell cell-fn">
+      <span class="cell-title">2종 오류 (β)</span>
+      <span class="cell-desc">효과가 있는데 없다고 판단</span>
+      <span class="cell-label">미스 (Miss)</span>
+    </div>
+
+    <div class="row-header">H₀ 실제<br>참</div>
+    <div class="cell cell-fp">
+      <span class="cell-title">1종 오류 (α)</span>
+      <span class="cell-desc">효과가 없는데 있다고 판단</span>
+      <span class="cell-label">오경보 (False Alarm)</span>
+    </div>
+    <div class="cell cell-tn">
+      <span class="cell-title">올바른 채택</span>
+      <span class="cell-desc">효과가 없고, 없다고 판단</span>
+      <span class="cell-label">✓ 신뢰수준 (1−α)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ SECTION 3 ════ -->
+<div class="section">
+  <h2 class="section-title">③ 핵심 대응 관계 정리</h2>
+  <p class="section-desc">ML 혼동행렬 용어와 통계 검정 오류의 1:1 매핑</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>오류 유형</th>
+        <th>혼동행렬 (ML)</th>
+        <th>통계 검정</th>
+        <th>실제 사례</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-coral">1종 오류 α</span></td>
+        <td><strong>FP (False Positive)</strong><br>"음성인데 양성으로"</td>
+        <td>H₀가 참인데 기각<br>"효과 없는데 있다고"</td>
+        <td>정상 메일을 스팸 처리<br>무효 신약을 효과 있다고 승인</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">2종 오류 β</span></td>
+        <td><strong>FN (False Negative)</strong><br>"양성인데 음성으로"</td>
+        <td>H₀가 거짓인데 채택<br>"효과 있는데 없다고"</td>
+        <td>암 환자를 정상으로 진단<br>유효 신약을 효과 없다고 기각</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tradeoff">
+    <p class="tradeoff-title">⚖️ 트레이드오프 (Trade-off)</p>
+    <p>1종 오류 ↓ 시도 → 2종 오류 ↑ &nbsp;|&nbsp; Precision ↑ → Recall ↓</p>
+    <p>두 오류는 반드시 트레이드오프 관계입니다. 어느 오류가 더 치명적인지 <strong>도메인에 맞게 균형</strong>을 조정해야 합니다.</p>
+    <p><strong>임계값(Threshold) 조정</strong>(ML) · <strong>유의수준 α & 표본 크기</strong>(통계)로 균형을 제어합니다.</p>
+  </div>
+</div>
+
+</body>
+</html>

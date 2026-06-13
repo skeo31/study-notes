@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검정 · 탐지 · 의사결정의 통일 이론</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+:root {
+  --bg:        #faf9f6;
+  --surface:   #ffffff;
+  --border:    #e2ddd5;
+  --text:      #1a1917;
+  --muted:     #6b6760;
+  --blue:      #185FA5;
+  --blue-lt:   #ddeaf8;
+  --amber:     #8a5200;
+  --amber-lt:  #fef3dc;
+  --teal:      #0a5c44;
+  --teal-lt:   #d4f0e8;
+  --red:       #8b1a1a;
+  --red-lt:    #fde8e8;
+  --purple:    #3d2d8a;
+  --purple-lt: #edeafd;
+  --rule:      #c8c2b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 18px;
+  line-height: 1.85;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ── Page wrapper ── */
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 40px 100px;
+}
+
+/* ── Cover ── */
+.cover {
+  text-align: center;
+  padding: 80px 0 60px;
+  border-bottom: 2px solid var(--rule);
+  margin-bottom: 70px;
+}
+.cover .kicker {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.cover h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+.cover .subtitle {
+  font-size: 20px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* ── Section headers ── */
+.section-num {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+h2 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  margin-bottom: 28px;
+  padding-bottom: 14px;
+  border-bottom: 1.5px solid var(--rule);
+}
+h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 42px 0 16px;
+}
+
+/* ── Body text ── */
+p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+/* ── Callout box ── */
+.callout {
+  border-left: 4px solid var(--blue);
+  background: var(--blue-lt);
+  padding: 20px 24px;
+  border-radius: 0 8px 8px 0;
+  margin: 32px 0;
+  font-size: 18px;
+}
+.callout.amber  { border-color: var(--amber); background: var(--amber-lt); }
+.callout.teal   { border-color: var(--teal);  background: var(--teal-lt);  }
+.callout.red    { border-color: var(--red);   background: var(--red-lt);   }
+.callout.purple { border-color: var(--purple);background: var(--purple-lt);}
+
+.callout strong {
+  display: block;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--blue);
+}
+.callout.amber  strong { color: var(--amber); }
+.callout.teal   strong { color: var(--teal);  }
+.callout.red    strong { color: var(--red);   }
+.callout.purple strong { color: var(--purple);}
+
+/* ── Math display block ── */
+.math-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin: 28px 0;
+  font-size: 20px;
+  text-align: center;
+  overflow-x: auto;
+}
+.math-block .label {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* ── Comparison table ── */
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 32px 0;
+  font-size: 17px;
+}
+.comp-table th {
+  background: var(--text);
+  color: #fff;
+  padding: 14px 18px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 15px;
+}
+.comp-table td {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.comp-table tr:nth-child(even) td { background: #f5f3ef; }
+.comp-table tr:hover td { background: var(--blue-lt); }
+
+/* ── Error type table ── */
+.err-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 32px 0;
+  font-size: 17px;
+  text-align: center;
+}
+.err-table th, .err-table td {
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+}
+.err-table .head-row th { background: var(--text); color: #fff; font-weight: 500; }
+.err-table .row-h { background: #f5f3ef; font-weight: 500; }
+.err-table .ok   { background: var(--teal-lt); color: var(--teal); font-weight: 600; }
+.err-table .alpha-cell { background: var(--blue-lt); color: var(--blue); font-weight: 600; }
+.err-table .beta-cell  { background: var(--amber-lt); color: var(--amber); font-weight: 600; }
+
+/* ── Diagram canvas area ── */
+.fig-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 24px 24px;
+  margin: 36px 0;
+}
+.fig-caption {
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 16px;
+  font-style: italic;
+}
+canvas { display: block; width: 100%; height: auto; }
+
+/* ── Flow diagram ── */
+.flow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 36px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.flow-node {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  min-width: 160px;
+  text-align: center;
+  font-size: 16px;
+}
+.flow-node strong { display: block; font-size: 17px; margin-bottom: 4px; }
+.flow-node.blue   { border-color: var(--blue); background: var(--blue-lt); }
+.flow-node.amber  { border-color: #c8860a; background: var(--amber-lt); }
+.flow-node.teal   { border-color: var(--teal); background: var(--teal-lt); }
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 24px;
+  color: var(--muted);
+  align-self: center;
+}
+
+/* ── Divider ── */
+.sec-divider {
+  border: none;
+  border-top: 1.5px solid var(--rule);
+  margin: 70px 0 60px;
+}
+
+/* ── Highlight span ── */
+.hl-blue   { color: var(--blue); font-weight: 600; }
+.hl-amber  { color: var(--amber); font-weight: 600; }
+.hl-teal   { color: var(--teal); font-weight: 600; }
+.hl-red    { color: var(--red); font-weight: 600; }
+
+/* ── Unify box ── */
+.unify-box {
+  border: 2px solid var(--purple);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin: 36px 0;
+  background: var(--purple-lt);
+}
+.unify-box h4 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 16px;
+}
+.unify-box p { font-size: 17px; margin-bottom: 12px; }
+
+/* ── Page number ── */
+footer {
+  text-align: center;
+  margin-top: 80px;
+  color: var(--muted);
+  font-size: 14px;
+  border-top: 1px solid var(--rule);
+  padding-top: 24px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="kicker">통계학 강의 자료</div>
+  <h1>검정 · 탐지 · 의사결정의<br>통일 이론</h1>
+  <div class="subtitle">Neyman–Pearson 가설 검정을 중심으로</div>
+</div>
+
+
+<!-- ══ SECTION 1 ══ -->
+<div class="section-num">Section 1</div>
+<h2>세 이론은 같은 구조를 공유한다</h2>
+
+<p>
+  통계학에서 배우는 <strong>가설 검정(hypothesis testing)</strong>,
+  공학에서 배우는 <strong>신호 탐지 이론(signal detection theory)</strong>,
+  경제학에서 배우는 <strong>통계적 의사결정 이론(statistical decision theory)</strong>—
+  이 세 이론은 서로 다른 학문에서 독립적으로 발전한 것처럼 보이지만,
+  수학적으로는 <strong>완전히 동일한 구조</strong>를 가지고 있다.
+</p>
+
+<div class="callout">
+  <strong>핵심 직관</strong>
+  세 이론 모두 본질적으로 동일한 질문에 답한다:<br>
+  <em>"관측된 증거(데이터)를 바탕으로, 두 가지 가능성 중 하나를 선택하라."</em>
+</div>
+
+<h3>통일된 구조: 가설 검정 프레임</h3>
+
+<table class="comp-table">
+  <thead>
+    <tr>
+      <th>이론</th>
+      <th>H₀</th>
+      <th>H₁</th>
+      <th>검정통계량</th>
+      <th>결정 규칙</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>통계 검정</strong></td>
+      <td>효과 없음</td>
+      <td>효과 있음</td>
+      <td>t, χ², F</td>
+      <td>p &lt; α → 기각</td>
+    </tr>
+    <tr>
+      <td><strong>신호 탐지</strong></td>
+      <td>신호 없음 (noise only)</td>
+      <td>신호 있음</td>
+      <td>likelihood ratio Λ</td>
+      <td>Λ &gt; β → "있다"</td>
+    </tr>
+    <tr>
+      <td><strong>의사결정</strong></td>
+      <td>현상유지 (act 0)</td>
+      <td>행동 (act 1)</td>
+      <td>expected utility</td>
+      <td>U(act1) &gt; U(act0)</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<hr class="sec-divider">
+
+<!-- ══ SECTION 2 ══ -->
+<div class="section-num">Section 2</div>
+<h2>가설 검정: 원형(原形)</h2>
+
+<p>
+  데이터 \(X\)를 관측한 후, 검정통계량 \(T(X)\)를 임계값 \(c\)와 비교하여 결정한다.
+</p>
+
+<div class="math-block">
+  \[
+  \text{결정 규칙:}\quad
+  T(X) > c \;\Rightarrow\; H_1 \text{ 채택 (H_0 기각)}
+  \]
+  \[
+  T(X) \le c \;\Rightarrow\; H_0 \text{ 유지}
+  \]
+</div>
+
+<h3>두 종류의 오류</h3>
+
+<table class="err-table">
+  <thead class="head-row">
+    <tr>
+      <th></th>
+      <th>실제: H₀ 참</th>
+      <th>실제: H₁ 참</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="row-h">결정: H₀ 채택</td>
+      <td class="ok">✓ 올바른 결정</td>
+      <td class="beta-cell">β (2종 오류)<br><small>miss</small></td>
+    </tr>
+    <tr>
+      <td class="row-h">결정: H₀ 기각</td>
+      <td class="alpha-cell">α (1종 오류)<br><small>false alarm</small></td>
+      <td class="ok">✓ 검정력 (1−β)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout red">
+  <strong>Trade-off</strong>
+  임계값 \(c\)를 올리면 \(\alpha \downarrow\) 이지만 \(\beta \uparrow\).<br>
+  임계값 \(c\)를 내리면 \(\alpha \uparrow\) 이지만 \(\beta \downarrow\).<br>
+  두 오류를 동시에 줄이는 것은 불가능하다 — 표본 크기를 늘리는 수밖에 없다.
+</div>
+
+<h3>H₀ · H₁ 분포와 기각역 (교과서 그림)</h3>
+
+<div class="fig-wrap">
+  <canvas id="distCanvas" width="820" height="420"></canvas>
+  <div class="fig-caption">
+    그림 1. H₀ 분포(파란색)와 H₁ 분포(주황색)를 나란히 그린 그래프.<br>
+    임계값 <em>c</em>를 기준으로 α(1종 오류)와 β(2종 오류) 영역이 겹쳐 나타난다.
+  </div>
+</div>
+
+<h3>교과서 그림과 LRT의 연결</h3>
+
+<p>
+  아래 그림은 <strong>같은 x축</strong> 위에 두 패널을 나란히 보여준다.
+  위 패널(분포 공간)의 임계값 <em>c</em>와 아래 패널(LRT 공간)의 임계값 <em>η</em>는
+  수직 점선으로 연결되어 있다 — 동일한 경계의 두 가지 표현이다.
+</p>
+
+<div class="fig-wrap">
+  <canvas id="lrtCanvas" width="820" height="640"></canvas>
+  <div class="fig-caption">
+    그림 2. 위 패널: 교과서 분포 그림. 아래 패널: 동일 x에서의 Λ(x) = p(x|H₁)/p(x|H₀) 곡선.<br>
+    수직 점선은 <em>c</em>(분포 공간 임계값)와 <em>η</em>(LRT 임계값)가 <strong>같은 경계</strong>임을 보여준다.
+  </div>
+</div>
+
+
+<hr class="sec-divider">
+
+<!-- ══ SECTION 3 ══ -->
+<div class="section-num">Section 3</div>
+<h2>LRT와 교과서 검정의 관계</h2>
+
+<p>
+  교과서의 그림은 <em>"임계값 c를 어디에 그어야 하는가?"</em>라는 질문에 직접 답하지 않는다.
+  단지 <em>"α = 0.05가 되도록"</em>이라고만 한다.
+  Neyman–Pearson 보조정리(Lemma)가 이 결정을 수학적으로 정당화한다.
+</p>
+
+<div class="callout purple">
+  <strong>Neyman–Pearson 보조정리</strong>
+  주어진 유의수준 \(\alpha\) 하에서 검정력 \(1 - \beta\)를 <em>최대화</em>하는 최적 기각역은 반드시 다음 형태이다:
+  \[C^* = \{x : \Lambda(x) > \eta\}\]
+  여기서 \(\Lambda(x) = \dfrac{p(x \mid H_1)}{p(x \mid H_0)}\) 는 <strong>likelihood ratio</strong>이고,
+  \(\eta\)는 \(\alpha\) 조건을 만족하도록 결정되는 임계값이다.
+</div>
+
+<h3>정규분포 예시: 동치 관계</h3>
+
+<p>
+  \(H_0: \mu = 0\), \(H_1: \mu = \mu_1 > 0\), 분산 \(\sigma^2\) 기지(旣知)일 때:
+</p>
+
+<div class="math-block">
+  \[
+  \Lambda(x) = \frac{p(x \mid H_1)}{p(x \mid H_0)}
+  = \frac{\exp\!\bigl(-\tfrac{(x-\mu_1)^2}{2\sigma^2}\bigr)}
+         {\exp\!\bigl(-\tfrac{x^2}{2\sigma^2}\bigr)}
+  \]
+  <br>
+  \[
+  \log \Lambda(x) = \frac{\mu_1}{\sigma^2}\,x \;-\; \frac{\mu_1^2}{2\sigma^2}
+  \]
+  <div class="label">
+    \(\log \Lambda(x) > \log\eta\)는 \(x > c\)와 동치 — 같은 기각역이다.
+  </div>
+</div>
+
+<table class="comp-table">
+  <thead>
+    <tr>
+      <th>교과서 언어</th>
+      <th>LRT 언어</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>임계값 \(c\) 오른쪽을 기각역으로</td>
+      <td>\(\Lambda(x) > \eta\)를 기각역으로</td>
+    </tr>
+    <tr>
+      <td>\(\alpha = 0.05\)가 되도록 \(c\) 결정</td>
+      <td>\(\alpha = 0.05\)가 되도록 \(\eta\) 결정</td>
+    </tr>
+    <tr>
+      <td>기각역 \(= \{x : T(x) > c\}\)</td>
+      <td>기각역 \(= \{x : \Lambda(x) > \eta\}\)</td>
+    </tr>
+    <tr>
+      <td>단순 가설에서만 직관적</td>
+      <td>복합 가설·다차원으로 일반화 가능</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout teal">
+  <strong>핵심 결론</strong>
+  교과서 그림에서 <em>"c를 여기에 긋는다"</em>는 행위는,
+  LRT에서 <em>"η를 이 값으로 정한다"</em>는 것과 <strong>수학적으로 완전히 동일</strong>하다.
+  교과서 그림은 LRT라는 일반 이론의 1차원 단면이다.
+</div>
+
+
+<hr class="sec-divider">
+
+<!-- ══ SECTION 4 ══ -->
+<div class="section-num">Section 4</div>
+<h2>세 이론을 검정 이론으로 통합 설명</h2>
+
+<h3>① 신호 탐지 이론 (SDT) = LRT의 재해석</h3>
+
+<p>
+  신호 탐지 이론은 Neyman–Pearson 보조정리를 <em>그대로</em> 사용한다.
+  레이더, 진단 검사, 인간 지각 등에서:
+</p>
+
+<div class="math-block">
+  \[
+  \Lambda(x) = \frac{p(x \mid \text{신호 있음})}{p(x \mid \text{신호 없음})} > \eta
+  \;\Rightarrow\; \text{"탐지"}
+  \]
+</div>
+
+<table class="comp-table">
+  <thead>
+    <tr><th>검정 이론 용어</th><th>신호 탐지 이론 용어</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>검정력 \(1 - \beta\)</td><td>Hit rate (민감도)</td></tr>
+    <tr><td>1종 오류 \(\alpha\)</td><td>False Alarm rate</td></tr>
+    <tr><td>\(\eta\)를 변화</td><td>ROC 곡선 추적</td></tr>
+    <tr><td>Effect size</td><td>\(d'\) (민감도 지수)</td></tr>
+  </tbody>
+</table>
+
+<div class="callout amber">
+  <strong>ROC 곡선의 정체</strong>
+  임계값 \(\eta\)를 \(0\)에서 \(\infty\)로 변화시킬 때,
+  \(\bigl(\alpha(\eta),\; 1-\beta(\eta)\bigr)\)의 궤적이 바로 <strong>ROC 곡선</strong>이다.
+  검정의 power curve와 수학적으로 동일한 객체이다.
+</div>
+
+<h3>② 통계적 의사결정 이론 = LRT + 손실함수</h3>
+
+<p>
+  검정은 오류의 <em>확률</em>만 보지만, 의사결정 이론은 오류의 <em>비용(손실)</em>까지 고려한다.
+  베이즈 최적 결정 규칙:
+</p>
+
+<div class="math-block">
+  \[
+  \Lambda(x) > \eta^* \;\Rightarrow\; H_1 \text{ 선택}
+  \]
+  \[
+  \eta^* = \frac{C(H_0 \text{ 기각} \mid H_0 \text{ 참}) \cdot P(H_0)}
+               {C(H_1 \text{ 기각} \mid H_1 \text{ 참}) \cdot P(H_1)}
+  = \frac{\text{1종 오류의 비용}}{\text{2종 오류의 비용}}
+  \]
+  <div class="label">
+    사전확률과 손실함수가 최적 임계값 \(\eta^*\)를 결정한다.
+  </div>
+</div>
+
+<table class="comp-table">
+  <thead>
+    <tr><th>검정 이론 요소</th><th>의사결정 이론 대응</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>유의수준 \(\alpha\)</td><td>1종 오류의 비용</td></tr>
+    <tr><td>검정력 \(1 - \beta\)</td><td>2종 오류 회피의 가치</td></tr>
+    <tr><td>임계값 \(c\)</td><td>비용 비율로 결정되는 \(\eta^*\)</td></tr>
+    <tr><td>사전 확률 없음</td><td>베이즈 결정: \(P(H_0)\), \(P(H_1)\) 포함</td></tr>
+  </tbody>
+</table>
+
+<h3>전체 계보</h3>
+
+<div class="flow">
+  <div class="flow-node blue">
+    <strong>Neyman–Pearson 검정</strong>
+    Λ(x) &gt; η<br>
+    <small>α 고정 → β 최소화</small>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node amber">
+    <strong>신호 탐지 이론</strong>
+    ROC 곡선<br>
+    <small>η 변화 → (α, 1−β) 궤적</small>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node teal">
+    <strong>통계적 의사결정</strong>
+    손실함수 + 사전확률<br>
+    <small>η* = 비용 비율</small>
+  </div>
+</div>
+
+<div class="unify-box">
+  <h4>통합 원리</h4>
+  <p>
+    세 이론의 <strong>핵심 검정통계량은 모두 likelihood ratio</strong> \(\Lambda(x)\)이다.
+  </p>
+  <p>
+    차이는 단지 <em>임계값을 어떻게 정하는가</em>뿐이다:
+  </p>
+  <p>
+    &nbsp;&nbsp;• <span class="hl-blue">검정</span>은 유의수준 \(\alpha\)로 정한다.<br>
+    &nbsp;&nbsp;• <span class="hl-amber">탐지</span>는 ROC 곡선 위의 운용점으로 정한다.<br>
+    &nbsp;&nbsp;• <span class="hl-teal">의사결정</span>은 손실함수와 사전확률로 최적화한다.
+  </p>
+</div>
+
+
+<footer>
+  통계학 강의 자료 &mdash; 검정 · 탐지 · 의사결정의 통일 이론
+</footer>
+
+</div><!-- .page -->
+
+<!-- ══ CANVAS DRAWING SCRIPT ══ -->
+<script>
+window.addEventListener('load', function() {
+  const canvas = document.getElementById('distCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const mu0 = 0, mu1 = 2.6, sigma = 1.0;
+  const crit = 1.4;
+
+  const padL = 70, padR = 50, padT = 70, padB = 90;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const xMin = -3.8, xMax = 6.3;
+  const yMax = 0.46;
+
+  function xc(x) { return padL + (x - xMin) / (xMax - xMin) * plotW; }
+  function yc(y) { return padT + plotH - y / yMax * plotH; }
+  function normal(x, mu) {
+    return Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI));
+  }
+
+  function fillRegion(x0, x1, mu, color) {
+    ctx.beginPath();
+    const sx = Math.max(x0, xMin), ex = Math.min(x1, xMax);
+    ctx.moveTo(xc(sx), yc(0));
+    for (let i = 0; i <= 400; i++) {
+      const x = sx + (ex - sx) * i / 400;
+      ctx.lineTo(xc(x), yc(normal(x, mu)));
+    }
+    ctx.lineTo(xc(ex), yc(0));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  function drawCurve(mu, color) {
+    ctx.beginPath();
+    for (let i = 0; i <= 600; i++) {
+      const x = xMin + (xMax - xMin) * i / 600;
+      const y = normal(x, mu);
+      if (i === 0) ctx.moveTo(xc(x), yc(y));
+      else ctx.lineTo(xc(x), yc(y));
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.8;
+    ctx.stroke();
+  }
+
+  // Filled regions
+  fillRegion(crit, xMax, mu0, 'rgba(24,95,165,0.28)');   // alpha
+  fillRegion(xMin, crit, mu1, 'rgba(186,117,23,0.30)');  // beta
+  fillRegion(crit, xMax, mu1, 'rgba(10,92,68,0.16)');    // power
+
+  // Curves
+  drawCurve(mu0, '#185FA5');
+  drawCurve(mu1, '#8a5200');
+
+  // Critical line
+  ctx.setLineDash([8, 5]);
+  ctx.beginPath();
+  ctx.moveTo(xc(crit), padT - 14);
+  ctx.lineTo(xc(crit), yc(0) + 8);
+  ctx.strokeStyle = '#8b1a1a';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // X axis
+  ctx.beginPath();
+  ctx.moveTo(padL, yc(0));
+  ctx.lineTo(W - padR, yc(0));
+  ctx.strokeStyle = '#b4b2a9';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  // Labels: H0
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 18px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#185FA5';
+  ctx.fillText('H₀ 분포 (μ = μ₀)', xc(mu0), padT - 26);
+
+  // Labels: H1
+  ctx.fillStyle = '#8a5200';
+  ctx.fillText('H₁ 분포 (μ = μ₁)', xc(mu1), padT - 26);
+
+  // Critical value label
+  ctx.font = 'bold 17px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#8b1a1a';
+  ctx.fillText('c (임계값)', xc(crit), yc(0) + 24);
+
+  // μ₀ and μ₁ ticks
+  ctx.font = '15px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#6b6760';
+  ctx.fillText('μ₀', xc(mu0), yc(0) + 22);
+  ctx.fillText('μ₁', xc(mu1), yc(0) + 22);
+
+  // α label inside alpha region
+  ctx.font = 'bold 20px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#185FA5';
+  ctx.fillText('α', xc(crit + 0.52), yc(0.026));
+  ctx.font = '14px "Noto Sans KR", sans-serif';
+  ctx.fillText('(1종 오류)', xc(crit + 0.52), yc(0.026) + 20);
+
+  // β label
+  ctx.font = 'bold 20px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#8a5200';
+  ctx.fillText('β', xc(crit - 0.62), yc(0.042));
+  ctx.font = '14px "Noto Sans KR", sans-serif';
+  ctx.fillText('(2종 오류)', xc(crit - 0.62), yc(0.042) + 20);
+
+  // 1-β label
+  ctx.font = 'bold 17px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#0a5c44';
+  ctx.fillText('1−β (검정력)', xc(mu1 + 1.05), yc(0.062));
+
+  // Legend at bottom
+  const lgY = H - 18;
+  const items = [
+    { color: 'rgba(24,95,165,0.38)', label: 'α: 1종 오류 (false alarm)' },
+    { color: 'rgba(186,117,23,0.40)', label: 'β: 2종 오류 (miss)' },
+    { color: 'rgba(10,92,68,0.30)', label: '1−β: 검정력 (power)' },
+  ];
+  ctx.font = '15px "Noto Sans KR", sans-serif';
+  ctx.textAlign = 'left';
+  let lgX = padL;
+  items.forEach(item => {
+    ctx.fillStyle = item.color;
+    ctx.fillRect(lgX, lgY - 14, 18, 14);
+    ctx.strokeStyle = '#b4b2a9';
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(lgX, lgY - 14, 18, 14);
+    ctx.fillStyle = '#6b6760';
+    ctx.fillText(item.label, lgX + 24, lgY - 2);
+    lgX += ctx.measureText(item.label).width + 52;
+  });
+});
+// ── LRT linked figure (log-scale) ──
+window.addEventListener('load', function() {
+  const canvas = document.getElementById('lrtCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const mu0 = 0, mu1 = 2.6, sigma = 1.0, crit = 1.4;
+  const xMin = -3.8, xMax = 6.3;
+
+  const padL = 90, padR = 130, gap = 60;
+  const topH = 230, botH = 200;
+  const padTop = 58;
+  const plotW = W - padL - padR;
+
+  const top1 = padTop + topH;
+  const bot0 = top1 + gap;
+  const bot1 = bot0 + botH;
+  const yMaxDist = 0.46;
+
+  function Lambda(x) {
+    return Math.exp((mu1 / (sigma * sigma)) * x - (mu1 * mu1) / (2 * sigma * sigma));
+  }
+  function logL(x) {
+    return (mu1 / (sigma * sigma)) * x - (mu1 * mu1) / (2 * sigma * sigma);
+  }
+  const logEta = logL(crit);
+
+  // log scale y-range for bottom panel: logL is linear in x
+  // Set range so logEta sits at 45% from bottom
+  const logAtLeft  = logL(xMin);
+  const logAtRight = logL(xMax);
+  const span = logAtRight - logAtLeft;
+  const logYmin = logAtLeft  - span * 0.12;
+  const logYmax = logAtRight + span * 0.12;
+
+  function xc(x)    { return padL + (x - xMin) / (xMax - xMin) * plotW; }
+  function ycTop(y) { return top1 - (y / yMaxDist) * topH; }
+  function ycBot(v) { return bot1 - (v - logYmin) / (logYmax - logYmin) * botH; }
+
+  function normal(x, mu) {
+    return Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI));
+  }
+
+  // ── TOP PANEL ──
+  function fillR(x0, x1, mu, col) {
+    ctx.beginPath();
+    const sx = Math.max(x0, xMin), ex = Math.min(x1, xMax);
+    ctx.moveTo(xc(sx), ycTop(0));
+    for (let i = 0; i <= 400; i++) {
+      const x = sx + (ex - sx) * i / 400;
+      ctx.lineTo(xc(x), ycTop(normal(x, mu)));
+    }
+    ctx.lineTo(xc(ex), ycTop(0));
+    ctx.closePath(); ctx.fillStyle = col; ctx.fill();
+  }
+  fillR(crit, xMax, mu0, 'rgba(24,95,165,0.28)');
+  fillR(xMin, crit, mu1, 'rgba(186,117,23,0.30)');
+  fillR(crit, xMax, mu1, 'rgba(10,92,68,0.16)');
+
+  function drawN(mu, col) {
+    ctx.beginPath();
+    for (let i = 0; i <= 600; i++) {
+      const x = xMin + (xMax - xMin) * i / 600;
+      if (i === 0) ctx.moveTo(xc(x), ycTop(normal(x, mu)));
+      else         ctx.lineTo(xc(x), ycTop(normal(x, mu)));
+    }
+    ctx.strokeStyle = col; ctx.lineWidth = 2.6; ctx.stroke();
+  }
+  drawN(mu0, '#185FA5'); drawN(mu1, '#8a5200');
+
+  ctx.beginPath(); ctx.moveTo(padL, top1); ctx.lineTo(W - padR, top1);
+  ctx.strokeStyle = '#b4b2a9'; ctx.lineWidth = 1.2; ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 16px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#185FA5'; ctx.fillText('H\u2080 \uBD84\uD3EC (\u03BC\u2080)', xc(mu0), padTop - 12);
+  ctx.fillStyle = '#8a5200'; ctx.fillText('H\u2081 \uBD84\uD3EC (\u03BC\u2081)', xc(mu1), padTop - 12);
+
+  ctx.font = 'bold 18px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#185FA5'; ctx.fillText('\u03B1', xc(crit + 0.50), ycTop(0.022));
+  ctx.font = '13px "Noto Sans KR", sans-serif';
+  ctx.fillText('(1\uC885 \uC624\uB958)', xc(crit + 0.50), ycTop(0.022) + 18);
+
+  ctx.font = 'bold 18px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#8a5200'; ctx.fillText('\u03B2', xc(crit - 0.60), ycTop(0.038));
+  ctx.font = '13px "Noto Sans KR", sans-serif';
+  ctx.fillText('(2\uC885 \uC624\uB958)', xc(crit - 0.60), ycTop(0.038) + 18);
+
+  ctx.font = 'bold 14px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#0a5c44'; ctx.fillText('1\u2212\u03B2 (\uAC80\uC815\uB825)', xc(mu1 + 1.0), ycTop(0.052));
+
+  ctx.font = '14px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#6b6760';
+  ctx.fillText('\u03BC\u2080', xc(mu0), top1 + 18);
+  ctx.fillText('\u03BC\u2081', xc(mu1), top1 + 18);
+
+  ctx.textAlign = 'left'; ctx.font = '13px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#9a9490'; ctx.fillText('\u2460 \uBD84\uD3EC \uACF5\uAC04', padL, padTop - 12);
+
+  // ── BOTTOM PANEL: log Λ(x) — straight line on log scale ──
+
+  // Shade between curve and log-eta: left (H0, amber), right (H1, purple)
+  // Left of c: curve is BELOW log-eta line
+  ctx.beginPath();
+  ctx.moveTo(xc(xMin), ycBot(logL(xMin)));
+  for (let i = 1; i <= 300; i++) {
+    const x = xMin + (crit - xMin) * i / 300;
+    ctx.lineTo(xc(x), ycBot(logL(x)));
+  }
+  ctx.lineTo(xc(crit), ycBot(logEta));
+  ctx.lineTo(xc(xMin), ycBot(logEta));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(186,117,23,0.18)'; ctx.fill();
+
+  // Right of c: curve is ABOVE log-eta line
+  ctx.beginPath();
+  ctx.moveTo(xc(crit), ycBot(logEta));
+  for (let i = 0; i <= 300; i++) {
+    const x = crit + (xMax - crit) * i / 300;
+    ctx.lineTo(xc(x), ycBot(logL(x)));
+  }
+  ctx.lineTo(xc(xMax), ycBot(logEta));
+  ctx.lineTo(xc(crit), ycBot(logEta));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(61,45,138,0.16)'; ctx.fill();
+
+  // log Λ(x) — STRAIGHT LINE (because log-scale, normal distributions)
+  ctx.beginPath();
+  ctx.moveTo(xc(xMin), ycBot(logL(xMin)));
+  ctx.lineTo(xc(xMax), ycBot(logL(xMax)));
+  ctx.strokeStyle = '#3d2d8a'; ctx.lineWidth = 2.8; ctx.stroke();
+
+  // log η horizontal threshold line
+  ctx.setLineDash([8, 5]);
+  ctx.beginPath();
+  ctx.moveTo(padL, ycBot(logEta)); ctx.lineTo(W - padR, ycBot(logEta));
+  ctx.strokeStyle = '#8b1a1a'; ctx.lineWidth = 2.0; ctx.stroke();
+  ctx.setLineDash([]);
+
+  // η label
+  ctx.textAlign = 'left'; ctx.font = 'bold 14px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#8b1a1a';
+  ctx.fillText('log \u03B7 = log \u039B(c)', W - padR + 8, ycBot(logEta) - 4);
+  ctx.font = '12px "Noto Sans KR", sans-serif';
+  ctx.fillText('(LRT \uC784\uACC4\uAC12)', W - padR + 8, ycBot(logEta) + 13);
+
+  // Λ = 1 reference line (log Λ = 0)
+  if (logYmin < 0 && logYmax > 0) {
+    ctx.beginPath();
+    ctx.moveTo(padL, ycBot(0)); ctx.lineTo(W - padR, ycBot(0));
+    ctx.strokeStyle = '#d3d1c7'; ctx.lineWidth = 0.8;
+    ctx.setLineDash([3, 4]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.textAlign = 'right'; ctx.font = '11px "Noto Sans KR", sans-serif';
+    ctx.fillStyle = '#b4b2a9'; ctx.fillText('\u039B=1', padL - 4, ycBot(0) + 4);
+  }
+
+  // Bot x-axis and y-axis
+  ctx.beginPath(); ctx.moveTo(padL, bot1); ctx.lineTo(W - padR, bot1);
+  ctx.strokeStyle = '#b4b2a9'; ctx.lineWidth = 1.2; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(padL, bot0); ctx.lineTo(padL, bot1);
+  ctx.strokeStyle = '#b4b2a9'; ctx.lineWidth = 1.0; ctx.stroke();
+
+  // Curve annotation
+  ctx.textAlign = 'left'; ctx.font = 'bold 14px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#3d2d8a';
+  ctx.fillText('log \u039B(x) = log p(x|H\u2081) \u2212 log p(x|H\u2080)', padL + 8, bot0 + 28);
+  ctx.font = '12px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#5f5e8a';
+  ctx.fillText('(\uC815\uADDC\uBD84\uD3EC\uC77C \uB54C \uB2E8\uC870\uC99D\uAC00 \uC9C1\uC120)', padL + 8, bot0 + 46);
+
+  // Region labels — placed between curve and η line
+  const leftMidX  = (xMin + crit) / 2;
+  const rightMidX = crit + (xMax - crit) * 0.45;
+  const leftLY  = (ycBot(logL(leftMidX))  + ycBot(logEta)) / 2;
+  const rightLY = (ycBot(logL(rightMidX)) + ycBot(logEta)) / 2;
+
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 14px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#8a5200';
+  ctx.fillText('log \u039B(x) < log \u03B7', xc(leftMidX), leftLY - 9);
+  ctx.font = '13px "Noto Sans KR", sans-serif';
+  ctx.fillText('\u2192 H\u2080 \uCC44\uD0DD', xc(leftMidX), leftLY + 10);
+
+  ctx.font = 'bold 14px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#3d2d8a';
+  ctx.fillText('log \u039B(x) > log \u03B7', xc(rightMidX), rightLY - 9);
+  ctx.font = '13px "Noto Sans KR", sans-serif';
+  ctx.fillText('\u2192 H\u2081 \uCC44\uD0DD', xc(rightMidX), rightLY + 10);
+
+  // Panel label
+  ctx.textAlign = 'left'; ctx.font = '13px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#9a9490';
+  ctx.fillText('\u2461 LRT \uACF5\uAC04  (log likelihood ratio)', padL, bot0 - 10);
+
+  // Y-axis rotated label
+  ctx.save();
+  ctx.translate(padL - 58, (bot0 + bot1) / 2);
+  ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center';
+  ctx.font = '13px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#3d2d8a';
+  ctx.fillText('log \u039B(x)', 0, 0); ctx.restore();
+
+  // x ticks
+  ctx.textAlign = 'center'; ctx.font = '14px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = '#6b6760';
+  ctx.fillText('x', W - padR + 12, bot1 + 5);
+  ctx.font = '13px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#9a9490';
+  ctx.fillText('\u03BC\u2080', xc(mu0), bot1 + 18);
+  ctx.fillText('\u03BC\u2081', xc(mu1), bot1 + 18);
+
+  // ── Shared vertical line through both panels at x = c ──
+  ctx.setLineDash([9, 5]);
+  ctx.beginPath();
+  ctx.moveTo(xc(crit), padTop - 18); ctx.lineTo(xc(crit), bot1 + 6);
+  ctx.strokeStyle = '#8b1a1a'; ctx.lineWidth = 2.2; ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Between-panel annotation
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 15px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#8b1a1a';
+  ctx.fillText('x = c  (\uC784\uACC4\uAC12)', xc(crit), top1 + gap * 0.38);
+  ctx.font = '12px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#6b6760';
+  ctx.fillText('\u27FA  \u039B(c) = \u03B7', xc(crit), top1 + gap * 0.70);
+
+  ctx.font = 'bold 13px "Noto Sans KR", sans-serif'; ctx.fillStyle = '#8b1a1a';
+  ctx.fillText('c', xc(crit), bot1 + 18);
+
+  // Intersection dot
+  ctx.beginPath(); ctx.arc(xc(crit), ycBot(logEta), 7, 0, Math.PI * 2);
+  ctx.fillStyle = '#8b1a1a'; ctx.fill();
+  ctx.beginPath(); ctx.arc(xc(crit), ycBot(logEta), 7, 0, Math.PI * 2);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5; ctx.stroke();
+});
+</script>
+</body>
+</html>
