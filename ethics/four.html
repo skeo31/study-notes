@@ -1,0 +1,213 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PPT 빈칸채우기 · 정보사회와 사이버 윤리</title>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--panel2:#1e2230;--line:#2a2f3d;--txt:#e7e9ee;--muted:#9aa3b2;--accent:#6ea8fe;--accent2:#7c5cff;--ok:#46c08a;--bad:#ef6a6a;--warn:#e0b341}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;line-height:2}
+.wrap{max-width:860px;margin:0 auto;padding:18px 16px 90px}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,rgba(15,17,21,.98),rgba(15,17,21,.92));backdrop-filter:blur(6px);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+h1{font-size:20px;margin:0 0 4px;font-weight:800;letter-spacing:-.3px}
+.sub{color:var(--muted);font-size:12.5px;margin:0;line-height:1.5}
+.modes{display:flex;gap:8px;margin:12px 0 6px}
+.mode{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:11px;cursor:pointer;font-weight:800;font-size:14px;text-align:center;transition:.12s}
+.mode small{display:block;font-weight:600;font-size:11px;opacity:.8;margin-top:2px}
+.mode.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.btn{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 14px;font-size:13.5px;cursor:pointer;font-weight:700;transition:.12s}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+.btn.ghost{background:transparent}
+.score{margin-left:auto;font-weight:800;font-size:14px}
+.chap{font-size:16px;font-weight:800;color:#fff;margin:22px 0 2px;padding-bottom:6px;border-bottom:2px solid var(--accent2)}
+.sec{font-size:13.5px;font-weight:800;color:var(--accent);margin:16px 0 4px}
+.line{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin:8px 0;font-size:15px}
+.blank{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-bottom:2px solid var(--accent);border-radius:6px;padding:1px 8px;color:var(--txt);font-size:14px;font-family:inherit;text-align:center;min-width:62px;line-height:1.5;margin:0 2px}
+.blank:focus{outline:none;border-color:var(--accent)}
+.blank.correct{border-color:var(--ok);background:rgba(70,192,138,.16);color:#a7e6c9}
+.blank.wrong{border-color:var(--bad);background:rgba(239,106,106,.14);color:#f3b4b4}
+.filled{display:inline-block;color:#b3a0ff;font-weight:700;padding:0 2px}
+.ans{color:var(--ok);font-weight:700}
+.lv2tag{font-size:10px;color:var(--warn);vertical-align:super}
+.footnote{color:var(--muted);font-size:11.5px;text-align:center;margin-top:24px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--accent2);color:#fff;padding:11px 18px;border-radius:30px;font-weight:700;font-size:13.5px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+.toast.show{opacity:1}
+</style></head><body>
+<div class="wrap">
+<header>
+  <h1>📝 PPT 빈칸채우기 · 정보사회와 사이버 윤리</h1>
+  <p class="sub">4·5회독 — 1회독 소논문 본문에서 핵심어 빈칸 뚫기 · 입력 후 채점</p>
+</header>
+
+<div class="modes">
+  <div class="mode active" data-lv="1">4회독 · 기본<small>핵심어만 빈칸</small></div>
+  <div class="mode" data-lv="2">5회독 · 심화 (난도 up)<small>핵심어 + 세부어까지 빈칸</small></div>
+</div>
+
+<div class="bar">
+  <button class="btn primary" id="grade">📝 채점하기</button>
+  <button class="btn" id="reveal">정답 보기</button>
+  <button class="btn ghost" id="reset">다시 풀기</button>
+  <span class="score" id="score"></span>
+</div>
+
+<div id="doc"></div>
+
+<p class="footnote">제Ⅰ장 인공지능이란 무엇인가 · 제Ⅱ장 윤리 인증 · 제Ⅲ장 노동·사회·미래<br>5회독(심화)은 노란 표시 세부어까지 추가로 빈칸 처리됩니다.</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// [[정답]] = 기본 빈칸(lv1), [[정답|2]] = 심화에서만 빈칸(lv2)
+const DATA=[
+{ch:"제Ⅰ장  인공지능이란 무엇인가",sec:"1. 인공지능과 그 변천사 그리고 용어들",lines:[
+"인공지능이란 인간의 [[지능]]을 [[인공적]]으로 구현하는 것을 의미한다.",
+"지능은 [[학습]], [[추론]], [[지각]], 이해 능력 등을 의미한다.",
+"이성은 개념적으로 인지하여 [[합리성|2]]을 추구하고 [[논리적 추론]] 능력을 나타내며, [[시공간]]을 초월하여 사유한다.",
+"감성은 이성에 반대되는 개념으로 대개 어떤 [[경험]]으로부터 나타나며, 자극에 대한 [[지각]]을 바탕으로 [[감정]]이나 느낌을 표현한다.",
+"지성은 사태를 정리·통일하고 새로운 것을 만들어 내는 것으로, 이를 [[문제 해결]] 능력이라고도 부른다.",
+"결과적으로 인공지능이란 인간과 [[구별]]할 수 없는 어떤 것이라고 할 수 있다."
+]},
+{ch:"",sec:"▸ 인공지능의 발전사 (연도)",lines:[
+"1950년 A. 튜링이 '계산하는 기계와 지능'이라는 논문을 발표하며 '기계는 [[생각]]할 수 있는가?'라는 의문을 던졌다.",
+"인공지능(AI)이라는 단어는 [[1956|2]]년 [[다트머스]] 회의에서 J. [[매커시]]에 의해 처음 등장하였다.",
+"1957년 P. [[로젠블라트]]가 [[퍼셉트론]]을 개발하였다.",
+"1980년 J. [[설]]이 'Mind, brain, and programs'를 발표하였다.",
+"1997년 [[딥블루]]가 체스에서 세계챔피언 가리 카스파로프를 꺾었다.",
+"2014년 '[[유진 구스트만]]'이 첫 튜링테스트에 성공하였다.",
+"2016년 구글의 '[[알파고]]'가 이세돌에게 승리하였다."
+]},
+{ch:"",sec:"▸ 인공지능 관련 용어들",lines:[
+"문제 해결을 위한 절차·방법·명령어 등을 통칭하여 [[알고리즘]]이라 한다.",
+"인공 신경망 이론은 1943년 의학자 워렌 [[맥컬록|2]]에 의해 탄생하였다.",
+"[[딥러닝]]은 인공 신경망을 활용해 비정형 데이터를 스스로 학습하며, [[지도]] 학습과 [[비지도]] 학습으로 나뉜다.",
+"학습에 활용되는 큰 규모의 데이터를 [[빅데이터]]라 하며, 잘못된 정보는 결과물의 [[편향성|2]]을 낳는다."
+]},
+{ch:"",sec:"2. 두 가지 이론과 분류",lines:[
+"튜링테스트는 [[흉내내기 게임]](Imitation Game)으로 제시되며, [[심신 이원론]]에 근거한다. (대표 철학자: [[데카르트|2]])",
+"중국어방 논증은 J. [[설]]이 제시했으며 [[심신 일원론]]에 근거한다. (대표 철학자: [[스피노자|2]])",
+"설에 따르면 인간의 언어 이해는 [[의미론]]적이지만, 인공지능의 답변은 [[구문론]]적인 데 그친다.",
+"특정 분야에서만 작동하는 인공지능을 [[약인공지능]](ANI), 인간과 구분할 수 없는 인공지능을 [[강인공지능]](AGI), 인간을 뛰어넘는 인공지능을 [[초지능]](ASI)이라 한다.",
+"약인공지능은 [[중국어방|2]] 논증에, 강인공지능은 [[튜링테스트|2]]에 대응된다.",
+"데이터로 학습하는 가장 넓은 범주가 [[머신러닝]], 신경망을 깊게 쌓은 것이 [[딥러닝]], 새로운 결과물을 만드는 것이 [[생성형 AI]]이다."
+]},
+{ch:"",sec:"3. 현재 AI의 부족한 점",lines:[
+"일상의 기본 현상을 추론할 때 정보를 통합하지 못하는 것은 [[상식]]이 부족하기 때문이다.",
+"특정 임무만 해결하므로 여전히 '[[좁은]] AI'의 시대라 불린다.",
+"AI는 주어진 [[틀]] 안에서만 창의성을 발휘하여 '틀을 벗어나' 사고하지 못한다.",
+"보안 검색대 통과처럼 큰 틀에서 세부로 계획하는 [[계층적]] 어려움을 겪는다.",
+"억양·몸짓에서 감정을 읽는 [[감정적·사회적 통찰|2]]이 부족하다.",
+"심층학습 AI는 [[블랙박스|2]]처럼 작동하여 결과의 해석이 어렵다.",
+"본래와 다른 임무에 다시 학습해야 하는 [[전이학습|2]]의 한계가 있다."
+]},
+{ch:"",sec:"4. 자율주행자동차",lines:[
+"인간이 부여한 자율권으로 스스로 지능적 판단을 하는 차를 [[autonomous|2]] vehicle, 기능적으로 스스로 움직이는 것을 [[self-driving|2]], 운전자가 없는 차를 [[driverless|2]] car라 한다.",
+"SAE 자율주행은 0~5의 [[6]]단계로 구분되며, 레벨 [[3]]~[[5]] 차량을 자율주행자동차라 부른다.",
+"레벨 [[5]]은 모든 환경 조건에서 시스템이 전부 담당하며 운전자 개입을 전제하지 않는 완전 자율주행이다.",
+"트롤리 사례에서 승객 사례의 인물은 [[프랭크]], 육교 사례의 인물은 [[조지]]이다.",
+"전체 교통사고의 약 [[94]]%가 인적 오류로 발생하며, 사고율은 인간차와 자율주행차 조합에서 [[가장 높다|2]], 자율주행차끼리는 [[가장 낮다|2]]."
+]},
+{ch:"제Ⅱ장  인공지능과 윤리 인증 그리고 문제점",sec:"1~3. 윤리인증제와 필요성",lines:[
+"윤리인증제란 제작·설계된 인공지능이 '[[윤리적]]'으로 행위함을 입증·평가하는 제도이다.",
+"윤리인증은 AI 상용화의 [[필요조건]]이지만 [[충분조건]]은 아니다.",
+"이는 성능·[[가격|2]]·수요 등이 부족하면 상용화가 실패할 수 있기 때문이다."
+]},
+{ch:"",sec:"4. 각국의 준거 (IEEE·EU·중국·한국)",lines:[
+"미국 IEEE가 2018년 발표한 윤리 인증 프로그램의 약칭은 [[ECAIS|2]]이며, 3원칙은 [[책임성]]·[[투명성]]·알고리즘 [[편향성]] 축소이다.",
+"EU의 전문가 집단 [[AI HLEG|2]]는 신뢰할 수 있는 AI를 '위법하지 않고, [[윤리적]]이며, [[강력]]한 AI'로 정의한다.",
+"EU 7원칙에는 인간 대리 및 관리, 기술적 견고함, [[개인정보보호와 데이터 통제|2]], 투명성, 다양성·차별금지·공정성, 사회적·환경적 복지, 책임성이 있다.",
+"중국은 [[국무원|2]]이 2017년 발표하여 [[2030]]년을 목표로 [[8]]가지 원칙을 제시하였다.",
+"한국의 공통원칙 [[PACT]]는 [[공공성]]·[[책무성]]·[[통제성]]·[[투명성]]이다.",
+"각국 보고서에서 동일 명칭·내용으로 가장 빈번히(4회) 등장한 준거는 '[[투명성과 책임성]]'이다.",
+"한국의 윤리인증제 3대 기준은 투명성, [[알고리즘 편향성|2]], [[개인정보보호 및 데이터 통제|2]]이다."
+]},
+{ch:"제Ⅲ장  인공지능과 노동, 사회 그리고 우리의 미래",sec:"1. 노동",lines:[
+"[[헤겔]]은 인간이 자신의 노동으로 인간성을 부여한다고 보았고, [[묵자]]는 자기 노동에 의지하는 자는 산다고 하였다.",
+"노동시장 변화의 본질은 [[자동화]]이며, 이는 경제학적으로 '[[탈숙련화]]'를 의미한다.",
+"자동화를 저해하는 3요인은 [[지각과 정교한 조작|2]], [[창의적 지성]], [[사회적 지성]]이다."
+]},
+{ch:"",sec:"2~3. 사회와 미래",lines:[
+"부의 재분배 방식으로 [[롱테일]]의 법칙과 [[파레토]]의 법칙이 대비된다.",
+"기계 지능이 스스로를 재설계해 인간이 제어할 수 없는 시점을 [[싱귤래리티]](특이점)라 한다.",
+"과학기술로 인간 능력을 개선하려는 운동을 [[트랜스휴머니즘]]이라 하며, 그 결과 인간은 [[포스트휴먼]]으로 변할 수 있다.",
+"기계 폭동 가능성에 대비를 강조한 학자는 [[보스트롬|2]], 기술 발전을 수용한 학자는 [[커즈와일|2]]이다.",
+"좋은 곳을 뜻하는 [[유토피아]]는 [[토마스 모어|2]]의 소설에서 유래했고, 〈[[1984|2]]〉·〈멋진 신세계〉가 그리는 세계는 [[디스토피아]]이다.",
+"AI와 함께하는 미래가 유토피아일지 디스토피아일지는 인간이 미래를 어떻게 [[준비]]하는가에 달려 있다."
+]}
+];
+
+let level=1; // 1=기본(4회독), 2=심화(5회독)
+const docEl=document.getElementById('doc');
+const state={}; // state[id]=value
+let blanks=[]; // {id, ans, lv, el}
+
+function parseLine(text,refs){
+  // returns HTML; refs collects {ans, lv}
+  let html=''; let re=/\[\[([^\]]+)\]\]/g; let last=0; let m;
+  while((m=re.exec(text))){
+    html+=esc(text.slice(last,m.index));
+    let parts=m[1].split('|'); let ans=parts[0]; let lv=parts[1]?+parts[1]:1;
+    const id='b'+refs._n++;
+    if(lv<=level){
+      refs.list.push({id,ans,lv});
+      const w=Math.max(62,Math.min(220,ans.length*15+24));
+      html+='<input class="blank" data-id="'+id+'" style="width:'+w+'px" value="'+esc(state[id]||'')+'">';
+    } else {
+      html+='<span class="filled">'+esc(ans)+'</span>';
+    }
+    last=re.lastIndex;
+  }
+  html+=esc(text.slice(last));
+  return html;
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function render(){
+  blanks=[]; const refs={_n:0,list:blanks};
+  let html=''; let curCh='';
+  DATA.forEach(block=>{
+    if(block.ch&&block.ch!==curCh){html+='<div class="chap">'+esc(block.ch)+'</div>';curCh=block.ch}
+    html+='<div class="sec">'+esc(block.sec)+'</div>';
+    block.lines.forEach(line=>{html+='<div class="line">'+parseLine(line,refs)+'</div>'});
+  });
+  docEl.innerHTML=html;
+  docEl.querySelectorAll('.blank').forEach(inp=>{
+    inp.addEventListener('input',e=>{state[e.target.dataset.id]=e.target.value});
+  });
+  document.getElementById('score').textContent='빈칸 '+blanks.length+'개';
+}
+function norm(s){return String(s||'').replace(/\s|[()·,.'"’‘〈〉]/g,'').toLowerCase()}
+function grade(){
+  let ok=0;
+  blanks.forEach(b=>{
+    const inp=docEl.querySelector('.blank[data-id="'+b.id+'"]');
+    inp.classList.remove('correct','wrong');
+    const v=norm(state[b.id]); const a=norm(b.ans);
+    if(v&&(v===a||a.includes(v)&&v.length>=Math.max(2,a.length-2))){inp.classList.add('correct');ok++}
+    else inp.classList.add('wrong');
+  });
+  const pct=blanks.length?Math.round(ok/blanks.length*100):0;
+  document.getElementById('score').textContent='정답 '+ok+' / '+blanks.length+'  ('+pct+'%)';
+  toast('채점 완료! '+ok+'/'+blanks.length+' ('+pct+'%)');
+}
+function reveal(){
+  blanks.forEach(b=>{
+    const inp=docEl.querySelector('.blank[data-id="'+b.id+'"]');
+    inp.value=b.ans; state[b.id]=b.ans; inp.classList.remove('wrong'); inp.classList.add('correct');
+  });
+  toast('정답을 모두 채웠습니다');
+}
+function reset(){for(const k in state)delete state[k];render();toast('초기화했습니다')}
+
+document.querySelectorAll('.mode').forEach(m=>m.onclick=()=>{
+  document.querySelectorAll('.mode').forEach(x=>x.classList.remove('active'));
+  m.classList.add('active'); level=+m.dataset.lv;
+  for(const k in state)delete state[k]; render();
+});
+document.getElementById('grade').onclick=grade;
+document.getElementById('reveal').onclick=reveal;
+document.getElementById('reset').onclick=reset;
+let tt;function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2200)}
+render();
+</script>
+</body></html>
