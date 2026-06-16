@@ -72,6 +72,7 @@
   "python": [],
   "ethics": [
     { "file": "Three.html", "title": "기말 모의고사" },
-    { "file": "four.html", "title": "빈칸채우기" }
+    { "file": "four.html", "title": "빈칸채우기" },
+    { "file": "five.html", "title": "연관 기출 풀기" }
   ]
 }
