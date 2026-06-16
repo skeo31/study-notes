@@ -1,0 +1,178 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>기출 모의고사 · 중간 + 기말</title>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--panel2:#1e2230;--line:#2a2f3d;--txt:#e7e9ee;--muted:#9aa3b2;--accent:#6ea8fe;--accent2:#7c5cff;--ok:#46c08a;--bad:#ef6a6a;--warn:#e0b341}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:18px 16px 90px}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,rgba(15,17,21,.98),rgba(15,17,21,.92));backdrop-filter:blur(6px);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+h1{font-size:20px;margin:0 0 4px;font-weight:800;letter-spacing:-.3px}
+.sub{color:var(--muted);font-size:12.5px;margin:0;line-height:1.5}
+.note{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:8px;padding:9px 12px;margin:12px 0;font-size:12.5px;color:#d7d2b8}
+.modes{display:flex;gap:8px;margin:12px 0 6px}
+.mode{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:11px;cursor:pointer;font-weight:800;font-size:14px;text-align:center;transition:.12s}
+.mode small{display:block;font-weight:600;font-size:11px;opacity:.8;margin-top:2px}
+.mode.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.btn{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 14px;font-size:13.5px;cursor:pointer;font-weight:700;transition:.12s}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+.btn.ghost{background:transparent}
+.score{margin-left:auto;font-weight:800;font-size:14px}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;margin:11px 0}
+.qhead{display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap}
+.qnum{font-weight:800;font-size:14px;color:var(--accent)}
+.badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid var(--line);background:var(--panel2);color:var(--muted)}
+.qtext{font-size:15px;font-weight:600;margin:2px 0 10px;white-space:pre-wrap}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;gap:9px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;font-size:14px;transition:.1s}
+.opt:hover{border-color:var(--accent)}
+.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+.opt.correct{border-color:var(--ok);background:rgba(70,192,138,.12)}
+.opt.wrong{border-color:var(--bad);background:rgba(239,106,106,.12)}
+.opt .onum{font-weight:700;color:var(--muted);flex:none}
+.fillin{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--txt);font-size:14px;font-family:inherit}
+.fillin.correct{border-color:var(--ok)}.fillin.wrong{border-color:var(--bad)}
+.expl{display:none;margin-top:10px;padding:10px 12px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:8px;font-size:13px;color:#cfe9dd}
+.expl.show{display:block}.expl b{color:var(--ok)}
+.essay textarea{width:100%;min-height:90px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--txt);font-size:14px;font-family:inherit;resize:vertical;margin-top:6px}
+.model{display:none;margin-top:10px;padding:11px 13px;background:rgba(124,92,255,.10);border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:8px;font-size:13.5px;white-space:pre-wrap;line-height:1.7}
+.model.show{display:block}.model b{color:#b3a0ff}
+.footnote{color:var(--muted);font-size:11.5px;text-align:center;margin-top:24px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--accent2);color:#fff;padding:11px 18px;border-radius:30px;font-weight:700;font-size:13.5px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+.toast.show{opacity:1}
+</style></head><body>
+<div class="wrap">
+<header>
+  <h1>📜 기출 모의고사 · 중간 + 기말</h1>
+  <p class="sub">실제 기출 문제 그대로 수록 · 시험범위(강의)에 포함된 문항만</p>
+</header>
+<div class="note">
+  ※ 네가 준 <b>중간·기말 기출 원문</b>을 그대로 수록(정답은 기출 표기 기준) · <b>공리주의·의무론·결과주의 등 강의 미포함 문항은 제외</b>했어
+</div>
+<div class="modes">
+  <div class="mode active" data-set="mid">중간고사 기출<small>정보사회·윤리학·덕윤리·익명성·사이버범죄</small></div>
+  <div class="mode" data-set="fin">기말고사 기출<small>사이버 윤리 실천 전반</small></div>
+</div>
+<div class="bar">
+  <button class="btn primary" id="grade">📝 채점하기</button>
+  <button class="btn" id="reveal">정답·해설 보기</button>
+  <button class="btn ghost" id="reset">다시 풀기</button>
+  <span class="score" id="score"></span>
+</div>
+<div id="quiz"></div>
+<p class="footnote">출처: 정보사회와 사이버 윤리 중간·기말 기출 · 강의 범위 외(공리주의·의무론·결과주의) 문항 제외</p>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// 실제 기출 (mid=중간, fin=기말). a: mc=인덱스 / tf=true|false / fill=문자열
+const QUIZ={
+mid:[
+{n:1,t:"mc",q:"인간의 삶에 혁명을 일으킨 3가지로 알맞게 짝지어진 것은?",o:["마제석기, 증기기관, 컴퓨터","마제석기, 증기기관, 전기","뗀석기, 증기기관, 컴퓨터","불, 바퀴, 컴퓨터"],a:0,e:"마제석기·증기기관·컴퓨터."},
+{n:2,t:"mc",q:"정보에 대한 설명으로 옳은 것은?",o:["주체와 객체 사이에 주고받는 것들","주체와 주체 사이에 주고받는 것들","객체와 객체 사이에 주고받는 것들","기계 간 신호만"],a:0,e:"정보는 주체와 객체 사이에 주고받는 것."},
+{n:3,t:"fill",q:"정보화 사회에서 한층 더 발전한 사회를 ( ) 사회라 한다.",a:"지능정보화",e:"지능정보화 사회."},
+{n:4,t:"mc",q:"정보화 사회의 특성으로 알맞지 않은 것은?",o:["탈공감성","정보 중심성","네트워크화","탈산업화"],a:0,e:"'탈공감성'은 정보화 사회 특성이 아니다."},
+{n:5,t:"tf",q:"'사이버(cyber)'란 단어는 캐나다 소설가 윌리엄 깁슨의 〈뉴로맨서〉에서 처음 사용되었으며, '가상' 혹은 '공간'을 의미한다.",a:true,e:"참."},
+{n:6,t:"tf",q:"서양에서 윤리(ethics)는 그리스어 'ethos'에서 유래하였고 본래 뜻은 습관이다.",a:true,e:"참. ethos=습관."},
+{n:7,t:"tf",q:"지능정보사회의 목적은 인간 중심의 지능정보사회 구현을 위해 개발자·공급자의 책임윤리를 강화하고 이용자의 오남용을 방지하는 지침을 제공하는 것이다.",a:true,e:"참."},
+{n:8,t:"mc",q:"지능정보사회의 공통원칙이 아닌 것은?",o:["안전성","공공성","책무성","투명성"],a:0,e:"PACT(공공성·책무성·통제성·투명성). 안전성은 아님."},
+{n:9,t:"fill",q:"윤리학은 행위에 대한 ( )과 인간이 지켜야 하는 의무를 연구하는 학문이다.",a:"가치판단",e:"가치판단과 의무."},
+{n:10,t:"mc",q:"성품(행위자) 중심 규범 윤리에 속하는 것은?",o:["플라톤 덕 윤리","익명성의 도덕적 중립성","사이버 테러형 범죄","디지털 리터러시"],a:0,e:"성품 중심 = 플라톤·아리스토텔레스의 덕 윤리. (원기출 오답지였던 공리주의·의무론은 강의 미포함이라 보기에서 제외함)"},
+{n:11,t:"tf",q:"성품(행위자) 중심 규범 윤리는 A가 행위 a를 했기 때문에 덕스러운 것이 아니라, 덕스럽기 때문에 선한 행위를 할 수 있다고 본다.",a:true,e:"참."},
+{n:13,t:"mc",q:"'무지의 지'에 대한 설명으로 옳은 것은?",o:["'자신이 알지 못하는 것'을 안다","'자신이 아는 것'을 모른다","'자신이 알지 못하는 것'을 모른다","모든 것을 안다"],a:0,e:"자신이 알지 못함을 아는 것."},
+{n:14,t:"mc",q:"소크라테스의 윤리학 핵심 사항으로 옳은 것은?",o:["좋은 삶/선한 삶을 위한 철학적 성찰(자기 검토의 삶)","타인에게 해를 가하는 삶은 옳다","최선을 생각 못하면 차선의 믿음에 근거해 행위한다","쾌락 극대화의 삶"],a:0,e:"자기 검토의 삶."},
+{n:15,t:"mc",q:"플라톤의 덕 기반 이론에서 제시한 두 가지 문제로 알맞게 짝지어진 것은?",o:["가치론적 문제와 형이상학적 문제","이성적 문제와 형이상학적 문제","논리적 문제와 수학적 문제","경험적 문제와 윤리적 문제"],a:0,e:"가치론적·형이상학적 문제."},
+{n:16,t:"fill",q:"플라톤은 ( )을 제시하여 욕구적, 기개(감정)적, 이성적인 부분으로 3가지로 나누었다.",a:"영혼 삼분설",e:"영혼 삼분설."},
+{n:17,t:"fill",q:"행복은 다른 무엇의 수단이 될 수 없는 ( )과 더할 것이 없는 완정성, 두 가지 성질을 가졌다.",a:"최종성",e:"최종성과 완정성."},
+{n:18,t:"mc",q:"아리스토텔레스는 어떤 삶을 사는 것이 행복한 삶이라고 했는가?",o:["관조적인 삶","쾌락적인 삶","권력적인 삶","금욕적인 삶"],a:0,e:"관조적인 삶."},
+{n:19,t:"mc",q:"아리스토텔레스가 제시한 두 가지 탁월성으로 바르게 짝지어진 것은?",o:["성격적 탁월성, 지적 탁월성","감성적, 이성적","신체적, 정신적","개인적, 사회적"],a:0,e:"성격적·지적 탁월성."},
+{n:20,t:"mc",q:"중용에 대한 설명 중 옳은 것은?",o:["지나침과 모자람의 중간으로 너무 많지도 적지도 않은 것","항상 절반을 택하는 것","무조건 적게 하는 것","극단을 추구하는 것"],a:0,e:"중용=적절한 중간."},
+{n:21,t:"fill",q:"중용은 이성에 의해 ( )를 가진 사람이 정의하는 방식으로 정의된다.",a:"실천적 지혜",e:"실천적 지혜."},
+{n:26,t:"mc",q:"전체적으로 윗 단계에서 개괄적인 것을 먼저 설정한 후 단계를 낮춰 세분화하여 시스템 전체를 구축해 행위(일원론적) 중심 규범 윤리를 AI에 탑재하는 방식은?",o:["하향식 윤리모듈 접근 방식","상향식 윤리모듈 접근 방식","혼합식 접근 방식","무작위 접근 방식"],a:0,e:"하향식 윤리모듈 접근 방식."},
+{n:28,t:"mc",q:"인터넷 익명성의 순기능으로 옳지 않은 것은?",o:["정보 신뢰성의 증가","취재원을 보호하는 기능","신원이 밝혀지면 곤란한 사람을 보호하는 기능","언론과 사상의 장을 보장하는 기능"],a:0,e:"'정보 신뢰성 증가'는 순기능이 아니다."},
+{n:29,t:"fill",q:"익명성은 ( )을 유지하여 내적으로 '선'도 '악'도, '옳음'도 '그름'도 아닌 성향을 지닌다.",a:"도덕적 중립성",e:"도덕적 중립성."},
+{n:30,t:"fill",q:"익명성에 대한 논의는 ( )의 필요성으로 해결해야 한다.",a:"성숙한 시민의식",e:"성숙한 시민의식."},
+{n:31,t:"mc",q:"고도의 기술 요소가 포함되어 정보통신망 자체에 대한 공격(해킹·위변조·삭제·유출·바이러스 유포·기반 파괴)으로 나타나는 범죄 구분은?",o:["사이버 테러형 범죄","사이버 도박","사이버 명예훼손","사이버 사기"],a:0,e:"사이버 테러형 범죄."},
+{n:32,t:"fill",q:"( )의 규정에 따른 사이버폭력은 정보통신망을 통해 부호·문언·음향·화상 등을 이용해 타인을 모욕하거나 명예 또는 권익을 침해하는 모든 폭력적 표현·행위이다.",a:"방송통신심의위원회",e:"방송통신심의위원회."},
+{n:33,t:"mc",q:"사이버 범죄의 특성으로 알맞지 않은 것은?",o:["사이버 공간에 대한 가치 규범 윤리의식이 있다","익명성","비대면성","광역성"],a:0,e:"가치 규범 윤리의식이 '있다'는 특성이 아니다."},
+{n:34,t:"mc",q:"정보시스템에 침입하여 장애·파괴를 일으키거나 개인정보를 취득해 악용하는 행위(해킹·바이러스·메일폭탄·논리폭탄)에 해당하는 사이버 범죄는?",o:["사이버 테러","사이버 스토킹","사이버 명예훼손","사이버 도박"],a:0,e:"사이버 테러."}
+],
+fin:[
+{n:1,t:"mc",q:"사이버 공간의 특징으로 옳은 것은?",o:["익명성이 존재한다","시공간의 제약이 크다","물리적 거리의 한계가 있다","정보 접근이 어렵다"],a:0,e:"익명성·시공간 초월."},
+{n:2,t:"mc",q:"사이버 공간에서 발생할 수 있는 윤리적 문제로 옳지 않은 것은?",o:["정보 공유의 확대","개인정보 유출","사이버 폭력","저작권 침해"],a:0,e:"정보 공유 확대는 문제(부정 현상)가 아니다."},
+{n:3,t:"mc",q:"사이버 폭력의 예로 옳은 것은?",o:["악성 댓글 작성","온라인 학습 참여","정보 검색","파일 백업"],a:0,e:"악성 댓글 작성."},
+{n:4,t:"mc",q:"사이버 명예훼손의 정의로 옳은 것은?",o:["타인의 평판을 떨어뜨리는 허위·모욕적 표현을 온라인에 게시하는 행위","오프라인 대화 중의 비판적 발언","단순한 비평","정치적 의견 표현"],a:0,e:"온라인상의 허위·모욕으로 평판 훼손."},
+{n:5,t:"mc",q:"정보 격차의 의미로 옳은 것은?",o:["정보 접근과 활용 능력의 차이로 발생하는 불평등","동일한 정보 접근 능력을 갖는 현상","정보의 양이 동일하게 분배되는 현상","기술 수준이 균등한 상태"],a:0,e:"접근·활용 능력 차이의 불평등."},
+{n:6,t:"mc",q:"디지털 리터러시의 정의로 옳은 것은?",o:["디지털 기술을 이해하고 비판적으로 활용하는 능력","정보를 단순히 수집하는 능력","오프라인 활동을 제한하는 능력","정보를 저장하는 기술"],a:0,e:"이해+비판적 활용."},
+{n:7,t:"mc",q:"사이버 윤리 교육의 목적에 가장 가까운 것은?",o:["온라인에서 책임 있고 올바른 행위 습관 형성","기술 숙련도 향상","컴퓨터 프로그래밍 능력 강화","정보 생산 속도 향상"],a:0,e:"책임 있는 행위 습관 형성."},
+{n:8,t:"mc",q:"저작권 침해에 해당하는 것은?",o:["허락 없이 타인의 글을 복제하여 게시한다","저작자의 이름을 명시하고 인용한다","공공데이터를 활용한다","오픈소스 프로그램을 사용한다"],a:0,e:"무단 복제·게시는 침해."},
+{n:9,t:"mc",q:"사이버 중독의 주요 원인이 아닌 것은?",o:["정보의 과도한 단절","자기 통제력 부족","게임이나 SNS 과몰입","현실 회피 성향"],a:0,e:"'정보의 과도한 단절'은 원인이 아니다."},
+{n:10,t:"mc",q:"정보보호의 기본 원칙으로 옳지 않은 것은?",o:["편의성","기밀성","무결성","가용성"],a:0,e:"정보보호 3요소=기밀성·무결성·가용성(CIA)."},
+{n:11,t:"mc",q:"사이버 범죄 대응 기관으로 옳은 것은?",o:["경찰청 사이버수사국","문화체육관광부","방송통신위원회","행정안전부"],a:0,e:"경찰청 사이버수사국."},
+{n:12,t:"mc",q:"정보 윤리의 핵심 가치로 옳은 것은?",o:["책임과 신뢰","효율성과 속도","경쟁과 이익","편의와 단축"],a:0,e:"책임과 신뢰."},
+{n:13,t:"mc",q:"사이버 보안 사고의 예로 옳은 것은?",o:["랜섬웨어 감염","온라인 설문 조사 참여","클라우드 백업","보안 업데이트 설치"],a:0,e:"랜섬웨어 감염."},
+{n:14,t:"mc",q:"사이버 폭력의 예방 방법으로 옳지 않은 것은?",o:["익명 계정으로 상대를 비난한다","타인에 대한 존중 태도를 유지한다","문제 발생 시 신고한다","온라인 예절을 지킨다"],a:0,e:"익명 비난은 예방법이 아니다."},
+{n:15,t:"mc",q:"개인정보 보호를 위한 올바른 방법은?",o:["불필요한 정보 최소 공개","공공장소에서 비밀번호 입력","의심 링크 클릭","계정 공유"],a:0,e:"불필요 정보 최소 공개."},
+{n:16,t:"mc",q:"사이버 공간의 법적 책임에 관한 설명으로 옳은 것은?",o:["실명 여부와 관계없이 불법 행위에는 법적 책임이 따른다","온라인 행위는 법의 적용을 받지 않는다","익명으로 작성하면 처벌되지 않는다","표현의 자유는 절대적 권리이다"],a:0,e:"실명 여부와 무관하게 불법행위는 책임이 따른다."},
+{n:17,t:"mc",q:"정보윤리 원칙 중 하나로 옳은 것은?",o:["책임의 원칙","경쟁의 원칙","효율의 원칙","기술의 원칙"],a:0,e:"책임의 원칙."},
+{n:18,t:"mc",q:"사이버 공간에서의 건전한 의사소통 태도에 해당하지 않는 것은?",o:["허위 정보 유포","비난 대신 논리적 근거 제시","상대의 인격 존중","사실 확인 후 발언"],a:0,e:"허위 정보 유포는 건전한 태도가 아니다."},
+{n:19,t:"fill",q:"(빈칸) 사이버 공간에서의 윤리적 행동은 ( )과 타인에 대한 존중을 기반으로 한다.",a:"자기 존중",e:"자기 존중(자율·책임)과 타인 존중."},
+{n:20,t:"essay",q:"(서술형) 정보사회의 발전 속에서 개인이 실천해야 할 사이버 윤리적 행동 세 가지를 서술하시오.",model:"① 타인 존중: 악성 댓글·명예훼손을 삼가고 인격을 존중한다. ② 개인정보·저작권 보호: 불필요한 정보 공개를 최소화하고, 출처를 밝혀 인용하며 무단 복제를 하지 않는다. ③ 책임 있는 행동과 신고: 익명이라도 법적·윤리적 책임을 지며, 문제 발생 시 신고하고 온라인 예절을 지킨다."}
+]
+};
+
+let cur="mid";
+const state={mid:{},fin:{}};
+const quiz=document.getElementById('quiz');
+function typeLabel(t){return t==='mc'?'5지선다':t==='tf'?'참/거짓':t==='fill'?'빈칸단답':'서술형'}
+function answerText(it){if(it.t==='mc')return '①②③④⑤'[it.a]+' '+it.o[it.a];if(it.t==='tf')return it.a?'참(O)':'거짓(X)';return it.a}
+function render(){
+  const list=QUIZ[cur];const a=state[cur];let html='';
+  list.forEach((it,i)=>{
+    if(it.t==='essay'){
+      html+='<div class="q essay"><div class="qhead"><span class="qnum">'+it.n+'.</span><span class="badge">서술형</span></div><div class="qtext" style="color:#ffd98a">'+it.q+'</div>';
+      html+='<textarea data-essay="'+i+'" placeholder="여기에 답안을 작성해 보세요">'+(a['e'+i]||'')+'</textarea>';
+      html+='<div style="margin-top:8px"><button class="btn ghost mb" data-mi="'+i+'">모범답안 보기</button></div>';
+      html+='<div class="model" data-model="'+i+'"><b>모범답안</b><br>'+it.model+'</div></div>';return;
+    }
+    html+='<div class="q" data-qi="'+i+'"><div class="qhead"><span class="qnum">'+it.n+'.</span><span class="badge">'+typeLabel(it.t)+'</span></div>';
+    html+='<div class="qtext">'+it.q+'</div>';
+    if(it.t==='mc'){html+='<div class="opts">';it.o.forEach((o,oi)=>{html+='<label class="opt" data-oi="'+oi+'"><input type="radio" name="q'+i+'" value="'+oi+'"'+(a[i]===oi?' checked':'')+'><span class="onum">'+'①②③④⑤'[oi]+'</span><span>'+o+'</span></label>'});html+='</div>';}
+    else if(it.t==='tf'){['참','거짓'].forEach((o,oi)=>{const v=oi===0;html+='<label class="opt" data-tf="'+v+'"><input type="radio" name="q'+i+'" value="'+v+'"'+(a[i]===v?' checked':'')+'><span class="onum">'+(oi===0?'O':'X')+'</span><span>'+o+'</span></label>'});}
+    else {html+='<input class="fillin" data-fill="'+i+'" placeholder="정답 입력" value="'+String(a[i]!=null?a[i]:'').replace(/"/g,'&quot;')+'">';}
+    html+='<div class="expl" data-expl="'+i+'"><b>정답:</b> '+answerText(it)+'<br>'+it.e+'</div></div>';
+  });
+  quiz.innerHTML=html;bind();
+  document.getElementById('score').textContent='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function bind(){
+  quiz.querySelectorAll('input[type=radio]').forEach(r=>r.onchange=e=>{const i=+e.target.closest('.q').dataset.qi;let v=e.target.value;v=v==='true'?true:v==='false'?false:+v;state[cur][i]=v});
+  quiz.querySelectorAll('input[data-fill]').forEach(f=>f.oninput=e=>state[cur][+e.target.dataset.fill]=e.target.value);
+  quiz.querySelectorAll('textarea[data-essay]').forEach(t=>t.oninput=e=>state[cur]['e'+e.target.dataset.essay]=e.target.value);
+  quiz.querySelectorAll('.mb').forEach(b=>b.onclick=()=>quiz.querySelector('[data-model="'+b.dataset.mi+'"]').classList.toggle('show'));
+}
+function norm(s){return String(s||'').replace(/\s|[()·,.'"’‘〈〉]/g,'').toLowerCase()}
+function gradeOne(it,v){if(v==null||v==='')return null;if(it.t==='fill')return norm(v)===norm(it.a)||(norm(it.a).includes(norm(v))&&norm(v).length>=2);return v===it.a}
+function grade(){
+  const list=QUIZ[cur];const a=state[cur];let ok=0,tot=0;
+  list.forEach((it,i)=>{
+    if(it.t==='essay')return;tot++;
+    const el=quiz.querySelector('.q[data-qi="'+i+'"]');const res=gradeOne(it,a[i]);
+    if(it.t==='fill'){const inp=el.querySelector('.fillin');inp.classList.remove('correct','wrong');if(res===true){inp.classList.add('correct');ok++}else if(res===false)inp.classList.add('wrong');}
+    else{el.querySelectorAll('.opt').forEach(o=>{o.classList.remove('correct','wrong');const oi=it.t==='mc'?+o.dataset.oi:(o.dataset.tf==='true');if(oi===it.a)o.classList.add('correct');if(a[i]===oi&&oi!==it.a)o.classList.add('wrong')});if(res===true)ok++;}
+    el.querySelector('[data-expl="'+i+'"]').classList.add('show');
+  });
+  const pct=tot?Math.round(ok/tot*100):0;
+  document.getElementById('score').textContent='객관식·단답 '+ok+' / '+tot+'  ('+pct+'%)';
+  toast('채점 완료! '+ok+'/'+tot+' ('+pct+'%)');
+}
+function reveal(){quiz.querySelectorAll('.expl').forEach(e=>e.classList.add('show'));quiz.querySelectorAll('.model').forEach(e=>e.classList.add('show'));
+  QUIZ[cur].forEach((it,i)=>{if(it.t==='essay')return;const el=quiz.querySelector('.q[data-qi="'+i+'"]');if(it.t==='fill')el.querySelector('.fillin').classList.add('correct');else el.querySelectorAll('.opt').forEach(o=>{const oi=it.t==='mc'?+o.dataset.oi:(o.dataset.tf==='true');if(oi===it.a)o.classList.add('correct')})});}
+function reset(){state[cur]={};render();toast('초기화했습니다')}
+document.querySelectorAll('.mode').forEach(m=>m.onclick=()=>{document.querySelectorAll('.mode').forEach(x=>x.classList.remove('active'));m.classList.add('active');cur=m.dataset.set;render()});
+document.getElementById('grade').onclick=grade;document.getElementById('reveal').onclick=reveal;document.getElementById('reset').onclick=reset;
+let tt;function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2200)}
+render();
+</script></body></html>
