@@ -72,7 +72,8 @@
   "python": [],
   "philosophy": [
     { "file": "descartes.html", "title": "방법서설 문제은행" },
-    { "file": "apology-of-socrates.html", "title": "소크라테스의 변명 분석노트 (비밀번호)" }
+    { "file": "apology-of-socrates.html", "title": "소크라테스의 변명 분석노트 (비밀번호)" },
+    { "file": "apology-quiz.html", "title": "소크라테스의 변명 점검퀴즈 (17a~28b)" }
   ],
   "ethics": [
     { "file": "Three.html", "title": "기말 모의고사" },
