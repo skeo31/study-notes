@@ -73,7 +73,9 @@
   "philosophy": [
     { "file": "descartes.html", "title": "방법서설 문제은행" },
     { "file": "apology-of-socrates.html", "title": "소크라테스의 변명 분석노트 (비밀번호)" },
-    { "file": "apology-quiz.html", "title": "소크라테스의 변명 점검퀴즈 (기출 + 17a~42a)" }
+    { "file": "apology-quiz.html", "title": "소크라테스의 변명 점검퀴즈 1 (17a~28b)" },
+    { "file": "apology-quiz2.html", "title": "소크라테스의 변명 점검퀴즈 2 (28b~42a)" },
+    { "file": "apology-gichul.html", "title": "소크라테스의 변명 점검퀴즈 1 기출 (비밀번호)" }
   ],
   "ethics": [
     { "file": "Three.html", "title": "기말 모의고사" },
