@@ -75,12 +75,12 @@
     { "file": "apology-of-socrates.html", "title": "소크라테스의 변명 분석노트 (비밀번호)" },
     { "file": "apology-quiz.html", "title": "소크라테스의 변명 점검퀴즈 1 (17a~28b)" },
     { "file": "apology-quiz2.html", "title": "소크라테스의 변명 점검퀴즈 2 (28b~42a)" },
-    { "file": "apology-gichul.html", "title": "소크라테스의 변명 점검퀴즈 1 기출 (비밀번호)" },
+    { "file": "apology-gichul.html", "title": "점검퀴즈 (비밀번호)" },
     { "file": "apology-summary.html", "title": "소크라테스의 변명 요약노트 (17a~42a)" }
   ],
   "ethics": [
     { "file": "Three.html", "title": "기말 모의고사" },
     { "file": "four.html", "title": "빈칸채우기" },
-    { "file": "five.html", "title": "연관 기출 풀기" }
+    { "file": "five.html", "title": "연관 기출 풀기 (비밀번호)" }
   ]
 }
