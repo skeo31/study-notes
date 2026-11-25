@@ -78,6 +78,9 @@
     { "file": "apology-gichul.html", "title": "점검퀴즈 (비밀번호)" },
     { "file": "apology-summary.html", "title": "소크라테스의 변명 요약노트 (17a~42a)" }
   ],
+  "aibigdata": [
+    { "file": "ai-bigdata-notes.html", "title": "인공지능과 빅데이터 교안 완전 정리 (1~13주차, 암기팁·셀프체크)" }
+  ],
   "ethics": [
     { "file": "Three.html", "title": "기말 모의고사" },
     { "file": "four.html", "title": "빈칸채우기" },
